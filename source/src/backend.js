@@ -62,12 +62,22 @@ const uuid = () => (typeof crypto !== 'undefined' && crypto.randomUUID)
 // Cats used to be saved with their whole cartoon portrait (a ~10KB SVG data URL) in photo_url, which filled the
 // phone's saved-data space after a few dozen cats. Now the cartoon is NOT stored: it is stripped on save and
 // regenerated from the breed on load, so rows look the same to the rest of the app.
+// Offline, the "cloud backup" (player_data) used to be saved INTO km_db_players, and the backup itself contains every
+// km_ key including km_db_players, so each save nested the previous one and it grew until the phone's saved-data space
+// was full. The data already lives in this phone's storage, so offline we never keep player_data.
 const slim = (t, rows) => t === 'cats'
   ? rows.map(r => (isGeneratedArt(r.photo_url) ? { ...r, photo_url: null } : r))
-  : rows;
+  : t === 'players'
+    ? rows.map(r => { if (!r || r.player_data === undefined) return r; const { player_data, ...rest } = r; return rest; })
+    : rows;
 function load(t) {
   if (!tables[t]) {
     try { tables[t] = JSON.parse(localStorage.getItem(LS + t) || '[]'); } catch { tables[t] = []; }
+    if (t === 'players' && tables[t].some(r => r && r.player_data !== undefined)) {
+      try { localStorage.removeItem(LS + t); } catch {} // free the bloated copy first so the slim one fits
+      persist(t);
+      tables[t] = tables[t].map(r => { if (!r) return r; const { player_data, ...rest } = r; return rest; });
+    }
     if (t === 'cats') {
       let changed = false;
       tables[t].forEach(r => { if (!r.photo_url && r.breed) { r.photo_url = catArtUrl(r.breed) || null; } else if (isGeneratedArt(r.photo_url)) changed = true; });

@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 152; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 153; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -748,7 +748,7 @@ function packPlayerData() {
   const out = {};
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    if (k && k.startsWith('km_')) { try { const v = localStorage.getItem(k); if (v != null) out[k] = v; } catch {} }
+    if (k && k.startsWith('km_') && !k.startsWith('km_db_') && !k.startsWith('km_catapi_') && !k.startsWith('km_cataas_')) { try { const v = localStorage.getItem(k); if (v != null) out[k] = v; } catch {} }
   }
   return out;
 }
@@ -873,7 +873,7 @@ async function saveNow() {
   const _orig = localStorage.setItem.bind(localStorage);
   localStorage.setItem = function (key, value) {
     _orig(key, value);
-    if (key && key.startsWith('km_')) scheduleSave();
+    if (key && key.startsWith('km_') && !key.startsWith('km_db_')) scheduleSave(); // km_db_* is the offline database itself: saving it would re-trigger a save forever
   };
 })();
 // On reconnect: flush player_data (cosmetics, achievements, house etc.)

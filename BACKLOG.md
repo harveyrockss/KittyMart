@@ -29,6 +29,8 @@
 
 - Run 14: cat-only treat-lure catch twist: 🐟 'Throw a Treat' button on Catch (1 per cat); the cat stops moving and sniffs for 4s (purr), then runs again; resets on each new cat. v1.15 (APP_VERSION 152). Signup/tabs/catch/treat/mart checked with playwright, no console errors.
 
+- Run 15 (bug report from Indiana's phone, v1.14: "saved-data space on this phone is full: 7 cats could not be updated" with 118 cats): ROOT CAUSE found: offline, the cloud-backup (player_data, which packs every km_ key) was saved into km_db_players, which is itself a km_ key and its write re-triggered a save every 5s, so each save nested the previous backup and the row grew until storage filled. Fixed 3 ways: (1) setItem hook ignores km_db_* keys, (2) backup packing skips km_db_* and photo-pool caches, (3) offline store never keeps player_data and strips an existing bloated row on load (tested: 3MB -> 249 bytes, stays stable across saves). v1.16 (APP_VERSION 153). Indiana should reload the app twice (first load cleans, needs the new version.json).
+
 ## Next (priority order)
 1. Cat-only features for App Store differentiation (one per run): cat-bed house layout (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
