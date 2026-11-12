@@ -6,6 +6,7 @@
 // localStorage and the same sb(...) calls the screens already use are answered by
 // a small PostgREST-compatible engine below.
 import { createClient } from '@supabase/supabase-js';
+import { catArtUrl, isGeneratedArt } from './catData';
 
 export const KM_SUPABASE_URL = '';
 export const KM_SUPABASE_KEY = '';
@@ -58,12 +59,30 @@ const uuid = () => (typeof crypto !== 'undefined' && crypto.randomUUID)
   ? crypto.randomUUID()
   : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
 
+// Cats used to be saved with their whole cartoon portrait (a ~10KB SVG data URL) in photo_url, which filled the
+// phone's saved-data space after a few dozen cats. Now the cartoon is NOT stored: it is stripped on save and
+// regenerated from the breed on load, so rows look the same to the rest of the app.
+const slim = (t, rows) => t === 'cats'
+  ? rows.map(r => (isGeneratedArt(r.photo_url) ? { ...r, photo_url: null } : r))
+  : rows;
 function load(t) {
-  if (!tables[t]) { try { tables[t] = JSON.parse(localStorage.getItem(LS + t) || '[]'); } catch { tables[t] = []; } }
+  if (!tables[t]) {
+    try { tables[t] = JSON.parse(localStorage.getItem(LS + t) || '[]'); } catch { tables[t] = []; }
+    if (t === 'cats') {
+      let changed = false;
+      tables[t].forEach(r => { if (!r.photo_url && r.breed) { r.photo_url = catArtUrl(r.breed) || null; } else if (isGeneratedArt(r.photo_url)) changed = true; });
+      if (changed) persist(t); // compact old saves right away
+    }
+  }
   return tables[t];
 }
 function persist(t) {
-  try { localStorage.setItem(LS + t, JSON.stringify(tables[t])); } catch (e) { console.warn('KittyMart offline storage is full', e); }
+  const write = () => localStorage.setItem(LS + t, JSON.stringify(slim(t, tables[t])));
+  try { write(); } catch (e) {
+    // Storage full: drop re-downloadable caches (photo lists) and try once more.
+    try { ['km_catapi_pool_v1'].forEach(k => localStorage.removeItem(k)); write(); }
+    catch (e2) { console.warn('KittyMart offline storage is full', e2); }
+  }
 }
 
 const dec = v => { try { return decodeURIComponent(v); } catch { return v; } };
