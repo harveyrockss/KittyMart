@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 141; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 142; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -1255,6 +1255,25 @@ function playMeow(breedName = '') {
     osc.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
     osc.start(t); osc.stop(t + dur + 0.05);
     setTimeout(() => ctx.close(), 1500);
+  } catch (e) {}
+}
+
+// Gentle purr: low amplitude-modulated rumble (~25 Hz pulses on a 55 Hz tone with filtered noise).
+function playPurr() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const t = ctx.currentTime + 0.01, dur = 1.4;
+    const osc = ctx.createOscillator(), lfo = ctx.createOscillator(), lg = ctx.createGain(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    osc.type = 'sawtooth'; osc.frequency.value = 55;
+    f.type = 'lowpass'; f.frequency.value = 400;
+    lfo.frequency.value = 25; lg.gain.value = 0.12;
+    g.gain.setValueAtTime(0.001, t);
+    g.gain.linearRampToValueAtTime(0.16, t + 0.25);
+    g.gain.linearRampToValueAtTime(0.001, t + dur);
+    lfo.connect(lg); lg.connect(g.gain);
+    osc.connect(f); f.connect(g); g.connect(ctx.destination);
+    osc.start(t); lfo.start(t); osc.stop(t + dur); lfo.stop(t + dur);
+    setTimeout(() => ctx.close(), 2000);
   } catch (e) {}
 }
 
@@ -4356,7 +4375,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
       <div style={{ padding: 16 }}>
         <style>{`.tap-btn{animation:tbounce 0.4s infinite}.tap-btn:active{transform:scale(0.88)!important}@keyframes tbounce{0%,100%{transform:scale(1)}50%{transform:scale(0.93)}}`}</style>
         <h2 style={{ textAlign: 'center', color: '#333', margin: '0 0 4px' }}>🏁 Pet Races</h2>
-        <p style={{ textAlign: 'center', color: '#888', fontSize: 13, margin: '0 0 16px' }}>Live multiplayer · up to 4 cats per race</p>
+        <p style={{ textAlign: 'center', color: '#888', fontSize: 13, margin: '0 0 16px' }}>{ONLINE ? 'Live multiplayer · up to 4 cats per race' : 'Race the computer cats · up to 4 per race'}</p>
         <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', borderRadius: 14, padding: '10px 14px', marginBottom: 14, border: '2px solid #52b788', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ color: '#a0ffa0', fontWeight: 'bold', fontSize: 13 }}>{ONLINE ? `🟢 ${onlineCount || 0} players online` : '📴 Offline mode · race the computer'}</span>
           <span style={{ color: '#ffd700', fontWeight: 'bold', fontSize: 13 }}>🐱 {dd} Kitty Coins</span>
@@ -6108,6 +6127,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
     s.hunger = 100; s.lastFed = Date.now();
     saveDogState(dog.id, s);
     addXP(dog.id, 10, showToast);
+    playPurr();
     showToast(`🍖 ${dog.name} fed! +10 XP`);
     try { localStorage.setItem('km_feed_count', (parseInt(localStorage.getItem('km_feed_count')||'0')+1).toString()); } catch {}
     recordChallenge('feed');
