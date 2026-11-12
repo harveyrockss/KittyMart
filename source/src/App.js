@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 150; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 151; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2875,6 +2875,58 @@ function FriendsGalleryModal({ onClose, initialQuery }) {
 }
 
 // ─── Home Screen ─────────────────────────────────────────────────────────────
+// ─── Yarn Chase mini-game (cat-only) ─────────────────────────────────────────
+function YarnChase() {
+  const key = 'km_yarn_' + localDateKey();
+  const getPlays = () => { try { return parseInt(localStorage.getItem(key) || '0', 10) || 0; } catch { return 0; } };
+  const [plays, setPlays] = React.useState(getPlays);
+  const [running, setRunning] = React.useState(false);
+  const [time, setTime] = React.useState(15);
+  const [score, setScore] = React.useState(0);
+  const [pos, setPos] = React.useState({ x: 50, y: 50 });
+  const [done, setDone] = React.useState(null);
+  const scoreRef = React.useRef(0);
+  React.useEffect(() => {
+    if (!running) return;
+    const t = setInterval(() => setTime(v => v - 1), 1000);
+    return () => clearInterval(t);
+  }, [running]);
+  React.useEffect(() => {
+    if (running && time <= 0) {
+      setRunning(false);
+      const pts = Math.min(scoreRef.current, 15);
+      if (pts > 0) addBonusPts(pts);
+      setDone(pts);
+    }
+  }, [time, running]);
+  const start = () => {
+    if (plays >= 3) return;
+    try { localStorage.setItem(key, String(plays + 1)); } catch {}
+    setPlays(plays + 1); scoreRef.current = 0; setScore(0); setTime(15); setDone(null); setRunning(true);
+  };
+  const hit = () => {
+    scoreRef.current += 1; setScore(scoreRef.current);
+    try { playMeow(); } catch {}
+    setPos({ x: 8 + Math.random() * 78, y: 8 + Math.random() * 72 });
+  };
+  return (
+    <div data-testid="yarn-chase" style={{ background: 'white', borderRadius: 16, padding: 12, margin: '10px 0', border: '2px solid #ffd6e7' }}>
+      <div style={{ fontWeight: 'bold', fontSize: 13, color: '#c2185b' }}>🧶 Yarn Chase · {3 - plays} play{3 - plays === 1 ? '' : 's'} left today</div>
+      {!running && <div style={{ fontSize: 12, color: '#666', margin: '4px 0 8px' }}>{done !== null ? `Great pounce! ${score} catches = +${done} pts` : 'Tap the yarn ball as fast as you can for 15 seconds. Up to 15 pts!'}</div>}
+      {running ? (
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 'bold', color: '#764ba2' }}>⏱ {time}s · 🧶 {score}</div>
+          <div style={{ position: 'relative', height: 150, background: '#fff0f6', borderRadius: 12, marginTop: 6, overflow: 'hidden' }}>
+            <button aria-label="yarn ball" onClick={hit} style={{ position: 'absolute', left: pos.x + '%', top: pos.y + '%', fontSize: 32, background: 'none', border: 'none', cursor: 'pointer', transition: 'left 0.15s, top 0.15s', padding: 0 }}>🧶</button>
+          </div>
+        </div>
+      ) : (
+        <button onClick={start} disabled={plays >= 3} style={{ padding: '8px 16px', background: plays >= 3 ? '#eee' : 'linear-gradient(135deg,#ff6fa5,#c2185b)', color: plays >= 3 ? '#aaa' : 'white', border: 'none', borderRadius: 12, fontWeight: 'bold', cursor: 'pointer' }}>{plays >= 3 ? 'Come back tomorrow' : 'Play 🧶'}</button>
+      )}
+    </div>
+  );
+}
+
 function HomeScreen({ player, dogs, stats, onNavigate }) {
   const bonusPts = useLive(getBonusPts, 'km_pts_change');
   const totalPoints = (stats ? stats.pts : calcPoints(dogs)) + bonusPts;
@@ -3022,6 +3074,7 @@ function HomeScreen({ player, dogs, stats, onNavigate }) {
         );
       })()}
       <CommunityGoalBanner player={player} dogs={dogs} />
+      <YarnChase />
       <MysteryDogCard player={player} today={todayKey} />
       <TrickOrTreatCard />
       <AdventCalendarCard />
