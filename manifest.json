@@ -1,0 +1,17 @@
+{
+  "short_name": "KittyMart",
+  "name": "KittyMart – Catch & Collect Cats",
+  "description": "Catch rare cats, train them, race them and collect them all!",
+  "icons": [
+    { "src": "icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" }
+  ],
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#764ba2",
+  "background_color": "#764ba2",
+  "categories": ["games", "entertainment"],
+  "lang": "en"
+}
