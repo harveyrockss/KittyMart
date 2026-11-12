@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 146; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 147; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2078,6 +2078,10 @@ const CHALLENGE_POOL = [
   {id:'f1', type:'feed', text:'Feed 3 cats',              goal:3,  pts:15},
   {id:'f2', type:'feed', text:'Feed 5 cats',              goal:5,  pts:25},
   {id:'f3', type:'feed', text:'Feed 10 cats',             goal:10, pts:40},
+  {id:'f4', type:'feed', text:'Make 4 cats purr with a snack', goal:4, pts:20},
+  {id:'f5', type:'feed', text:'Fill 6 food bowls',        goal:6,  pts:30},
+  {id:'p5', type:'poo', text:'Scoop 2 litter trays',      goal:2,  pts:15},
+  {id:'c10', type:'catch', text:'Find 4 cats curled up napping', goal:4, rarity:'any', pts:20},
 ];
 
 function localDateKey(d = new Date()) {

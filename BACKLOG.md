@@ -17,6 +17,8 @@
 
 - Run 8: 4 cat-only achievements (Purr Maker=feed 10x, Tidy Tray=scoop 5 litter trays, Nine Lives=9 of one breed, Cat Café=20 cats); 'A Small Pack' -> 'Little Clowder'. v1.9 (APP_VERSION 146). Signup/tabs/race/mart checked, no console errors. Note: feed/litter achievements are evaluated when the collection changes.
 
+- Run 9: 4 cat-flavoured daily challenges added (snack-purr, food bowls, scoop trays, napping cats). v1.10 (APP_VERSION 147). Signup/tutorial/tabs (Catch, Mart, Race, Home) checked, no console errors.
+
 ## Next (priority order)
 1. Cat-only features for App Store differentiation (one per run): cat-bed/nap-spot house, yarn-chase mini-game, treat-lure catch twist, cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
