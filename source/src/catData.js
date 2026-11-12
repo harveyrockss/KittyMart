@@ -262,13 +262,27 @@ export const CAT_API_IDS = {
   "White Cat": "tang",
 };
 
+// Colour/pattern 'breeds' with no Cat API breed: photos come from CATAAS by coat tag (see photos.js).
+// Only tags confirmed in CATAAS's /api/tags list are used. Grey & White, Ginger & White and Fawn have no exact
+// tag, so they use the nearest confirmed one (gray / orange / cream); Lykoi has none and uses Russian Blue photos.
+const PHOTO_TAGS = {
+  "Calico": "calico", "Tortoiseshell": "tortoiseshell", "Tuxedo Cat": "tuxedo",
+  "Ginger Tabby": "ginger", "Cream Cat": "cream", "Fawn Cat": "cream",
+  "Black & White Cat": "blackandwhite", "Grey & White Cat": "gray",
+  "Ginger & White Cat": "orange", "Tabby & White Cat": "tabby",
+};
+// Used when the tagged source can't be reached (nearest real Cat API breed).
+const PHOTO_FALLBACK_IDS = { "Lykoi": "rblu" };
+const FALLBACK_DEFAULT_ID = "asho";
+
 const BREEDS_BY_NAME = {};
 CAT_BREEDS.forEach(b => {
   BREEDS_BY_NAME[b.name] = b;
   // `api` doubles as the default photo for a freshly caught cat: a generated cartoon portrait.
   Object.defineProperty(b, 'api', { enumerable: true, get() { return catArtUrl(b.name); } });
   b.fallback = null;
-  b.catApiId = CAT_API_IDS[b.name] || null;
+  b.photoTag = PHOTO_TAGS[b.name] || null;
+  b.catApiId = CAT_API_IDS[b.name] || (b.photoTag ? FALLBACK_DEFAULT_ID : (PHOTO_FALLBACK_IDS[b.name] || null));
 });
 
 // Catch-zone pools (names must match CAT_BREEDS above)

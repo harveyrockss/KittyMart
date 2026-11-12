@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import { sb, supabaseAuth } from './backend';
+import { sb, supabaseAuth, ONLINE } from './backend';
 import { CAT_BREEDS, ZONE_BREEDS, CAT_TRAITS, CAT_NAMES_MALE, CAT_NAMES_FEMALE, catArtUrl } from './catData';
 import { fetchBreedPhoto, catPhotoFor, warmBreedPhotos, installPhotoFallback } from './photos';
 installPhotoFallback();
@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 137;
+const APP_VERSION = 138; // build number; shown as v1.<n> (138 = v1.1). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -1561,7 +1561,7 @@ function PrivacyPolicyModal({ onClose }) {
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', margin:'0 0 16px' }}><h2 style={{ margin:0, color:'#764ba2' }}>🔒 Privacy Policy</h2><button onClick={onClose} aria-label="Close" style={{ background:'none', border:'none', fontSize:24, cursor:'pointer', color:'#888' }}>✕</button></div>
         <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}><strong>Last updated: October 2026</strong></p>
         <h3 style={{ fontSize:14, color:'#333' }}>What we collect</h3>
-        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>We collect your username, your email address (optional, used for password reset), your password (hashed — we never store your plain password), the cats you catch, and any cat photos you choose to upload. If you allow location access, your approximate coordinates are sent to OpenStreetMap's Nominatim service only to work out your catch zone; we do not store your location on our servers. Real cat photos are loaded from The Cat API (thecatapi.com), which receives your device's IP address like any website you visit.</p>
+        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>We collect your username, your email address (optional, used for password reset), your password (hashed — we never store your plain password), the cats you catch, and any cat photos you choose to upload. If you allow location access, your approximate coordinates are sent to OpenStreetMap's Nominatim service only to work out your catch zone; we do not store your location on our servers. Real cat photos are loaded from The Cat API (thecatapi.com) and CATAAS (cataas.com), which receive your device's IP address like any website you visit.</p>
         <h3 style={{ fontSize:14, color:'#333' }}>How we use it</h3>
         <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>Your data is used solely to power KittyMart — displaying your cat collection, race results, and leaderboard rankings.</p>
         <h3 style={{ fontSize:14, color:'#333' }}>Who we share it with</h3>
@@ -4383,7 +4383,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
         <h2 style={{ textAlign: 'center', color: '#333', margin: '0 0 4px' }}>🏁 Pet Races</h2>
         <p style={{ textAlign: 'center', color: '#888', fontSize: 13, margin: '0 0 16px' }}>Live multiplayer · up to 4 cats per race</p>
         <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', borderRadius: 14, padding: '10px 14px', marginBottom: 14, border: '2px solid #52b788', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ color: '#a0ffa0', fontWeight: 'bold', fontSize: 13 }}>🟢 {onlineCount || 0} players online</span>
+          <span style={{ color: '#a0ffa0', fontWeight: 'bold', fontSize: 13 }}>{ONLINE ? `🟢 ${onlineCount || 0} players online` : '📴 Offline mode · race the computer'}</span>
           <span style={{ color: '#ffd700', fontWeight: 'bold', fontSize: 13 }}>🐱 {dd} Kitty Coins</span>
         </div>
 
@@ -7748,7 +7748,7 @@ export default function App() {
             {musicOn ? '🔊' : '🔇'}
           </button>
           <img src={kmLogo(holiday)} alt="KittyMart" style={{ height: holiday?.name === 'Halloween' ? 110 : 55, borderRadius: 12, marginBottom: 2 }} />
-          <p style={{ margin: '2px 0 0', fontSize: 12, opacity: 0.85 }}>Hi {player.username}! · 🐱 {dogsLoadError ? '⚠️' : (stats ? stats.count : dogs.length)} · ⭐ {totalPoints}pts · <span style={{color:'#a0ffa0',fontWeight:'bold'}}>🟢 {onlineCount} online</span> · <span style={{opacity:0.5,fontSize:10}}>v{APP_VERSION}</span></p>
+          <p style={{ margin: '2px 0 0', fontSize: 12, opacity: 0.85 }}>Hi {player.username}! · 🐱 {dogsLoadError ? '⚠️' : (stats ? stats.count : dogs.length)} · ⭐ {totalPoints}pts · {ONLINE && <><span style={{color:'#a0ffa0',fontWeight:'bold'}}>🟢 {onlineCount} online</span> · </>}<span style={{opacity:0.5,fontSize:10}}>v1.{APP_VERSION - 137}</span></p>
         </div>
       </div>
       {dogsLoadError && (
