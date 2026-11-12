@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 138; // build number; shown as v1.<n> (138 = v1.1). Bump with public/version.json
+const APP_VERSION = 139; // build number; shown as v1.<n-137> (139 = v1.2). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -507,7 +507,7 @@ function getActiveEvent() {
 // Season number (months since Jan 2024)
 function getCurrentSeason() {
   const now = new Date();
-  return (now.getFullYear() - 2024) * 12 + now.getMonth() + 1;
+  return Math.max(1, (now.getFullYear() - 2026) * 12 + now.getMonth() - 9); // Season 1 = Nov 2026
 }
 
 const CUSTOM_BREED_ART = {};
@@ -3452,7 +3452,7 @@ function DogPicker({ dogs, onPick, title, subtitle, accentGradient, accentShadow
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                 <div style={{ fontSize: 12, fontWeight: 900, color: '#555', letterSpacing: 0.3 }}>🐱 {breed}</div>
                 <div style={{ flex: 1, height: 1, background: '#eee' }} />
-                <div style={{ fontSize: 11, color: '#aaa', fontWeight: 700 }}>{breedDogs.length} dog{breedDogs.length !== 1 ? 's' : ''}</div>
+                <div style={{ fontSize: 11, color: '#aaa', fontWeight: 700 }}>{breedDogs.length} cat{breedDogs.length !== 1 ? 's' : ''}</div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10 }}>
                 {breedDogs.map(dog => {
@@ -6712,7 +6712,7 @@ function LeaderboardScreen({ currentPlayer, myTotalPts: myTotalPtsProp, onlineId
                         🔥 {p.loginStreak}d
                       </span>
                     )}
-                    {isOnline && <span style={{ fontSize: 10, background: '#06d6a0', color: 'white', borderRadius: 20, padding: '1px 7px', fontWeight: 'bold' }}>🟢 online</span>}
+                    {ONLINE && isOnline && <span style={{ fontSize: 10, background: '#06d6a0', color: 'white', borderRadius: 20, padding: '1px 7px', fontWeight: 'bold' }}>🟢 online</span>}
                   </div>
                   {p.championLabel && (
                     <div style={{ fontSize: 12, color: '#764ba2', fontStyle: 'italic', marginBottom: 2 }}>
@@ -7192,7 +7192,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
                     <div>
                       <div style={{ fontWeight: 'bold', fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
                         {f.username}
-                        {friendsOnlineIds.has(f.id) && <span style={{ fontSize: 9, background: '#06d6a0', color: 'white', borderRadius: 20, padding: '2px 7px', fontWeight: 'bold' }}>🟢 ONLINE</span>}
+                        {ONLINE && friendsOnlineIds.has(f.id) && <span style={{ fontSize: 9, background: '#06d6a0', color: 'white', borderRadius: 20, padding: '2px 7px', fontWeight: 'bold' }}>🟢 ONLINE</span>}
                       </div>
                       <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>⭐ {f.total_pts || 0} pts · 🏁 {f.race_wins || 0} wins</div>
                     </div>
