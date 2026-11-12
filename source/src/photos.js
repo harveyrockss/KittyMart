@@ -29,6 +29,7 @@ let globalBackoff = 0;
 const okUrls = new Set();
 const lastPicked = {};
 const fallbackByUrl = {}; // real photo url -> cartoon to show if it ever fails to load
+const breedByUrl = {}; // real photo url -> breed name (so a failed photo can try another real source first)
 
 export const isRealPhoto = u => typeof u === 'string' && /^https?:\/\/([a-z0-9-]+\.)?(thecatapi|cataas)\.com\//i.test(u);
 
@@ -131,7 +132,7 @@ export async function fetchBreedPhoto(breed) {
     const choices = urls.length > 1 ? urls.filter(u => u !== lastPicked[id]) : urls;
     for (let i = 0; i < 2; i++) {
       const url = choices[Math.floor(Math.random() * choices.length)];
-      if (await probe(url)) { lastPicked[id] = url; fallbackByUrl[url] = art; notify(); return url; }
+      if (await probe(url)) { lastPicked[id] = url; fallbackByUrl[url] = art; breedByUrl[url] = breed.name; notify(); return url; }
     }
     failUntil[id] = Date.now() + 5 * 60 * 1000; // this source isn't loading right now: try the next one
     if (isTag) delete pool[id]; // drop a pool whose photos don't load so it is rebuilt next time
@@ -145,7 +146,7 @@ export function catPhotoFor(dog) {
   if (!dog) return null;
   const pu = dog.photo_url;
   if (pu && pu.startsWith('data:image/') && !pu.startsWith('data:image/svg+xml')) return pu; // user's own photo
-  if (isRealPhoto(pu)) { fallbackByUrl[pu] = fallbackByUrl[pu] || (dog.breed && catArtUrl(dog.breed)); return pu; }
+  if (isRealPhoto(pu)) { fallbackByUrl[pu] = fallbackByUrl[pu] || (dog.breed && catArtUrl(dog.breed)); if (!breedByUrl[pu]) breedByUrl[pu] = dog.breed; return pu; }
   // older cats were saved with the cartoon: give them a stable real photo from the breed pool
   const b = BREEDS_LOOKUP[dog.breed];
   const urls = b && keysFor(b).map(poolUrls).find(u => u && u.length);
@@ -153,7 +154,7 @@ export function catPhotoFor(dog) {
     let h = 0; const key = String(dog.id || dog.name || '');
     for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
     const url = urls[h % urls.length];
-    fallbackByUrl[url] = catArtUrl(dog.breed);
+    fallbackByUrl[url] = catArtUrl(dog.breed); breedByUrl[url] = dog.breed;
     return url;
   }
   return null;
@@ -165,10 +166,11 @@ export function warmBreedPhotos(names, max = 40) {
   (names || []).forEach(name => {
     const b = BREEDS_LOOKUP[name];
     if (!b) return;
-    const key = keysFor(b).find(k => !poolUrls(k));
-    if (!key || n >= max) return;
-    const delay = 300 * n++;
-    setTimeout(() => { loadPool(key).then(u => { if (u) notify(); }); }, delay);
+    keysFor(b).filter(k => !poolUrls(k)).forEach(key => {
+      if (n >= max) return;
+      const delay = 300 * n++;
+      setTimeout(() => { loadPool(key).then(u => { if (u) notify(); }); }, delay);
+    });
   });
 }
 
@@ -179,9 +181,26 @@ export function installPhotoFallback() {
   document.addEventListener('error', e => {
     const t = e.target;
     if (!t || t.tagName !== 'IMG' || !isRealPhoto(t.src) || t.dataset.kmfb) return;
-    const fb = fallbackByUrl[t.src] || catArtUrl(t.alt) || catArtUrl('Domestic Shorthair');
+    const tries = +(t.dataset.kmtry || 0);
+    const failed = t.src;
+    const fb = fallbackByUrl[failed] || catArtUrl(t.alt) || catArtUrl('Domestic Shorthair');
     t.dataset.kmfb = '1';
     e.stopImmediatePropagation(); e.stopPropagation();
+    // First try a real photo from the breed's *other* source (e.g. its Cat API pool when the CATAAS tag
+    // photos won't load); only if that fails too do we show the cartoon.
+    const b = BREEDS_LOOKUP[breedByUrl[failed] || t.alt];
+    const failedKey = Object.keys(pool).find(k => (pool[k].urls || []).includes(failed));
+    if (failedKey && failedKey.startsWith('tag:')) { delete pool[failedKey]; savePool(); failUntil[failedKey] = Date.now() + 10 * 60 * 1000; }
+    const alt = b && keysFor(b).filter(k => k !== failedKey).map(poolUrls).find(u => u && u.length);
+    if (alt && tries < 1) {
+      t.dataset.kmtry = String(tries + 1);
+      let h = 0; const key = String(t.alt || '') + failed.length;
+      for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+      const url = alt[h % alt.length];
+      fallbackByUrl[url] = fb; breedByUrl[url] = b.name;
+      delete t.dataset.kmfb; t.style.display = ''; t.src = url;
+      return;
+    }
     t.style.display = '';
     t.src = fb;
   }, true);

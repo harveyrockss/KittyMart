@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 139; // build number; shown as v1.<n-137> (139 = v1.2). Bump with public/version.json
+const APP_VERSION = 140; // build number; shown as v1.<n-137> (140 = v1.3). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
