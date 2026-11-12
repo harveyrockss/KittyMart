@@ -4,15 +4,65 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>KittyMart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#ffd9e8">
+<meta name="theme-color" content="#ff9fc4">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="KittyMart">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
-html,body{margin:0;height:100%;overflow:hidden;background:#ffd9e8;font-family:ui-rounded,'Nunito',system-ui,sans-serif;color:#5a3a3a;touch-action:none}
+html,body{margin:0;height:100%;overflow:hidden;background:#ffe9f1;font-family:'Nunito',ui-rounded,system-ui,sans-serif;color:#5a3a3a;touch-action:none}
+#root{position:fixed;inset:0;display:flex;flex-direction:column}
+#hdr{flex:none;position:relative;background:linear-gradient(135deg,#ff9fc4,#8fe0cf);padding:calc(env(safe-area-inset-top,0px) + 6px) 12px 8px;text-align:center;color:#fff;box-shadow:0 2px 10px rgba(120,60,80,.25);z-index:5}
+#hlogo{width:84px;height:84px;border-radius:20px;object-fit:cover;border:3px solid #fff;box-shadow:0 3px 10px rgba(80,40,60,.3);display:block;margin:0 auto 4px}
+#hline{font-weight:800;font-size:13.5px;text-shadow:0 1px 3px rgba(120,40,70,.55)}
+#snd{position:absolute;right:10px;top:calc(env(safe-area-inset-top,0px) + 8px);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.6);font-size:21px;cursor:pointer;padding:0}
+#root.stg #hlogo{width:36px;height:36px;border-radius:10px;border-width:2px;display:inline-block;vertical-align:middle;margin:0 8px 0 0}
+#root.stg #hline{display:inline-block;vertical-align:middle}
+#root.stg #hdr{padding-top:calc(env(safe-area-inset-top,0px) + 4px);padding-bottom:5px}
+#root.stg #snd{top:calc(env(safe-area-inset-top,0px) + 3px);width:40px;height:40px}
+#content{flex:1;min-height:0;position:relative;overflow:hidden;background:linear-gradient(#fff4f8,#e6fbf6)}
+#stage{position:absolute;inset:0;display:none;background:#ffe0ea}
+#page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;display:none;padding:12px 12px 24px}
+#tabbar{flex:none;display:flex;background:#fffaf6;border-top:2px solid #ffd0e0;padding-bottom:env(safe-area-inset-bottom,0px);z-index:6}
+.tab{flex:1;border:0;background:none;padding:6px 0 5px;font:800 10.5px 'Nunito',ui-rounded,system-ui;color:#b08a98;cursor:pointer;min-width:0}
+.tab span{display:block;font-size:24px;line-height:1.15;filter:grayscale(.6) opacity(.75)}
+.tab.on{color:#e0618b;box-shadow:inset 0 3px 0 #e0618b}.tab.on span{filter:none}
+#pg .row{background:#fff;box-shadow:0 2px 8px rgba(160,90,120,.12)}
+.ph{margin:4px 2px 10px;font-size:22px;color:#e0618b}
+.card{background:#fff;border-radius:22px;padding:14px;margin-bottom:12px;box-shadow:0 3px 12px rgba(160,90,120,.15);border:2px solid #ffe0ec}
+.card h3{margin:0 0 8px;font-size:17px;color:#7a4a9a}
+.card p{margin:0 0 8px;font-size:14px;font-weight:600}
+.wel{background:linear-gradient(135deg,#fff0e6,#ffe3ef);border-color:#ffb98a;text-align:center}
+.wel .pw{font-size:34px}.wel h2{margin:2px 0 4px;font-size:24px;color:#4a3a3a}.wel .sk{color:#e0703a;font-weight:900}
+.sts{display:flex;justify-content:space-between;text-align:center;gap:4px}
+.sts>div{flex:1}.sts b{display:block;font-size:24px;line-height:1.1}.sts small{font-size:12px;color:#8a6a78;font-weight:700}
+.pbar{height:14px;background:#ffe3ee;border-radius:8px;overflow:hidden;flex:1}.pbar i{display:block;height:100%;background:linear-gradient(90deg,#ff9fc4,#59cdbd);border-radius:8px}
+.chip{background:#59cdbd;color:#0b3d36;border-radius:999px;padding:5px 12px;font-weight:900;font-size:13px;white-space:nowrap}
+.qb{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.qb button i{display:block;font-style:normal;font-size:30px;margin-bottom:4px}.qb button{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:0;border-radius:20px;padding:16px 2px;color:#fff;font:900 15px 'Nunito',ui-rounded,system-ui;line-height:1.25;cursor:pointer;box-shadow:0 4px 10px rgba(80,60,100,.25);min-height:92px}
+.qb button:active,.gob:active{transform:scale(.96)}
+.q1{background:linear-gradient(135deg,#8d8cf0,#7a56b8)}.q2{background:linear-gradient(135deg,#6fc7a0,#3d8a73)}.q3{background:linear-gradient(135deg,#ffab75,#e5705a)}.q4{background:linear-gradient(135deg,#6dd0ee,#3d9bd0)}
+.feat{border:3px solid #8a5ce6;background:linear-gradient(135deg,#efe6ff,#e2d4f5)}
+.week{border:3px solid #ee6aa0;background:linear-gradient(135deg,#ffe3ec,#ffd0dc)}
+.pc{background:#fff;border:2px solid #ffd0e0;border-radius:14px;flex:none}
+.rar{font-weight:900;font-size:14px}.r0{color:#6a8a6a}.r1{color:#3d8ad0}.r2{color:#8a4ce6}
+.gift{color:#e0873a;font-weight:800;font-size:14px}.ok{color:#3d9a63;font-weight:800;font-size:14px}
+.gob{border:0;border-radius:16px;padding:13px 16px;background:linear-gradient(135deg,#8d8cf0,#7a56b8);color:#fff;font:900 17px 'Nunito',ui-rounded,system-ui;cursor:pointer;box-shadow:0 4px 10px rgba(80,60,150,.3)}
+.bdg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.bd{display:flex;gap:8px;align-items:center;background:#fff6fa;border:2px solid #ffe0ec;border-radius:14px;padding:8px;font-weight:900;font-size:13px;line-height:1.2}
+.bd.lock{opacity:.5;filter:grayscale(1)}.bd .e{font-size:26px}.bd small{display:block;font-weight:600;font-size:11px;color:#8a6a78}
+.lb{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #ffe8f0;font-weight:800;font-size:15px}.lb:last-child{border:0}.rk{font-size:22px;width:30px;text-align:center}
+.sel{font:700 16px 'Nunito',ui-rounded,system-ui;width:130px;border:2px solid #ffc2d6;border-radius:9px;background:#fff;color:#5a3a3a;padding:3px 6px}
+.lane{position:relative;height:60px;background:linear-gradient(#eafbe3,#d4f2c8);border-radius:16px;margin-bottom:8px;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(80,120,80,.2)}
+.lane canvas{position:absolute;bottom:2px;left:0;width:70px;height:56px}
+.lane .ln{position:absolute;left:8px;top:3px;font-size:11px;font-weight:900;color:#4a7a4a;opacity:.7}
+.lane .fl{position:absolute;right:0;top:0;bottom:0;width:10px;background:repeating-linear-gradient(#333 0 7px,#fff 7px 14px)}
+.zc{text-align:center;font-size:44px;font-weight:900;color:#e0618b;height:56px;line-height:56px}
+.ztap{display:block;width:100%;height:120px;margin:10px 0;border:0;border-radius:26px;background:linear-gradient(135deg,#ffab75,#e5705a);color:#fff;font:900 26px 'Nunito',ui-rounded,system-ui;box-shadow:0 6px 16px rgba(200,90,70,.4);touch-action:manipulation;cursor:pointer}
+.ztap:active{transform:scale(.97)}
 #app{position:absolute;left:0;top:0;width:420px;height:760px;transform-origin:0 0;overflow:hidden}
 canvas#c{position:absolute;left:0;top:0;width:420px;height:760px;display:block}
 .pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.94);border:2.5px solid #ff9fbf;border-radius:999px;padding:3px 12px 3px 6px;font-weight:800;font-size:16px;color:#7a3b52;box-shadow:0 2px 6px rgba(120,60,80,.2)}
@@ -27,7 +77,7 @@ canvas#c{position:absolute;left:0;top:0;width:420px;height:760px;display:block}
 #act:active{transform:scale(.94)}
 #lure{position:absolute;left:14px;bottom:44px;display:none;border:3px solid #fff;border-radius:999px;padding:10px 16px;background:linear-gradient(#a8f3e6,#4cc9b3);color:#0b4b42;font:800 16px ui-rounded,system-ui;box-shadow:0 5px 14px rgba(40,120,110,.4);cursor:pointer}
 #back{position:absolute;right:8px;top:50px;display:none;border:2.5px solid #59cdbd;background:#fff;color:#2a6f65;border-radius:14px;padding:6px 12px;font:800 14px ui-rounded,system-ui;cursor:pointer}
-#toast{position:absolute;left:50%;top:372px;transform:translateX(-50%);opacity:0;transition:opacity .3s;pointer-events:none;background:#fff;border:2.5px solid #ff9fbf;color:#7a3b52;border-radius:16px;padding:8px 14px;font-weight:800;font-size:15px;text-align:center;max-width:380px;z-index:30;box-shadow:0 4px 12px rgba(120,60,80,.25)}
+#toast{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 196px);z-index:40;transform:translateX(-50%);opacity:0;transition:opacity .3s;pointer-events:none;background:#fff;border:2.5px solid #ff9fbf;color:#7a3b52;border-radius:16px;padding:8px 14px;font-weight:800;font-size:15px;text-align:center;max-width:380px;z-index:30;box-shadow:0 4px 12px rgba(120,60,80,.25)}
 #catchui{position:absolute;left:24px;right:24px;top:120px;display:none;background:rgba(255,255,255,.95);border:3px solid #ff9fbf;border-radius:22px;padding:12px 14px 14px;text-align:center;z-index:15;box-shadow:0 8px 24px rgba(120,60,80,.3)}
 #ct{font-weight:800;font-size:15px;color:#7a3b52;margin-bottom:8px}
 #cbar{position:relative;height:36px;border-radius:18px;background:#ffe0ea;border:3px solid #fff;overflow:hidden;box-shadow:inset 0 2px 6px rgba(0,0,0,.18);cursor:pointer}
@@ -72,19 +122,25 @@ canvas#c{position:absolute;left:0;top:0;width:420px;height:760px;display:block}
 </style>
 </head>
 <body>
+<div id="root">
+ <div id="hdr"><button id="snd" aria-label="Sound">🔊</button><img id="hlogo" alt="KittyMart"><div id="hline"></div></div>
+ <div id="content">
+  <div id="stage">
 <div id="app">
  <canvas id="c" width="420" height="760"></canvas>
  <div id="hud"><div class="pill"><canvas id="ci" width="28" height="28"></canvas><span id="coins">0</span></div><div class="pill">🐟 <span id="treats">0</span></div><div class="sp"></div><button class="rb" id="hb" title="How to play">❓</button><div class="pill" id="day">Day 1</div></div>
- <button id="back">🏠 Home</button>
+ <button id="back">← Yards</button>
  <div id="nav">
-  <button class="nb" data-m="yard"><span>🌳</span>Cat Yard</button>
-  <button class="nb" data-m="cats"><span>🐱</span>Cat-alog</button>
-  <button class="nb" data-m="upg"><span>🛒</span>Upgrades</button>
-  <button class="nb" data-m="set"><span>⚙️</span>Settings</button>
+  <button class="nb" data-m="upg" style="max-width:220px"><span>🛒</span>Upgrades</button>
  </div>
  <button id="lure">🐟 Lure</button>
  <button id="act">✋<br>Act</button>
  <div id="catchui"><div id="ct">Tap when the marker is in the green!</div><div id="cbar"><div id="czone"></div><div id="cmark"></div></div><button id="pounce">🐾 Pounce!</button></div>
+</div>
+  </div>
+  <div id="page"><div id="pg"></div></div>
+ </div>
+ <div id="tabbar"><button class="tab" data-t="home"><span>🏠</span>Home</button><button class="tab" data-t="catch"><span>🌳</span>Catch</button><button class="tab" data-t="cats"><span>🐱</span>Cats</button><button class="tab" data-t="shop"><span>🛍️</span>Shop</button><button class="tab" data-t="zoom"><span>🏁</span>Zoomies</button><button class="tab" data-t="board"><span>🏆</span>Board</button><button class="tab" data-t="me"><span>🙋</span>Me</button></div>
  <div id="toast"></div>
  <div id="modal"><div id="mbox"><button id="mx">✕</button><div id="mc"></div></div></div>
  <div id="title">
@@ -94,13 +150,15 @@ canvas#c{position:absolute;left:0;top:0;width:420px;height:760px;display:block}
   <button class="go" id="start">Open for business</button>
   <button class="go alt" id="cont" style="display:none">Continue</button>
  </div>
+
 </div>
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
 const cv=$('c'),ctx=cv.getContext('2d'),app=$('app');
 const DW=420,DH=760,OUT='#7a4a38';
-function fit(){const sc=Math.min(innerWidth/DW,innerHeight/DH);app.style.transform='translate('+(innerWidth-DW*sc)/2+'px,'+(innerHeight-DH*sc)/2+'px) scale('+sc+')';app._sc=sc;app._ox=(innerWidth-DW*sc)/2;app._oy=(innerHeight-DH*sc)/2}
+const stage=$('stage');
+function fit(){const w=stage.clientWidth||innerWidth,h=stage.clientHeight||innerHeight,sc=Math.min(w/DW,h/DH);app.style.transform='translate('+(w-DW*sc)/2+'px,'+(h-DH*sc)/2+'px) scale('+sc+')';app._sc=sc}
 addEventListener('resize',fit);fit();
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const rnd=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.floor(Math.random()*a.length)],clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -139,9 +197,9 @@ const FX0=24,FX1=396,FY0=318,FY1=650;
 
 /* ---------- state ---------- */
 const KEY='kittymart-v1';
-const fresh=()=>({name:'',coins:40,treats:5,cats:[],posts:[null,null,null,null],up:{shelf:0,neon:0,heat:0,rooms:2},seen:{},caught:{},acc:{},dist:{alley:1},served:0,nid:1,snd:1,helped:0});
+const fresh=()=>({name:'',coins:40,treats:5,cats:[],posts:[null,null,null,null],up:{shelf:0,neon:0,heat:0,rooms:2},seen:{},caught:{},acc:{},dist:{alley:1},served:0,nid:1,snd:1,helped:0,pts:0,streak:0,best:0,lastDay:'',featDay:'',weekKey:'',badges:{},zoomWins:0,zooms:0,spa:0,stealth:0});
 let S=fresh();
-try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&typeof s==='object'){S=Object.assign(fresh(),s);S.up=Object.assign(fresh().up,s.up||{});S.dist=Object.assign({alley:1},s.dist||{});S.acc=s.acc||{};S.caught=s.caught||{};if(s.tut&&!s.helped)S.helped=1}}catch(e){}
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&typeof s==='object'){S=Object.assign(fresh(),s);S.up=Object.assign(fresh().up,s.up||{});S.dist=Object.assign({alley:1},s.dist||{});S.acc=s.acc||{};S.caught=s.caught||{};S.badges=s.badges||{};if(s.tut&&!s.helped)S.helped=1}}catch(e){}
 S.cats.forEach(c=>{if(!c.wear)c.wear={}});
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 let hasSave=false;try{hasSave=!!localStorage.getItem(KEY)&&!!S.name}catch(e){}
@@ -247,8 +305,14 @@ const keys={l:0,r:0,u:0,d:0};
 const catBy=id=>S.cats.find(c=>c.id===id);
 function worker(i){const id=S.posts[i];if(id==null||i>=S.up.rooms)return null;const c=catBy(id);return c&&c.mood>=25?c:null}
 function toast(t,ms){const e=$('toast');e.textContent=t;e.style.opacity=1;clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.opacity=0,ms||2400)}
-function refresh(){$('coins').textContent=S.coins;$('treats').textContent=S.treats;$('day').textContent='Day '+(Math.floor(S.served/20)+1);if(scene==='yard')updLure()}
-function setScene(s){scene=s;const shop=s==='shop',yard=s==='yard';$('hud').style.display=shop||yard?'flex':'none';$('nav').style.display=shop?'flex':'none';$('back').style.display=yard?'block':'none';$('act').style.display=yard?'block':'none';$('lure').style.display=yard?'block':'none';if(!yard){$('catchui').style.display='none';C=null;Y=null}refresh()}
+function refresh(){$('coins').textContent=S.coins;$('treats').textContent=S.treats;$('day').textContent='Day '+(Math.floor(S.served/20)+1);if(scene==='yard')updLure();
+ $('hline').textContent='Hi '+(S.name||'friend')+'! · 🐱 '+S.cats.length+' · ⭐ '+S.pts+' · 🪙 '+S.coins;$('snd').textContent=S.snd?'🔊':'🔇';
+ if(scene!=='title')checkBadges(false)}
+function setScene(s){scene=s;const shop=s==='shop',yard=s==='yard',stg=shop||yard;
+ $('stage').style.display=stg?'block':'none';$('page').style.display=stg?'none':'block';$('root').classList.toggle('stg',stg);$('stage').style.background=yard?'#bfe6ff':'#ffe0ea';
+ $('hud').style.display=stg?'flex':'none';$('nav').style.display=shop?'flex':'none';$('back').style.display=yard?'block':'none';$('act').style.display=yard?'block':'none';$('lure').style.display=yard?'block':'none';
+ if(!yard){$('catchui').style.display='none';C=null;Y=null}
+ if(stg)fit();refresh()}
 function popFx(x,y,txt,col){fx.push({x,y,txt,col:col||'#ff9a3c',life:1.1})}
 
 /* ---------- shop ---------- */
@@ -258,7 +322,7 @@ function spawnCust(){
 }
 function serve(u){
  if(u.st!=='wait')return;const it=ITEMS[u.want];const gain=Math.round(it.p*(1+(worker(0)?.25:0)));
- S.coins+=gain;S.served++;u.st='leave';u.happy=true;popFx(u.x,u.y-110,'+'+gain);sfx(880,.12,'triangle');sfx(1175,.15,'triangle',.05,.08);refresh();
+ S.coins+=gain;S.served++;S.pts+=2;u.st='leave';u.happy=true;popFx(u.x,u.y-110,'+'+gain);sfx(880,.12,'triangle');sfx(1175,.15,'triangle',.05,.08);refresh();
 }
 function waiting(){return cust.filter(u=>u.st==='wait')}
 function updateShop(dt){
@@ -338,14 +402,14 @@ function startYard(di){
  const D=DIST[di];closeModal();
  Y={di,D,cats:[],lure:S.treats>0?'fish':'toy',spawnT:3,hint:''};
  P.x=210;P.y=600;P.tx=P.x;P.ty=P.y;P.face=1;
- setScene('yard');
+ curTab='catch';tabHL();setScene('yard');
  spawnCat(false);spawnCat(true);spawnCat(false);
  if(!S.helped){S.helped=1;save();openHelp()}else toast('Tap the ground to walk. Press ✋ Act next to a cat!',3000);
  updLure();
 }
 function hideProps(){return Y.D.props.filter(p=>p[0]!=='tree').map(p=>({t:p[0],x:p[1],y:p[2]}))}
 function spawnCat(hide){
- const D=Y.D,coat=pick(D.pool),r=COAT[coat].r;
+ const D=Y.D,rr=Math.random(),coat=rr<.12?featCoat().id:rr<.2?weekCoat().id:pick(D.pool),r=COAT[coat].r;
  const k={id:++kid,coat,eye:pick(EYES),x:0,y:0,st:'loaf',aw:'groom',at:rnd(1,2.5),t:rnd(1,3),face:1,ph:Math.random()*6,grace:0,r,lure:null,stealth:false};
  if(hide){const p=pick(hideProps());k.st='hide';k.prop=p;k.x=p.x+rnd(-8,8);k.y=p.y-7;k.t=rnd(16,28)}
  else{k.x=rnd(60,360);k.y=rnd(340,600);if(Math.hypot(k.x-P.x,k.y-P.y)<120)k.y=clamp(k.y-160,FY0,FY1)}
@@ -412,12 +476,16 @@ function pounce(){
 function befriend(k){
  Y.cats=Y.cats.filter(x=>x!==k);const K=COAT[k.coat];
  const cat={id:S.nid++,coat:k.coat,eye:k.eye,collar:pick(COLLARS),name:pick(NAMES),mood:100,wear:{}};S.cats.push(cat);S.seen[k.coat]=1;S.caught[k.coat]=(S.caught[k.coat]||0)+1;
- const bonus=COIN[K.r];S.coins+=bonus;refresh();save();
+ const bonus=COIN[K.r],pts=[50,120,300][K.r];let extra='';S.coins+=bonus;S.pts+=pts;const tk=dkey(new Date()),wk=dkey(weekStart(new Date()));
+ if(k.coat===featCoat().id&&S.featDay!==tk){S.featDay=tk;S.pts+=100;extra+='<br>⭐ Featured Cat bonus +100 pts!'}
+ if(k.coat===weekCoat().id&&S.weekKey!==wk){S.weekKey=wk;S.pts+=250;extra+='<br>🌟 Cat of the Week bonus +250 pts!'}
+ if(k.stealth)S.stealth=(S.stealth||0)+1;
+ refresh();save();
  [523,659,784,1047].forEach((f,i)=>sfx(f,.2,'triangle',.06,i*.1));
- modal('<h2>New friend! 💕</h2><div style="text-align:center"><canvas id="np" width="200" height="190"></canvas><div style="font-weight:800">'+K.n+' · '+RAR[K.r]+'</div><small>+'+bonus+' 🪙 welcome bonus</small></div><div class="meta" style="margin-top:8px">Name your cat<input type="text" id="nn" maxlength="12" value="'+esc(cat.name)+'"></div><button class="big" id="ok">Welcome to the shop</button><button class="big alt" id="again">Keep exploring</button>');
+ modal('<h2>New friend! 💕</h2><div style="text-align:center"><canvas id="np" width="200" height="190"></canvas><div style="font-weight:800">'+K.n+' · '+RAR[K.r]+'</div><small>+'+bonus+' 🪙 · +'+pts+' ⭐ pts'+extra+'</small></div><div class="meta" style="margin-top:8px">Name your cat<input type="text" id="nn" maxlength="12" value="'+esc(cat.name)+'"></div><button class="big" id="ok">Welcome to the shop</button><button class="big alt" id="again">Keep exploring</button>');
  let tt=0;const anim=()=>{if(!$('np'))return;tt+=.05;paint($('np'),(c,w,h)=>{c.translate(w/2,h-10);drawCat(c,0,0,{coat:cat.coat,eye:cat.eye,collar:cat.collar,s:1.4,t:tt,mood:'happy'})});requestAnimationFrame(anim)};anim();
  const fin=()=>{const v=$('nn').value.trim();if(v)cat.name=v.slice(0,12);save()};
- $('ok').onclick=()=>{fin();closeModal();setScene('shop')};
+ $('ok').onclick=()=>{fin();closeModal();setTab('shop')};
  $('again').onclick=()=>{fin();closeModal();updLure()};
 }
 /* yard backgrounds */
@@ -480,29 +548,29 @@ function modal(h){$('mc').innerHTML=h;$('modal').style.display='flex'}
 function closeModal(){$('modal').style.display='none'}
 $('mx').onclick=closeModal;
 function openHelp(){
- modal('<h2>How to play 🐾</h2><div class="steps"><div class="row"><div class="ic">🛍️</div><div class="meta">Run the shop<small>Tap customers waiting at the counter to serve them and earn KittyCoins.</small></div></div><div class="row"><div class="ic">🌳</div><div class="meta">Visit the Cat Yard<small>Tap the ground (or use WASD / arrows) to walk. Shy cats loaf around — or hide in bushes and boxes. Press ✋ Act beside a bush to look inside!</small></div></div><div class="row"><div class="ic">🐟</div><div class="meta">Lure, then pounce<small>Walk up beside a cat and press ✋ Act to lure it with a treat or toy. Sneak up while its eyes are closed 😌 for a bigger target; freeze when it watches 👀. Then tap Pounce when the marker is in the green!</small></div></div><div class="row"><div class="ic">👑</div><div class="meta">Care & dress up<small>Give your cats shop jobs in the Cat-alog, feed them, and buy hats, bows and scarves. Fill your Diary with all 9 coats!</small></div></div></div><button class="big" id="hok">Let\'s play!</button>');
+ modal('<h2>How to play 🐾</h2><div class="steps"><div class="row"><div class="ic">🛍️</div><div class="meta">Run the Shop<small>Open the Shop tab and tap customers waiting at the counter to serve them and earn KittyCoins.</small></div></div><div class="row"><div class="ic">🌳</div><div class="meta">Go to the Catch tab<small>Tap the ground (or use WASD / arrows) to walk. Shy cats loaf around — or hide in bushes and boxes. Press ✋ Act beside a bush to look inside!</small></div></div><div class="row"><div class="ic">🐟</div><div class="meta">Lure, then pounce<small>Walk up beside a cat and press ✋ Act to lure it with a treat or toy. Sneak up while its eyes are closed 😌 for a bigger target; freeze when it watches 👀. Then tap Pounce when the marker is in the green!</small></div></div><div class="row"><div class="ic">👑</div><div class="meta">Care & dress up<small>Give your cats shop jobs in the Cats tab, feed them, treat them at the Spa and buy hats, bows and scarves. Fill your Diary with all 9 coats, race in Zoomies and collect badges!</small></div></div></div><button class="big" id="hok">Let\'s play!</button>');
  $('hok').onclick=closeModal;
 }
 function coatName(id){return S.seen[id]?COAT[id].n:'???'}
-function openCats(keep){
- let h='<h2>Cat-alog</h2><div class="tabs"><button class="'+(catTab==='cats'?'on':'')+'" data-tab="cats">🐱 My cats</button><button class="'+(catTab==='diary'?'on':'')+'" data-tab="diary">📖 Diary</button></div>';
+function renderCats(keep){
+ let h='<h2 class="ph">🐱 Cats</h2><div class="tabs"><button class="'+(catTab==='cats'?'on':'')+'" data-tab="cats">🐱 My cats</button><button class="'+(catTab==='diary'?'on':'')+'" data-tab="diary">📖 Diary</button></div>';
  if(catTab==='diary'){
   const found=COATS.filter(k=>S.seen[k.id]).length,tot=Object.values(S.caught).reduce((a,b)=>a+b,0);
   h+='<div class="stat"><div>'+found+'/9<small>coats found</small></div><div>'+Math.max(tot,S.cats.length)+'<small>cats befriended</small></div><div>'+S.served+'<small>customers served</small></div></div><div class="dex">';
   COATS.forEach(k=>{const got=S.seen[k.id];h+='<div class="dx '+(got?'':'lock')+'"><canvas width="90" height="100" data-dex="'+k.id+'"></canvas>'+(got?k.n:'???')+'<small>'+(got?'Met ×'+(S.caught[k.id]||1)+' · ':'')+'⭐'.repeat(k.r+1)+'</small></div>'});
   h+='</div>';
  }else{
-  if(!S.cats.length)h+='<p>No cats yet — visit the Cat Yard and win some over!</p>';
+  if(!S.cats.length)h+='<div class="card"><p>No cats yet — visit the Catch tab and win some over!</p></div>';
   S.cats.forEach(c=>{const K=COAT[c.coat],job=S.posts.indexOf(c.id);
    h+='<div class="row"><canvas width="90" height="110" data-cat="'+c.id+'"></canvas><div class="meta"><input type="text" maxlength="12" value="'+esc(c.name)+'" data-ren="'+c.id+'"><small>'+K.n+' · '+RAR[K.r]+'</small><div class="mood"><i style="width:'+Math.round(c.mood)+'%"></i></div><select data-job="'+c.id+'"><option value="-1">Resting</option>'+POSTS.slice(0,S.up.rooms).map((p,i)=>'<option value="'+i+'"'+(job===i?' selected':'')+'>'+p.n+'</option>').join('')+'</select></div><div class="col"><button class="mini" data-feed="'+c.id+'"'+(S.treats<1?' disabled':'')+'>🐟 Feed</button><button class="mini t" data-dress="'+c.id+'">👗 Dress</button></div></div>'});
  }
- modal(h);const mb=$('mbox');if(keep)mb.scrollTop=keep;
- mb.querySelectorAll('[data-tab]').forEach(e=>e.onclick=()=>{catTab=e.dataset.tab;openCats()});
+ const mb=page(h);if(keep)mb.scrollTop=keep;
+ mb.querySelectorAll('[data-tab]').forEach(e=>e.onclick=()=>{catTab=e.dataset.tab;renderCats()});
  mb.querySelectorAll('[data-dex]').forEach(e=>paint(e,(c,w,hh)=>{c.translate(w/2-8,hh-8);drawCat(c,0,0,{coat:e.dataset.dex,s:.68,mood:'idle'})}));
  mb.querySelectorAll('[data-cat]').forEach(e=>{const k=catBy(+e.dataset.cat);paint(e,(c,w,hh)=>{c.translate(w/2-6,hh-8);drawCat(c,0,0,{coat:k.coat,eye:k.eye,collar:k.collar,wear:k.wear,s:.74,mood:'idle'})})});
  mb.querySelectorAll('[data-ren]').forEach(e=>e.onchange=()=>{const k=catBy(+e.dataset.ren);k.name=e.value.trim().slice(0,12)||k.name;save()});
- mb.querySelectorAll('[data-job]').forEach(e=>e.onchange=()=>{const id=+e.dataset.job,j=+e.value;S.posts=S.posts.map(p=>p===id?null:p);if(j>=0)S.posts[j]=id;save();openCats(mb.scrollTop)});
- mb.querySelectorAll('[data-feed]').forEach(e=>e.onclick=()=>{if(S.treats<1)return;const k=catBy(+e.dataset.feed);S.treats--;k.mood=100;sfx(700,.1,'triangle');refresh();save();openCats(mb.scrollTop)});
+ mb.querySelectorAll('[data-job]').forEach(e=>e.onchange=()=>{const id=+e.dataset.job,j=+e.value;S.posts=S.posts.map(p=>p===id?null:p);if(j>=0)S.posts[j]=id;save();renderCats(mb.scrollTop)});
+ mb.querySelectorAll('[data-feed]').forEach(e=>e.onclick=()=>{if(S.treats<1)return;const k=catBy(+e.dataset.feed);S.treats--;k.mood=100;sfx(700,.1,'triangle');refresh();save();renderCats(mb.scrollTop)});
  mb.querySelectorAll('[data-dress]').forEach(e=>e.onclick=()=>openDress(+e.dataset.dress));
 }
 function openDress(id){
@@ -530,29 +598,16 @@ function openUpg(){
  mb.querySelector('[data-t]').onclick=()=>{if(S.coins<TREAT*3)return;S.coins-=TREAT*3;S.treats+=3;sfx(700,.1,'triangle');refresh();save();openUpg()};
  mb.querySelectorAll('[data-u]').forEach(e=>e.onclick=()=>{const x=upgList()[+e.dataset.u];if(x.lv>=x.max||S.coins<x.cost)return;S.coins-=x.cost;x.buy();sfx(1000,.15,'triangle');refresh();save();openUpg()});
 }
-function openYard(){
- let h='<h2>Cat Yard 🌳</h2><p>Walk up to a cat, lure it with a 🐟 treat or free 🧶 toy, then pounce! Cats hide in bushes and boxes — press ✋ Act beside one to peek.</p>';
- DIST.forEach((D,i)=>{const own=S.dist[D.id];h+='<div class="row"><div style="font-size:30px">'+D.e+'</div><div class="meta">'+D.n+'<small>'+D.sub+'</small></div><button class="mini" data-d="'+i+'"'+(!own&&S.coins<D.cost?' disabled':'')+'>'+(own?'Go':'Unlock '+D.cost+'🪙')+'</button></div>'});
- modal(h);
- $('mbox').querySelectorAll('[data-d]').forEach(e=>e.onclick=()=>{const i=+e.dataset.d,D=DIST[i];if(!S.dist[D.id]){if(S.coins<D.cost)return;S.coins-=D.cost;S.dist[D.id]=1;refresh();save();openYard();return}startYard(i)});
-}
-function openSet(){
- modal('<h2>Settings</h2><div class="row"><div class="meta">Sound<small>Little beeps and chimes</small></div><button class="mini" id="sn">'+(S.snd?'On':'Off')+'</button></div><div class="row"><div class="meta">How to play<small>Replay the quick guide</small></div><button class="mini t" id="hp">❓ Show</button></div><div class="row"><div class="meta">Shop: '+esc(S.name||'KittyMart')+'<small>'+S.served+' customers served · '+S.cats.length+' cats</small></div></div><div class="row"><div class="meta">Title logo<small>Seasonal KittyMart art</small></div><select id="lg" style="width:130px;font:700 16px ui-rounded,system-ui;border:2px solid #ffc2d6;border-radius:9px;background:#fff;color:#5a3a3a;padding:3px 6px">'+LOGOS.map(l=>'<option value="'+l[0]+'"'+((S.logo||'auto')===l[0]?' selected':'')+'>'+l[1]+'</option>').join('')+'</select></div><button class="big alt" id="rs">Reset all progress</button>');
- $('lg').onchange=e=>{S.logo=e.target.value;save();setLogo()};
- $('hp').onclick=openHelp;
- $('sn').onclick=()=>{S.snd=S.snd?0:1;save();openSet()};
- $('rs').onclick=()=>{$('rs').textContent='Tap again to confirm reset';$('rs').onclick=()=>{S=fresh();S.name='';try{localStorage.removeItem(KEY)}catch(e){}cust=[];closeModal();setScene('title');$('title').style.display='flex';$('cont').style.display='none'}};
-}
-document.querySelectorAll('.nb').forEach(b=>b.onclick=()=>{({yard:openYard,cats:()=>openCats(),upg:openUpg,set:openSet})[b.dataset.m]()});
+document.querySelectorAll('.nb').forEach(b=>b.onclick=()=>{({upg:openUpg})[b.dataset.m]()});
 $('hb').onclick=openHelp;
-$('back').onclick=()=>{setScene('shop')};
+$('back').onclick=()=>setTab('catch');
 $('lure').onclick=()=>{if(!Y)return;if(Y.lure==='fish')Y.lure='toy';else if(S.treats>0)Y.lure='fish';else toast('No 🐟 treats — buy some in Upgrades');updLure()};
 $('act').addEventListener('pointerdown',e=>{e.preventDefault();act()});
 $('pounce').addEventListener('pointerdown',e=>{e.preventDefault();pounce()});
 $('cbar').addEventListener('pointerdown',e=>{e.preventDefault();pounce()});
 
 /* ---------- input ---------- */
-function toDesign(e){const sc=app._sc;return[(e.clientX-app._ox)/sc,(e.clientY-app._oy)/sc]}
+function toDesign(e){const r=app.getBoundingClientRect(),sc=app._sc;return[(e.clientX-r.left)/sc,(e.clientY-r.top)/sc]}
 cv.addEventListener('pointerdown',e=>{
  const[x,y]=toDesign(e);
  if(scene==='yard'){if(!C&&$('modal').style.display!=='flex'){P.tx=clamp(x,FX0,FX1);P.ty=clamp(y,FY0,FY1)}return}
@@ -564,13 +619,166 @@ const KM={ArrowLeft:'l',a:'l',A:'l',ArrowRight:'r',d:'r',D:'r',ArrowUp:'u',w:'u'
 addEventListener('keydown',e=>{if(scene!=='yard'||$('modal').style.display==='flex')return;const k=KM[e.key];if(k){keys[k]=1;e.preventDefault()}else if(e.key===' '||e.key==='e'||e.key==='E'||e.key==='Enter'){e.preventDefault();if(C)pounce();else act()}});
 addEventListener('keyup',e=>{const k=KM[e.key];if(k)keys[k]=0});
 
+/* ---------- app shell: tabs, pages ---------- */
+let curTab='home';
+const pageEl=()=>$('page');
+function page(h){$('pg').innerHTML=h;return $('page')}
+function tabHL(){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===curTab))}
+const pad2=n=>(n<10?'0':'')+n;
+const dkey=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+function hashS(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function weekStart(d){const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
+const featCoat=()=>COATS[hashS('f'+dkey(new Date()))%COATS.length];
+const weekCoat=()=>COATS[hashS('w'+dkey(weekStart(new Date())))%COATS.length];
+function weekLeft(){const n=new Date(),e=weekStart(n);e.setDate(e.getDate()+7);const ms=e-n,d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);return d>0?d+'d '+h+'h left':h+'h '+m+'m left'}
+function updStreak(){const t=dkey(new Date());if(S.lastDay===t)return;const y=new Date();y.setDate(y.getDate()-1);S.streak=(S.lastDay===dkey(y))?(S.streak||0)+1:1;S.best=Math.max(S.best||0,S.streak);S.lastDay=t;save()}
+const coatsFound=()=>COATS.filter(k=>S.seen[k.id]).length;
+const BADGES=[
+['🐾','First Friend','Befriend your first cat',()=>S.cats.length>=1],
+['😺','Cat Pack','Have 5 cats',()=>S.cats.length>=5],
+['🏠','Cat Café','Have 10 cats',()=>S.cats.length>=10],
+['🔍','Coat Hunter','Find 5 different coats',()=>coatsFound()>=5],
+['📖','Full Cat-alog','Find all 9 coats',()=>coatsFound()>=9],
+['💎','Rare Find','Befriend a rare cat',()=>COATS.some(k=>k.r==2&&S.seen[k.id])],
+['🛍️','Shopkeeper','Serve 25 customers',()=>S.served>=25],
+['🏪','Super Shop','Serve 100 customers',()=>S.served>=100],
+['🪙','Money Bags','Hold 500 KittyCoins',()=>S.coins>=500],
+['👑','Stylish Cat','Dress a cat in an accessory',()=>Object.keys(S.acc).length>0],
+['🏁','Zoomie Champ','Win 3 Zoomies races',()=>(S.zoomWins||0)>=3],
+['🔥','3-Day Streak','Play 3 days in a row',()=>(S.best||0)>=3],
+['🛁','Spa Day','Treat a cat to the spa',()=>(S.spa||0)>=1],
+['🤫','Sneaky Paws','Catch a cat with the stealth bonus',()=>(S.stealth||0)>=1]];
+function checkBadges(silent){BADGES.forEach((b,i)=>{if(!S.badges[i]&&b[3]()){S.badges[i]=1;if(!silent){toast('🏅 New badge: '+b[1],3200);sfx(900,.15,'triangle')}}})}
+const nBadges=()=>Object.keys(S.badges).length;
+function paintPortraits(root){
+ root.querySelectorAll('[data-dex]').forEach(e=>paint(e,(c,w,hh)=>{c.translate(w/2-8,hh-8);drawCat(c,0,0,{coat:e.dataset.dex,s:e.width>=90?.68:.62,mood:'idle'})}));
+ root.querySelectorAll('[data-cat]').forEach(e=>{const k=catBy(+e.dataset.cat);if(!k)return;const sc=e.height>=110?.74:e.height>=84?.55:.42;paint(e,(c,w,hh)=>{c.translate(w/2-4,hh-6);drawCat(c,0,0,{coat:k.coat,eye:k.eye,collar:k.collar,wear:k.wear,s:sc,mood:'idle'})})});
+}
+function setTab(t,keep){
+ curTab=t;tabHL();closeModal();
+ if(t==='shop'){setScene('shop');return}
+ setScene('page');
+ ({home:renderHome,catch:renderCatch,cats:renderCats,zoom:renderZoom,board:renderBoard,me:renderMe})[t](keep);
+ $('page').scrollTop=keep||0;
+}
+const openCats=k=>setTab('cats',k);
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
+$('snd').onclick=()=>{S.snd=S.snd?0:1;save();refresh()};
+
+/* ---------- Home ---------- */
+function renderHome(){
+ const f=featCoat(),w=weekCoat(),today=dkey(new Date()),ws=dkey(weekStart(new Date()));
+ const found=coatsFound();
+ let h='<div class="card wel"><div class="pw">🐾</div><h2>Welcome back, '+esc(S.name||'friend')+'!</h2><div class="sk">🔥 '+(S.streak||1)+'-day streak</div></div>';
+ h+='<div class="card"><h3>📊 Your Stats</h3><div class="sts"><div><b style="color:#4a3a3a">'+S.cats.length+'</b><small>Cats</small></div><div><b style="color:#7a56b8">'+S.pts+'</b><small>Points</small></div><div><b style="color:#e0873a">'+nBadges()+'</b><small>Badges</small></div><div><b style="color:#3d9a83">'+found+'</b><small>Coats</small></div><div><b style="color:#d8605a">'+S.coins+'</b><small>🪙 Coins</small></div></div>';
+ h+='<div style="display:flex;gap:10px;align-items:center;margin-top:12px"><div class="pbar"><i style="width:'+Math.round(found/COATS.length*100)+'%"></i></div><div class="chip">📖 '+found+'/'+COATS.length+'</div></div></div>';
+ h+='<div class="qb"><button class="q1" data-go="catch"><i>🐾</i>Go Catch!</button><button class="q2" data-go="cats"><i>🐱</i>My Cats</button><button class="q3" data-go="zoom"><i>🏁</i>Zoomies!</button><button class="q4" id="spab"><i>🛁</i>Spa</button></div>';
+ h+='<div class="card feat"><h3>⭐ Today\'s Featured Cat</h3><div style="display:flex;gap:10px;align-items:center"><canvas data-dex="'+f.id+'" width="90" height="100" class="pc"></canvas><div style="flex:1;min-width:0"><div style="font-size:20px;font-weight:900">'+f.n+'</div><div class="rar r'+f.r+'">'+RAR[f.r]+'</div>'+(S.featDay===today?'<div class="ok">✅ Bonus claimed today</div>':'<div class="gift">🎁 Catch it for +100 bonus pts!</div>')+(S.seen[f.id]?'<div class="ok">✅ You own this one!</div>':'')+'</div></div><button class="gob" data-go="catch" style="margin-top:10px;width:100%">'+(S.seen[f.id]?'🐾 Catch Again':'🐾 Go Catch!')+'</button></div>';
+ h+='<div class="card week"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">🌟 Cat of the Week</h3><div class="chip">⏳ '+weekLeft()+'</div></div><div style="display:flex;gap:10px;align-items:center;margin-top:8px"><canvas data-dex="'+w.id+'" width="90" height="100" class="pc"></canvas><div style="flex:1;min-width:0"><div style="font-size:20px;font-weight:900">'+w.n+'</div><div class="rar r'+w.r+'">'+RAR[w.r]+'</div>'+(S.weekKey===ws?'<div class="ok">✅ Bonus claimed this week</div>':'<div class="gift">🎁 Catch it for +250 bonus pts!</div>')+'</div></div></div>';
+ const mb=page(h);paintPortraits(mb);
+ mb.querySelectorAll('[data-go]').forEach(e=>e.onclick=()=>setTab(e.dataset.go));
+ $('spab').onclick=openSpa;
+}
+function openSpa(){
+ let h='<h2>Cat Spa 🛁</h2><p>A spa day tops a cat\'s mood back up to 100%. 15 🪙 each.</p>';
+ if(!S.cats.length)h+='<p>No cats yet — go catch some first!</p>';
+ S.cats.forEach(c=>{h+='<div class="row"><canvas width="70" height="84" data-cat="'+c.id+'"></canvas><div class="meta">'+esc(c.name)+'<small>'+COAT[c.coat].n+'</small><div class="mood"><i style="width:'+Math.round(c.mood)+'%"></i></div></div><button class="mini t" data-spa="'+c.id+'"'+(c.mood>=99||S.coins<15?' disabled':'')+'>Spa · 15🪙</button></div>'});
+ modal(h);const mb=$('mbox');paintPortraits(mb);
+ mb.querySelectorAll('[data-spa]').forEach(e=>e.onclick=()=>{const c=catBy(+e.dataset.spa);if(!c||S.coins<15||c.mood>=99)return;S.coins-=15;c.mood=100;S.spa=(S.spa||0)+1;sfx(800,.12,'triangle');sfx(1000,.15,'triangle',.05,.1);refresh();save();const st=mb.scrollTop;openSpa();$('mbox').scrollTop=st});
+}
+
+/* ---------- Catch tab (yard chooser) ---------- */
+function renderCatch(){
+ let h='<h2 class="ph">🌳 Cat Yard</h2><div class="card"><p style="margin:0">Walk up to a cat, lure it with a 🐟 treat or free 🧶 toy, then tap <b>Pounce</b> when the marker is in the green! Cats hide in bushes and boxes — press ✋ Act beside one to peek. Sneak up while its eyes are closed for a bigger target. 😌</p></div>';
+ DIST.forEach((D,i)=>{const own=S.dist[D.id];h+='<div class="row"><div style="font-size:32px">'+D.e+'</div><div class="meta">'+D.n+'<small>'+D.sub+'</small></div><button class="mini" data-d="'+i+'"'+(!own&&S.coins<D.cost?' disabled':'')+'>'+(own?'Go! 🐾':'Unlock '+D.cost+'🪙')+'</button></div>'});
+ h+='<div class="row"><div style="font-size:26px">🐟</div><div class="meta">Fish treats ×'+S.treats+'<small>Used to lure cats. '+TREAT+' 🪙 each</small></div><button class="mini t" id="bt"'+(S.coins<TREAT*3?' disabled':'')+'>Buy ×3 · '+TREAT*3+'🪙</button></div>';
+ const mb=page(h);
+ mb.querySelectorAll('[data-d]').forEach(e=>e.onclick=()=>{const i=+e.dataset.d,D=DIST[i];if(!S.dist[D.id]){if(S.coins<D.cost)return;S.coins-=D.cost;S.dist[D.id]=1;refresh();save();renderCatch();return}startYard(i)});
+ $('bt').onclick=()=>{if(S.coins<TREAT*3)return;S.coins-=TREAT*3;S.treats+=3;sfx(700,.1,'triangle');refresh();save();renderCatch()};
+}
+
+/* ---------- Zoomies ---------- */
+let ZR=null,ZSEL=null;
+function renderZoom(){
+ ZR=null;
+ if(!S.cats.length){page('<h2 class="ph">🏁 Zoomies!</h2><div class="card"><p>You need a cat to race! Go and catch one first.</p><button class="gob" data-go="catch" style="width:100%">🐾 Go Catch!</button></div>').querySelector('[data-go]').onclick=()=>setTab('catch');return}
+ if(!catBy(ZSEL))ZSEL=S.cats[0].id;
+ let h='<h2 class="ph">🏁 Zoomies!</h2><div class="card"><p style="margin:0">Pick a racer, then <b>tap as fast as you can</b>! Happier cats run faster. 1st place wins 40 🪙 + 30 pts.</p></div>';
+ S.cats.forEach(c=>{h+='<div class="row" data-pick="'+c.id+'" style="cursor:pointer;'+(c.id===ZSEL?'outline:3px solid #59cdbd':'')+'"><canvas width="70" height="84" data-cat="'+c.id+'"></canvas><div class="meta">'+esc(c.name)+'<small>'+COAT[c.coat].n+'</small><div class="mood"><i style="width:'+Math.round(c.mood)+'%"></i></div></div><div>'+(c.id===ZSEL?'✅':'')+'</div></div>'});
+ h+='<button class="gob" id="zgo" style="width:100%;margin-top:6px">🏁 Start race!</button>';
+ const mb=page(h);paintPortraits(mb);
+ mb.querySelectorAll('[data-pick]').forEach(e=>e.onclick=()=>{ZSEL=+e.dataset.pick;const st=mb.scrollTop;renderZoom();$('page').scrollTop=st});
+ $('zgo').onclick=startZoom;
+}
+function startZoom(){
+ const me=catBy(ZSEL);if(!me)return;
+ const rn=['Biscuit','Pepper','Mochi','Tofu','Noodle','Ziggy'].sort(()=>Math.random()-.5).slice(0,3);
+ const rc=[0,1,2].map(()=>pick(COATS));
+ ZR={t:-3,p:[0,0,0,0],sp:rc.map(k=>11+k.r*1.1+rnd(0,2.2)),ph:[rnd(0,6),rnd(0,6),rnd(0,6)],over:false,me};
+ let h='<h2 class="ph">🏁 Zoomies!</h2><div id="zcount" class="zc">3</div>';
+ const names=[esc(me.name)+' (you)'].concat(rn);
+ names.forEach((n,i)=>{h+='<div class="lane"><span class="ln">'+n+'</span><canvas id="zc'+i+'" width="70" height="56"></canvas><div class="fl"></div></div>'});
+ h+='<button id="ztap" class="ztap">TAP! TAP! TAP!</button><div id="zres"></div>';
+ const mb=page(h);
+ const kinds=[me].concat(rc.map((k,i)=>({coat:k.id,eye:EYES[i%4],collar:COLLARS[i%4],wear:{}})));
+ kinds.forEach((k,i)=>paint($('zc'+i),(c,w,hh)=>{c.translate(w/2,hh-3);drawCat(c,0,0,{coat:k.coat,eye:k.eye,collar:k.collar,wear:k.wear||{},s:.4,mood:'happy'})}));
+ $('ztap').addEventListener('pointerdown',e=>{e.preventDefault();if(!ZR||ZR.over||ZR.t<0)return;ZR.p[0]=Math.min(100,ZR.p[0]+3.2*(.8+.2*ZR.me.mood/100));sfx(500+ZR.p[0]*4,.04,'square',.02)});
+ let last=performance.now();
+ const loop=now=>{
+  if(!ZR||!$('ztap'))return;const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(!ZR.over){
+   const was=ZR.t;ZR.t+=dt;
+   if(ZR.t<0){const n=Math.ceil(-ZR.t);$('zcount').textContent=n}
+   else{
+    if(was<0){$('zcount').textContent='GO! 🐾';sfx(880,.2,'triangle')}else if(ZR.t>.8)$('zcount').textContent='';
+    for(let i=0;i<3;i++)ZR.p[i+1]=Math.min(100,ZR.p[i+1]+ZR.sp[i]*(1+.3*Math.sin(ZR.t*3+ZR.ph[i]))*dt);
+    if(ZR.p.some(v=>v>=100))endZoom();
+   }
+  }
+  ZR&&ZR.p.forEach((v,i)=>{const e=$('zc'+i);if(e)e.style.left='calc('+v+'% - '+(v*.7)+'px)'});
+  requestAnimationFrame(loop);
+ };
+ requestAnimationFrame(loop);
+}
+function endZoom(){
+ const z=ZR;z.over=true;const place=1+z.p.slice(1).filter(v=>v>z.p[0]).length;
+ const coins=[40,15,5,0][place-1],pts=[30,10,3,0][place-1];
+ S.coins+=coins;S.pts+=pts;S.zooms=(S.zooms||0)+1;if(place===1)S.zoomWins=(S.zoomWins||0)+1;z.me.mood=Math.max(0,z.me.mood-10);
+ refresh();save();
+ sfx(place===1?1047:300,.3,'triangle');
+ $('zres').innerHTML='<div class="card" style="text-align:center"><h3>'+['🥇 You won!','🥈 2nd place','🥉 3rd place','4th place'][place-1]+'</h3><p style="margin:0 0 8px">'+(coins?'+'+coins+' 🪙 ':'')+(pts?'+'+pts+' ⭐ pts':'Better luck next time!')+'</p><button class="gob" id="zagain" style="width:100%">🏁 Race again</button></div>';
+ $('zagain').onclick=renderZoom;
+}
+
+/* ---------- Board ---------- */
+function renderBoard(){
+ const rows=[['⭐','Points',S.pts],['🐱','Cats',S.cats.length],['📖','Coats found',coatsFound()+'/'+COATS.length],['🏅','Badges',nBadges()+'/'+BADGES.length],['🔥','Best streak',(S.best||S.streak||1)+' days'],['🏁','Zoomies wins',S.zoomWins||0],['🛍️','Customers served',S.served]];
+ let h='<h2 class="ph">🏆 Leaderboard</h2><div class="card"><div class="lb"><span class="rk">🥇</span><b>'+esc(S.name||'You')+'</b><span style="margin-left:auto;font-weight:900;color:#7a56b8">'+S.pts+' pts</span></div><p style="margin:10px 0 0;font-size:13px;color:#8a6a78">Only your own scores show here for now. An online leaderboard and friends list need a server — that\'s planned for later.</p></div><div class="card"><h3>📈 Your records</h3>';
+ rows.forEach(r=>{h+='<div class="lb"><span class="rk">'+r[0]+'</span>'+r[1]+'<span style="margin-left:auto;font-weight:900">'+r[2]+'</span></div>'});
+ page(h+'</div>');
+}
+
+/* ---------- Me ---------- */
+function renderMe(keep){
+ let h='<h2 class="ph">🙋 Me</h2><div class="card"><h3>Shopkeeper</h3><div class="meta" style="margin:0">Your name<input type="text" id="mn" maxlength="14" value="'+esc(S.name)+'"></div></div>';
+ h+='<div class="card"><h3>🏅 Badges ('+nBadges()+'/'+BADGES.length+')</h3><div class="bdg">';
+ BADGES.forEach((b,i)=>{h+='<div class="bd '+(S.badges[i]?'':'lock')+'"><span class="e">'+b[0]+'</span><div>'+b[1]+'<small>'+b[2]+'</small></div></div>'});
+ h+='</div></div><div class="card"><h3>⚙️ Settings</h3><div class="row"><div class="meta">Sound<small>Little beeps and chimes</small></div><button class="mini" id="sn">'+(S.snd?'On':'Off')+'</button></div><div class="row"><div class="meta">How to play<small>Replay the quick guide</small></div><button class="mini t" id="hp">❓ Show</button></div><div class="row"><div class="meta">Title logo<small>Seasonal KittyMart art</small></div><select id="lg" class="sel">'+LOGOS.map(l=>'<option value="'+l[0]+'"'+((S.logo||'auto')===l[0]?' selected':'')+'>'+l[1]+'</option>').join('')+'</select></div><button class="big alt" id="rs">Reset all progress</button></div><p style="text-align:center;font-size:12px;opacity:.6">KittyMart v1.1 · saved on this device</p>';
+ const mb=page(h);
+ $('mn').onchange=e=>{S.name=e.target.value.trim().slice(0,14)||S.name;save();refresh()};
+ $('lg').onchange=e=>{S.logo=e.target.value;save();setLogo()};
+ $('hp').onclick=openHelp;
+ $('sn').onclick=()=>{S.snd=S.snd?0:1;save();refresh();const st=mb.scrollTop;renderMe();$('page').scrollTop=st};
+ $('rs').onclick=()=>{$('rs').textContent='Tap again to confirm reset';$('rs').onclick=()=>{S=fresh();S.name='';try{localStorage.removeItem(KEY)}catch(e){}cust=[];closeModal();setScene('title');$('title').style.display='flex';$('cont').style.display='none';$('nm').value=''}};
+}
+
 /* ---------- title ---------- */
 const LOGOS=[['auto','Auto (by date)'],['summer','Summer'],['christmas','Christmas'],['valentine','Valentine\'s'],['easter','Easter'],['stpatrick','St Patrick\'s'],['spring','Spring'],['halloween','Halloween'],['newyear','New Year'],['autumn','Autumn']];
 function autoLogo(){const d=new Date(),m=d.getMonth()+1,n=d.getDate();return m==12?'christmas':m==1?(n<=7?'newyear':'summer'):m==2?(n<=14?'valentine':'summer'):m==3?(n<=17?'stpatrick':'autumn'):m==4?'easter':m==10?'halloween':m==9||m==11?'spring':'autumn'}
-function setLogo(){const k=(S.logo&&S.logo!=='auto')?S.logo:autoLogo();$('logoimg').src='logos/'+k+'.webp'}
+function setLogo(){const k=(S.logo&&S.logo!=='auto')?S.logo:autoLogo();$('logoimg').src='logos/'+k+'.webp';$('hlogo').src='logos/'+k+'.webp'}
 setLogo();
 if(hasSave){$('cont').style.display='block';$('nm').value=S.name}
-function begin(){const v=$('nm').value.trim();if(v)S.name=v;$('title').style.display='none';save();cust=[];spawnT=1;setScene('shop');if(!S.helped){S.helped=1;save();openHelp()}}
+function begin(){const v=$('nm').value.trim();if(v)S.name=v;$('title').style.display='none';cust=[];spawnT=1;updStreak();checkBadges(true);save();setTab('home');if(!S.helped){S.helped=1;save();openHelp()}}
 $('start').onclick=begin;
 $('cont').onclick=begin;
 
@@ -583,12 +791,12 @@ function frame(now){
  else if(scene==='yard'&&!mo)updateYard(dt);
  fx.forEach(f=>f.life-=dt);fx=fx.filter(f=>f.life>0);
  ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,DW,DH);
- if(scene==='yard'&&Y)drawYard();else if(scene==='shop')drawShop();else{ctx.fillStyle='#ffd9e8';ctx.fillRect(0,0,DW,DH)}
+ if(scene==='yard'&&Y)drawYard();else if(scene==='shop')drawShop();else if(scene==='title'||scene==='page'){}
  saveT+=dt;if(saveT>5){saveT=0;if(scene!=='title')save()}
  requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__km={S:()=>S,setScene,startYard,Y:()=>Y,P,C:()=>C,act,pounce,openCats,openUpg,openYard,openDress,openHelp,cust:()=>cust,serve,tick:dt=>{updateYard(dt)}};
+window.__km={S:()=>S,setTab,startZoom,renderHome,renderMe,renderBoard,openSpa,setScene,startYard,Y:()=>Y,P,C:()=>C,act,pounce,openCats,openUpg,openDress,openHelp,cust:()=>cust,serve,tick:dt=>{updateYard(dt)}};
 try{if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
 })();
 </script>
