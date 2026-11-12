@@ -19,8 +19,10 @@
 
 - Run 9: 4 cat-flavoured daily challenges added (snack-purr, food bowls, scoop trays, napping cats). v1.10 (APP_VERSION 147). Signup/tutorial/tabs (Catch, Mart, Race, Home) checked, no console errors.
 
+- Run 10: cat-only Nap feature: 😴 button on each cat card (6h cooldown per cat, +8 XP, purr sound, toast) and new achievement 'Cosy Napper' (5 naps). v1.11 (APP_VERSION 148). Tabs/nap/collection checked with playwright, no console errors.
+
 ## Next (priority order)
-1. Cat-only features for App Store differentiation (one per run): cat-bed/nap-spot house, yarn-chase mini-game, treat-lure catch twist, cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
+1. Cat-only features for App Store differentiation (one per run): cat-bed house layout (nap button done run 10), yarn-chase mini-game, treat-lure catch twist, cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
 3. Accounts are per-device offline: a real fix (shared accounts across phones) needs a new KittyMart Supabase project from Harvey. Consider an export/import 'transfer my cats' code.
 
