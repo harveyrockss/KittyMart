@@ -23,6 +23,8 @@
 
 - Run 11: wording sweep: litter-tray pickup overlay ("Poo!" -> "Litter Tray!", 💩 -> 🧹), vet banner "per dog" -> "per cat". v1.12 (APP_VERSION 149). Signup + Home/Catch/Mart/Race tabs checked, no console errors.
 
+- Run 12: cat-only Pet button (💜 on each cat card: purr + 3 XP, 1h cooldown per cat); Feed icon 🍖 -> 🐟; cosmetic text 'Dapper doggo' -> 'Dapper kitty'; card button row wraps. v1.13 (APP_VERSION 150). Signup/tabs/collection/pet checked with playwright, no console errors.
+
 ## Next (priority order)
 1. Cat-only features for App Store differentiation (one per run): cat-bed house layout (nap button done run 10), yarn-chase mini-game, treat-lure catch twist, cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).

@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 149; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 150; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5804,7 +5804,7 @@ const COSMETICS = [
   { id:'hat_top',      emoji:'🎩', name:'Top Hat',         cost:80,  slot:'hat',    desc:'Fancy kitten' },
   { id:'hat_party',    emoji:'🎉', name:'Party Hat',       cost:25,  slot:'hat',    desc:'Always celebrating' },
   { id:'hat_santa',    emoji:'🎅', name:'Santa Hat',       cost:50,  slot:'hat',    desc:'Ho ho meow!' },
-  { id:'collar_bow',   emoji:'🎀', name:'Bow Tie',         cost:40,  slot:'collar', desc:'Dapper doggo' },
+  { id:'collar_bow',   emoji:'🎀', name:'Bow Tie',         cost:40,  slot:'collar', desc:'Dapper kitty' },
   { id:'collar_diam',  emoji:'💎', name:'Diamond Collar',  cost:200, slot:'collar', desc:'Premium bling' },
   { id:'collar_flower',emoji:'🌸', name:'Flower Collar',   cost:35,  slot:'collar', desc:'Springtime cutie' },
   { id:'collar_star',  emoji:'⭐', name:'Star Collar',     cost:60,  slot:'collar', desc:'Born to shine' },
@@ -6158,6 +6158,20 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
     forceUpdate(n=>n+1);
   };
 
+  // Cat-only: give a cat a gentle pet (purrs; once per hour per cat)
+  const handlePet = (e, dog) => {
+    e.stopPropagation();
+    let pets = {}; try { pets = JSON.parse(localStorage.getItem('km_pet_times') || '{}'); } catch {}
+    const left = 3600000 - (Date.now() - (pets[dog.id] || 0));
+    if (left > 0) { showToast(`💜 ${dog.name} is purring happily — pet again in ${Math.ceil(left / 60000)}m`); return; }
+    pets[dog.id] = Date.now();
+    try { localStorage.setItem('km_pet_times', JSON.stringify(pets)); } catch {}
+    addXP(dog.id, 3, showToast);
+    playPurr();
+    showToast(`💜 ${dog.name} purrs loudly! +3 XP`);
+    forceUpdate(n=>n+1);
+  };
+
   const handlePoo = (e, dog) => {
     if (e) e.stopPropagation();
     const rarity = rollPooRarity();
@@ -6330,8 +6344,9 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
                     <div style={{height:'100%',width:`${Math.round(currentHunger)}%`,background:hungerColor,borderRadius:4,transition:'width 0.3s'}} />
                   </div>
                   {/* Feed & poo buttons */}
-                  <div style={{display:'flex',gap:3,justifyContent:'center',marginBottom:3}} onClick={e=>e.stopPropagation()}>
-                    <button onClick={e=>handleFeed(e,dog)} style={{flex:1,padding:'3px 4px',background:'#fff3e0',border:'1px solid #f4a261',borderRadius:7,fontSize:10,cursor:'pointer',color:'#e76f51',fontWeight:'bold'}}>🍖 Feed</button>
+                  <div style={{display:'flex',gap:3,flexWrap:'wrap',justifyContent:'center',marginBottom:3}} onClick={e=>e.stopPropagation()}>
+                    <button onClick={e=>handleFeed(e,dog)} style={{flex:1,padding:'3px 4px',background:'#fff3e0',border:'1px solid #f4a261',borderRadius:7,fontSize:10,cursor:'pointer',color:'#e76f51',fontWeight:'bold'}}>🐟 Feed</button>
+                    <button onClick={e=>handlePet(e,dog)} aria-label="Pet" style={{padding:'3px 6px',background:'#fce4ec',border:'1px solid #f48fb1',borderRadius:7,fontSize:11,cursor:'pointer'}}>💜</button>
                     <button onClick={e=>handleNap(e,dog)} aria-label="Nap" style={{padding:'3px 6px',background:'#ede7f6',border:'1px solid #b39ddb',borderRadius:7,fontSize:11,cursor:'pointer'}}>😴</button>
                     {needsPoo && <button onClick={e=>handlePoo(e,dog)} style={{padding:'3px 6px',background:'#fff8e1',border:'1px solid #f59e0b',borderRadius:7,fontSize:12,cursor:'pointer'}}>🧹</button>}
                   </div>
