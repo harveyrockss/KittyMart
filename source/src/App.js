@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 148; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 149; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5867,7 +5867,7 @@ function VetScreen({ player, dogs, setDogs, onBack }) {
       {msg && <div style={{background:'#764ba2',color:'white',borderRadius:12,padding:'10px 14px',marginBottom:12,fontWeight:'bold',fontSize:13}}>{msg}</div>}
       <div style={{background:'white',borderRadius:14,padding:14,marginBottom:14,border:'2px solid #e0d0ff'}}>
         <div style={{fontWeight:'bold',color:'#764ba2',marginBottom:6,fontSize:13}}>⭐ Points you can spend: {score} pts</div>
-        <div style={{background:'linear-gradient(135deg,#667eea,#764ba2)',color:'white',borderRadius:12,padding:'12px 14px',fontWeight:'bold',fontSize:14,textAlign:'center'}}>💊 Full Treatment — {VET_FEED_COST}pts per dog to restore hunger to 100. Tap Feed next to a dog below!</div>
+        <div style={{background:'linear-gradient(135deg,#667eea,#764ba2)',color:'white',borderRadius:12,padding:'12px 14px',fontWeight:'bold',fontSize:14,textAlign:'center'}}>💊 Full Treatment — {VET_FEED_COST}pts per cat to restore hunger to 100. Tap Feed next to a cat below!</div>
       </div>
       {dogs.length === 0 ? <div style={{textAlign:'center',color:'#aaa',padding:40}}>No cats yet!</div> : (
         <div style={{display:'flex',flexDirection:'column',gap:10}}>
@@ -6252,8 +6252,8 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
     <div style={{ padding: 16 }}>
       {toast && <div style={{position:'fixed',top:80,left:'50%',transform:'translateX(-50%)',background:'#764ba2',color:'white',borderRadius:20,padding:'10px 20px',fontWeight:'bold',fontSize:14,zIndex:999,whiteSpace:'nowrap',boxShadow:'0 4px 20px rgba(0,0,0,0.3)'}}>{toast}</div>}
       {pooOverlay && <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
-        <div style={{fontSize:64}}>💩</div>
-        <div style={{fontSize:24,fontWeight:'bold',color:POO_COLORS[pooOverlay.rarity]||'#fff'}}>{pooOverlay.rarity} Poo!</div>
+        <div style={{fontSize:64}}>🧹</div>
+        <div style={{fontSize:24,fontWeight:'bold',color:POO_COLORS[pooOverlay.rarity]||'#fff'}}>{pooOverlay.rarity} Litter Tray!</div>
         <div style={{fontSize:20,color:'#fff',fontWeight:'bold'}}>+{pooOverlay.pts} pts!</div>
       </div>}
       {breedOverlay && <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.75)',zIndex:1001,display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:12}}>
@@ -6333,7 +6333,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
                   <div style={{display:'flex',gap:3,justifyContent:'center',marginBottom:3}} onClick={e=>e.stopPropagation()}>
                     <button onClick={e=>handleFeed(e,dog)} style={{flex:1,padding:'3px 4px',background:'#fff3e0',border:'1px solid #f4a261',borderRadius:7,fontSize:10,cursor:'pointer',color:'#e76f51',fontWeight:'bold'}}>🍖 Feed</button>
                     <button onClick={e=>handleNap(e,dog)} aria-label="Nap" style={{padding:'3px 6px',background:'#ede7f6',border:'1px solid #b39ddb',borderRadius:7,fontSize:11,cursor:'pointer'}}>😴</button>
-                    {needsPoo && <button onClick={e=>handlePoo(e,dog)} style={{padding:'3px 6px',background:'#fff8e1',border:'1px solid #f59e0b',borderRadius:7,fontSize:12,cursor:'pointer'}}>💩</button>}
+                    {needsPoo && <button onClick={e=>handlePoo(e,dog)} style={{padding:'3px 6px',background:'#fff8e1',border:'1px solid #f59e0b',borderRadius:7,fontSize:12,cursor:'pointer'}}>🧹</button>}
                   </div>
                   {isRenaming ? (
                     <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: 3, marginBottom: 4 }}>
