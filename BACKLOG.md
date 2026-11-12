@@ -31,7 +31,10 @@
 
 - Run 15 (bug report from Indiana's phone, v1.14: "saved-data space on this phone is full: 7 cats could not be updated" with 118 cats): ROOT CAUSE found: offline, the cloud-backup (player_data, which packs every km_ key) was saved into km_db_players, which is itself a km_ key and its write re-triggered a save every 5s, so each save nested the previous backup and the row grew until storage filled. Fixed 3 ways: (1) setItem hook ignores km_db_* keys, (2) backup packing skips km_db_* and photo-pool caches, (3) offline store never keeps player_data and strips an existing bloated row on load (tested: 3MB -> 249 bytes, stays stable across saves). v1.16 (APP_VERSION 153). Indiana should reload the app twice (first load cleans, needs the new version.json).
 
+- Run 16: Cosy Cat Pack set up (Harvey asked, to cover running costs): Mart > 🧶 Cosy Pack tab, $2.99 one-time (not sellable on web), parental gate before purchase, Restore button, 4 dress-up items + per-cat dress-up picker, entitlement `km_pack_cosy`. Real purchase needs RevenueCat/App Store Connect on a Mac: see IAP_SETUP.md (also has a prompt for PuppyMart). Web test unlock: `?testpack=1`. v1.17 (APP_VERSION 154). Gate/unlock tested; dress-up with an owned cat not yet exercised by script.
+
 ## Next (priority order)
+0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live; dress-up UI should also show on the Cats card.
 1. Cat-only features for App Store differentiation (one per run): cat-bed house layout (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
 3. Accounts are per-device offline: a real fix (shared accounts across phones) needs a new KittyMart Supabase project from Harvey. Consider an export/import 'transfer my cats' code.

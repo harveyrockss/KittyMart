@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 153; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 154; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5884,6 +5884,11 @@ const COSMETICS = [
   { id:'acc_bandana',  emoji:'🟥', name:'Red Bandana',     cost:30,  slot:'acc',    desc:'Wild kitten energy' },
   { id:'cape_hero',    emoji:'🦸', name:'Hero Cape',       cost:100, slot:'cape',   desc:'Saving the world one meow at a time' },
   { id:'cape_star',    emoji:'🌟', name:'Star Cape',       cost:150, slot:'cape',   desc:'Legendary sparkle' },
+  // Cosy Cat Pack (one-time purchase) items — cost 0 and never sold for coins
+  { id:'hat_beanie',   emoji:'🧶', name:'Yarn Beanie',     cost:0, slot:'hat',    desc:'Knitted by grandma', pack:'cosy' },
+  { id:'collar_bell',  emoji:'🔔', name:'Jingle Bell',     cost:0, slot:'collar', desc:'Ting-a-ling!', pack:'cosy' },
+  { id:'acc_scarf',    emoji:'🧣', name:'Cosy Scarf',      cost:0, slot:'acc',    desc:'Warm and snuggly', pack:'cosy' },
+  { id:'cape_blanket', emoji:'🛏️', name:'Blanket Cape',    cost:0, slot:'cape',   desc:'Nap time anywhere', pack:'cosy' },
 ];
 
 function getDogCosmetics(dogId) {
@@ -5895,6 +5900,15 @@ function setDogCosmetics(dogId, cos) {
 // Owned cosmetics (not per-dog — owned globally, then equipped to a dog)
 function getOwnedCosmetics() {
   try { return JSON.parse(localStorage.getItem('km_owned_cosmetics') || '[]'); } catch { return []; }
+}
+// Cosy Cat Pack entitlement. In the App Store build, window.KM_IAP (RevenueCat bridge) must provide
+// purchase('cosy_cat_pack') -> Promise<boolean> and restore() -> Promise<boolean>. Without it nothing can be bought.
+const COSY_PACK_PRICE = '$2.99';
+function hasCosyPack() { try { return localStorage.getItem('km_pack_cosy') === '1'; } catch { return false; } }
+function grantCosyPack() {
+  try { localStorage.setItem('km_pack_cosy', '1'); } catch {}
+  COSMETICS.filter(c => c.pack === 'cosy').forEach(c => addOwnedCosmetic(c.id));
+  try { window.dispatchEvent(new Event('km_pack_change')); } catch {}
 }
 function addOwnedCosmetic(id) {
   const owned = getOwnedCosmetics();
@@ -6557,8 +6571,25 @@ function MartScreen({ dogs, totalPoints }) {
 
   const SECTION_TABS = [
     { id: 'powerups',   label: '⚡ Power-Ups' },
+    { id: 'cosy',       label: '🧶 Cosy Pack' },
   ];
   const [ownedCosmetics, setOwnedCosmetics] = useState(() => getOwnedCosmetics());
+  const [packOwned, setPackOwned] = useState(() => hasCosyPack());
+  const [showPackGate, setShowPackGate] = useState(false);
+  const [dressCat, setDressCat] = useState('');
+  const [, bumpDress] = useState(0);
+  const doBuyPack = async () => {
+    setShowPackGate(false);
+    try {
+      if (window.KM_IAP && window.KM_IAP.purchase) { const ok = await window.KM_IAP.purchase('cosy_cat_pack'); if (ok) { grantCosyPack(); setPackOwned(true); showPopup('🧶 Cosy Cat Pack unlocked! Dress up your cats below.'); } return; }
+      if (/[?&]testpack=1/.test(window.location.search)) { grantCosyPack(); setPackOwned(true); showPopup('🧶 (Test mode) Cosy Cat Pack unlocked!'); return; }
+      showMsg('Purchases are available in the App Store version of KittyMart.');
+    } catch { showMsg('Purchase did not go through. You were not charged.'); }
+  };
+  const doRestorePack = async () => {
+    try { if (window.KM_IAP && window.KM_IAP.restore && await window.KM_IAP.restore()) { grantCosyPack(); setPackOwned(true); showPopup('Purchase restored!'); return; } } catch {}
+    showMsg('No previous purchase found.');
+  };
 
   return (
     <div style={{ padding: 16 }}>
@@ -6581,6 +6612,45 @@ function MartScreen({ dogs, totalPoints }) {
           </button>
         ))}
       </div>
+
+      {/* ── Cosy Cat Pack (one-time purchase) ── */}
+      {section === 'cosy' && (
+        <div>
+          <div style={{ background: 'linear-gradient(135deg,#f4a261,#e76f51)', borderRadius: 20, padding: 16, color: 'white', textAlign: 'center', marginBottom: 12 }}>
+            <div style={{ fontSize: 34 }}>🧶🧣🔔🛏️</div>
+            <div style={{ fontSize: 18, fontWeight: 'bold', margin: '4px 0' }}>Cosy Cat Pack</div>
+            <div style={{ fontSize: 13, opacity: 0.95, marginBottom: 10 }}>4 snuggly dress-up items for your cats: Yarn Beanie, Jingle Bell, Cosy Scarf and Blanket Cape. One-time purchase, no subscription.</div>
+            {packOwned
+              ? <div style={{ background: 'rgba(255,255,255,0.25)', borderRadius: 14, padding: '10px', fontWeight: 'bold' }}>✅ You own the Cosy Cat Pack</div>
+              : <button onClick={() => setShowPackGate(true)} style={{ background: 'white', color: '#e76f51', border: 'none', borderRadius: 20, padding: '10px 26px', fontWeight: 'bold', fontSize: 15, cursor: 'pointer' }}>Get for {COSY_PACK_PRICE}</button>}
+            {!packOwned && <div style={{ marginTop: 10 }}><button onClick={doRestorePack} style={{ background: 'none', border: 'none', color: 'white', textDecoration: 'underline', fontSize: 12, cursor: 'pointer' }}>Restore purchase</button></div>}
+            {!packOwned && <div style={{ fontSize: 11, opacity: 0.85, marginTop: 6 }}>A grown-up must approve purchases.</div>}
+          </div>
+          {packOwned && (() => {
+            const cat = (dogs || []).find(d => String(d.id) === String(dressCat));
+            const cos = cat ? getDogCosmetics(cat.id) : {};
+            return (
+              <div style={{ background: 'white', borderRadius: 16, padding: 14, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+                <div style={{ fontWeight: 'bold', color: '#764ba2', marginBottom: 8 }}>🎀 Dress up a cat</div>
+                <select value={dressCat} onChange={e => setDressCat(e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid #ddd', fontSize: 14, marginBottom: 10 }}>
+                  <option value="">Choose a cat…</option>
+                  {(dogs || []).slice(0, 200).map(d => <option key={d.id} value={d.id}>{getDogNick(d.id) || d.breed} ({d.breed})</option>)}
+                </select>
+                {cat && <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {COSMETICS.filter(c => c.pack === 'cosy').map(c => {
+                    const on = cos[c.slot] === c.id;
+                    return <button key={c.id} onClick={() => { const n = { ...cos }; if (on) delete n[c.slot]; else n[c.slot] = c.id; setDogCosmetics(cat.id, n); try { window.dispatchEvent(new Event('km_dog_change')); } catch {} bumpDress(x => x + 1); }}
+                      style={{ flex: '1 1 40%', padding: '10px 6px', borderRadius: 12, border: on ? '2px solid #52b788' : '2px solid #eee', background: on ? '#e8f8ef' : '#fafafa', cursor: 'pointer', fontSize: 13 }}>
+                      <div style={{ fontSize: 24 }}>{c.emoji}</div><div style={{ fontWeight: 'bold' }}>{c.name}</div><div style={{ fontSize: 11, color: '#777' }}>{on ? 'Wearing ✓' : 'Tap to wear'}</div>
+                    </button>;
+                  })}
+                </div>}
+              </div>
+            );
+          })()}
+          {showPackGate && <ParentalGateModal onClose={() => setShowPackGate(false)} onSuccess={doBuyPack} />}
+        </div>
+      )}
 
       {/* ── Power-Ups section ── */}
       {section === 'powerups' && (
