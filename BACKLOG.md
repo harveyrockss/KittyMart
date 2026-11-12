@@ -33,11 +33,13 @@
 
 - Run 16: Cosy Cat Pack set up (Harvey asked, to cover running costs): Mart > 🧶 Cosy Pack tab, $2.99 one-time (not sellable on web), parental gate before purchase, Restore button, 4 dress-up items + per-cat dress-up picker, entitlement `km_pack_cosy`. Real purchase needs RevenueCat/App Store Connect on a Mac: see IAP_SETUP.md (also has a prompt for PuppyMart). Web test unlock: `?testpack=1`. v1.17 (APP_VERSION 154). Gate/unlock tested; dress-up with an owned cat not yet exercised by script.
 
+- Run 17: 'Transfer my cats': Settings > 📦 Save My Cats to a File / 📥 Load Cats from a File (JSON backup of all km_ data, photo caches excluded) so Indiana's account can move between phones offline. Tested save + load + reload with playwright, no console errors beyond blocked network. v1.18 (APP_VERSION 155). Loading a backup replaces local data (confirm dialog).
+
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live; dress-up UI should also show on the Cats card.
 1. Cat-only features for App Store differentiation (one per run): cat-bed house layout (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
-3. Accounts are per-device offline: a real fix (shared accounts across phones) needs a new KittyMart Supabase project from Harvey. Consider an export/import 'transfer my cats' code.
+3. Accounts are per-device offline: a real fix needs a new KittyMart Supabase project from Harvey. (File transfer done run 17.)
 
 ## Known issues
 - Automated catch-tap in playwright was flaky (cat moves); catch flow not re-verified by script in run 4 (only playMeow call changed, try/catch-wrapped). Tabs load with no console errors.

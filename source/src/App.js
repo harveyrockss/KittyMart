@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 154; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 155; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5916,6 +5916,26 @@ function addOwnedCosmetic(id) {
 }
 
 
+
+// ── Transfer my cats: save / load a backup file so an account can move to another phone (offline mode) ──
+function exportKittyBackup() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('km_') && !k.startsWith('km_catapi_') && !k.startsWith('km_cataas_')) { try { const v = localStorage.getItem(k); if (v != null) data[k] = v; } catch {} }
+  }
+  const blob = new Blob([JSON.stringify({ kittymart_backup: 1, saved: new Date().toISOString(), data })], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'kittymart-backup.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+async function importKittyBackup(file) {
+  const j = JSON.parse(await file.text());
+  if (!j || j.kittymart_backup !== 1 || !j.data || typeof j.data !== 'object') throw new Error('not a KittyMart backup');
+  Object.keys(j.data).forEach(k => { if (k.startsWith('km_') && typeof j.data[k] === 'string') { try { localStorage.setItem(k, j.data[k]); } catch {} } });
+}
+
 // ─── Vet Screen ──────────────────────────────────────────────────────────────
 const VET_FEED_COST = 20;
 function VetScreen({ player, dogs, setDogs, onBack }) {
@@ -7472,6 +7492,10 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
             {showHelpGate && <ParentalGateModal onClose={() => setShowHelpGate(false)} onSuccess={() => { setShowHelpGate(false); window.location.href = `mailto:the KittyMart team?subject=${encodeURIComponent('KittyMart support: ' + player.username)}`; }} />}
           </div>
         </div>, document.body)}
+      <button onClick={() => { try { exportKittyBackup(); } catch { alert('Could not save a backup on this device.'); } }} style={{ width: '100%', padding: 14, background: 'linear-gradient(135deg,#4cc9f0,#4361ee)', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>📦 Save My Cats to a File</button>
+      <label style={{ display:'block', boxSizing:'border-box', width: '100%', padding: 14, background: 'linear-gradient(135deg,#7209b7,#560bad)', color: 'white', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10, textAlign:'center' }}>📥 Load Cats from a File
+        <input type="file" accept="application/json,.json" style={{ display:'none' }} onChange={async e => { const f = e.target.files && e.target.files[0]; if (!f) return; if (!window.confirm('Load this backup? It replaces the cats and account saved on this phone.')) return; try { await importKittyBackup(f); alert('Backup loaded! The game will now reload.'); window.location.reload(); } catch { alert('That file is not a KittyMart backup.'); } }} />
+      </label>
       <button onClick={autoNameAllDogs} style={{ width: '100%', padding: 14, background: 'linear-gradient(135deg,#06d6a0,#059e76)', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>🏷️ Name All My Cats</button>
       <button onClick={() => setConfirmReset(true)} style={{ width: '100%', padding: 14, background: '#e63946', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>🗑️ Reset My Cats</button>
       <button onClick={() => setConfirmDelete(true)} style={{ width: '100%', padding: 14, background: '#b00020', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>❌ Delete Account</button>
