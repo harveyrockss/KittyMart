@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 145; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 146; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2433,7 +2433,7 @@ function WishingWell() {
 // ─── Achievements ──────────────────────────────────────────────────────────────
 const ACHIEVEMENTS = [
   { id: 'first_catch',   label: '🐾 First Steps',    desc: 'Catch your first cat',              pts: 10,  check: (dogs) => dogs.length >= 1 },
-  { id: 'trio',          label: '🐱 A Small Pack',   desc: 'Catch 3 cats',                      pts: 15,  check: (dogs) => dogs.length >= 3 },
+  { id: 'trio',          label: '🐱 Little Clowder', desc: 'Catch 3 cats',                      pts: 15,  check: (dogs) => dogs.length >= 3 },
   { id: 'ten_club',      label: '🔟 Ten Club',       desc: 'Catch 10 cats',                     pts: 25,  check: (dogs) => dogs.length >= 10 },
   { id: 'big_family',    label: '🐱 Big Family',     desc: 'Catch 50 cats',                     pts: 75,  check: (dogs) => dogs.length >= 50 },
   { id: 'century',       label: '🏆 Century',        desc: 'Catch 100 cats',                    pts: 150, check: (dogs) => dogs.length >= 100 },
@@ -2448,6 +2448,10 @@ const ACHIEVEMENTS = [
   { id: 'streak_3',      label: '🔥 On Fire',        desc: '3-day login streak',                pts: 30,  check: () => parseInt(localStorage.getItem('km_streak')||'0',10) >= 3 },
   { id: 'streak_7',      label: '🔥🔥 Week Warrior', desc: '7-day login streak',                pts: 75,  check: () => parseInt(localStorage.getItem('km_streak')||'0',10) >= 7 },
   { id: 'streak_30',     label: '🔥🔥🔥 Monthly',   desc: '30-day login streak',               pts: 300, check: () => parseInt(localStorage.getItem('km_streak')||'0',10) >= 30 },
+  { id: 'purr_10',       label: '😽 Purr Maker',     desc: 'Feed your cats 10 times',           pts: 20,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 10 },
+  { id: 'tidy_5',        label: '🧹 Tidy Tray',      desc: 'Scoop 5 litter trays',              pts: 20,  check: () => parseInt(localStorage.getItem('km_poo_count')||'0',10) >= 5 },
+  { id: 'nine_lives',    label: '🐈 Nine Lives',     desc: 'Own 9 cats of the same breed',      pts: 60,  check: (dogs) => { const c = {}; return dogs.some(d => (c[d.breed] = (c[d.breed]||0)+1) >= 9); } },
+  { id: 'cat_cafe',      label: '☕ Cat Café',        desc: 'Have 20 cats in your collection',   pts: 40,  check: (dogs) => dogs.length >= 20 },
 ];
 
 function checkAchievements(dogs, setToast) {

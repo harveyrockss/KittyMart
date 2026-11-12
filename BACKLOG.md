@@ -15,8 +15,10 @@
 
 - Run 7: Race "Host a Race Room"/"Join a Race" cards greyed with "Needs online play" note + toast when offline. Login: when no account exists on this device, the error now explains accounts are saved per browser/phone (likely why Indiana could not log in from another device; her account exists only where she signed up). v1.8 (APP_VERSION 145). Tabs/signup/login checked, no console errors.
 
+- Run 8: 4 cat-only achievements (Purr Maker=feed 10x, Tidy Tray=scoop 5 litter trays, Nine Lives=9 of one breed, Cat Café=20 cats); 'A Small Pack' -> 'Little Clowder'. v1.9 (APP_VERSION 146). Signup/tabs/race/mart checked, no console errors. Note: feed/litter achievements are evaluated when the collection changes.
+
 ## Next (priority order)
-1. Cat-only features for App Store differentiation (one per run): cat-bed/nap-spot house, yarn-chase mini-game, treat-lure catch twist, cat achievements/daily challenges ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
+1. Cat-only features for App Store differentiation (one per run): cat-bed/nap-spot house, yarn-chase mini-game, treat-lure catch twist, cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
 3. Accounts are per-device offline: a real fix (shared accounts across phones) needs a new KittyMart Supabase project from Harvey. Consider an export/import 'transfer my cats' code.
 
