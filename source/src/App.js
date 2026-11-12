@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 143; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 145; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2000,7 +2000,7 @@ function LoginScreen({ onLogin }) {
         }
 
         // Legacy path — we already have the row, compare password client-side (no extra REST call)
-        if (isEmailInput || !row) { setError('Wrong username or password.'); setLoading(false); return; }
+        if (isEmailInput || !row) { setError(!ONLINE && !row ? `No cat-lover named "${input}" on this device. KittyMart accounts are saved in the browser/phone where they were made — log in on that same one, or tap Sign Up to start fresh here. (Check spelling too.)` : 'Wrong username or password.'); setLoading(false); return; }
         const hashed = await hashPassword(pw);
         const pwMatch = row.password === hashed || row.password === pw;
         if (!pwMatch) { setError('Wrong username or password.'); setLoading(false); return; }
@@ -4386,16 +4386,16 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
           <button
-            onClick={() => selectedDog ? handleCreateRoom(selectedDog) : showToast('Pick a cat first!')}
-            style={{ padding: '22px 0', background: selectedDog ? 'linear-gradient(135deg,#667eea,#764ba2)' : '#ccc', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: selectedDog ? 'pointer' : 'default', boxShadow: selectedDog ? '0 6px 20px rgba(102,126,234,0.35)' : 'none' }}>
+            onClick={() => !ONLINE ? showToast('Live rooms need a KittyMart server — try Race vs AI!') : selectedDog ? handleCreateRoom(selectedDog) : showToast('Pick a cat first!')}
+            style={{ opacity: ONLINE ? 1 : 0.55, filter: ONLINE ? 'none' : 'grayscale(0.6)', padding: '22px 0', background: selectedDog ? 'linear-gradient(135deg,#667eea,#764ba2)' : '#ccc', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: selectedDog ? 'pointer' : 'default', boxShadow: selectedDog ? '0 6px 20px rgba(102,126,234,0.35)' : 'none' }}>
             🏟️ Host a Race Room
-            <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 'normal', marginTop: 4 }}>Create a room · invite 2–4 players · start when ready</div>
+            <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 'normal', marginTop: 4 }}>{ONLINE ? 'Create a room · invite 2–4 players · start when ready' : '📴 Needs online play · not available offline'}</div>
           </button>
           <button
-            onClick={() => { if (selectedDog) { goScreen('join_browse'); loadBrowse(); } else showToast('Pick a cat first!'); }}
-            style={{ padding: '22px 0', background: selectedDog ? 'linear-gradient(135deg,#f72585,#b5179e)' : '#ccc', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: selectedDog ? 'pointer' : 'default', boxShadow: selectedDog ? '0 6px 20px rgba(247,37,133,0.35)' : 'none' }}>
+            onClick={() => { if (!ONLINE) showToast('Live rooms need a KittyMart server — try Race vs AI!'); else if (selectedDog) { goScreen('join_browse'); loadBrowse(); } else showToast('Pick a cat first!'); }}
+            style={{ opacity: ONLINE ? 1 : 0.55, filter: ONLINE ? 'none' : 'grayscale(0.6)', padding: '22px 0', background: selectedDog ? 'linear-gradient(135deg,#f72585,#b5179e)' : '#ccc', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: selectedDog ? 'pointer' : 'default', boxShadow: selectedDog ? '0 6px 20px rgba(247,37,133,0.35)' : 'none' }}>
             🐾 Join a Race
-            <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 'normal', marginTop: 4 }}>Browse open rooms · race live</div>
+            <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 'normal', marginTop: 4 }}>{ONLINE ? 'Browse open rooms · race live' : '📴 Needs online play · not available offline'}</div>
           </button>
           <button
             onClick={() => selectedDog ? startAiRace(selectedDog, false) : showToast('Pick a cat first!')}
