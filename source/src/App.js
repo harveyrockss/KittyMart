@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 140; // build number; shown as v1.<n-137> (140 = v1.3). Bump with public/version.json
+const APP_VERSION = 141; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -1090,7 +1090,7 @@ function saveNowDebounced() {
   }, 2000);
 }
 
-// Bulk mode: power-ups that touch every dog (Pooper Scooper, treat bags) used to fire thousands of network saves and
+// Bulk mode: power-ups that touch every dog (Litter Scooper, treat bags) used to fire thousands of network saves and
 // events at once on big collections, which froze the app and lost the changes. In bulk mode we only write the local
 // state per dog and do ONE cloud save at the end.
 let _bulkMode = false;
@@ -1233,53 +1233,28 @@ function calcHunger(state) {
   return Math.max(0, (state.hunger || 100) - hoursElapsed * 10);
 }
 
-// Breed → size category for bark sound
-const BREED_SIZE = {
-  // Tiny yappy dogs
-  Chihuahua:'tiny', Papillon:'tiny', Maltese:'tiny', Pomeranian:'tiny', 'Yorkshire Terrier':'tiny',
-  'Shih Tzu':'tiny', Havanese:'tiny', Dachshund:'tiny', Pekingese:'tiny',
-  // Small dogs
-  Cavoodle:'small', 'French Bulldog':'small', 'King Charles Cavalier':'small', 'Jack Russell':'small',
-  'Miniature Schnauzer':'small', Beagle:'small', Poodle:'small', Corgi:'small', Whippet:'small',
-  // Medium dogs
-  'Border Collie':'medium', 'Australian Shepherd':'medium', Dalmatian:'medium', Setter:'medium',
-  Samoyed:'medium', Husky:'medium', Labrador:'medium', 'Golden Retriever':'medium',
-  // Large/deep bark
-  'German Shepherd':'large', Rottweiler:'large', Doberman:'large', 'Great Dane':'large',
-  'Saint Bernard':'large', Malamute:'large', Bernese:'large', Newfoundland:'large', 'Bull Mastiff':'large',
-};
-function playBark(breedName = '') {
+// Soft "mee-ow" synth: pitch rises then falls through a sweeping vowel filter. Pitch varies a little per breed.
+function playMeow(breedName = '') {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const size = BREED_SIZE[breedName] || 'medium';
-    // Each size: array of bark pulses {freq, endFreq, dur, gap}
-    const configs = {
-      tiny:   [{ freq:1100, endFreq:780, dur:0.06, vol:0.35 }, { freq:1050, endFreq:760, dur:0.06, vol:0.3  }, { freq:1000, endFreq:720, dur:0.05, vol:0.25 }],
-      small:  [{ freq: 700, endFreq:460, dur:0.10, vol:0.4  }, { freq: 650, endFreq:420, dur:0.10, vol:0.35 }],
-      medium: [{ freq: 420, endFreq:260, dur:0.15, vol:0.45 }, { freq: 380, endFreq:230, dur:0.16, vol:0.4  }],
-      large:  [{ freq: 160, endFreq: 90, dur:0.22, vol:0.55 }, { freq: 140, endFreq: 80, dur:0.25, vol:0.5  }],
-    };
-    const pulses = configs[size];
-    // Distortion curve for growly texture
-    const curve = new Float32Array(256);
-    const amt = size === 'large' ? 300 : size === 'medium' ? 180 : 80;
-    for (let i = 0; i < 256; i++) { const x = (i * 2) / 256 - 1; curve[i] = (Math.PI + amt) * x / (Math.PI + amt * Math.abs(x)); }
-    let t = ctx.currentTime + 0.01;
-    pulses.forEach(({ freq, endFreq, dur, vol }) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      const dist = ctx.createWaveShaper();
-      dist.curve = curve;
-      osc.connect(dist); dist.connect(gain); gain.connect(ctx.destination);
-      osc.type = size === 'tiny' ? 'square' : 'sawtooth';
-      osc.frequency.setValueAtTime(freq, t);
-      osc.frequency.exponentialRampToValueAtTime(endFreq, t + dur);
-      gain.gain.setValueAtTime(vol, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
-      osc.start(t); osc.stop(t + dur);
-      t += dur + (size === 'tiny' ? 0.04 : size === 'large' ? 0.12 : 0.08);
-    });
-    setTimeout(() => ctx.close(), 2000);
+    let h = 0; for (const ch of String(breedName)) h = (h * 31 + ch.charCodeAt(0)) % 997;
+    const base = 520 + (h % 9) * 35;          // 520-800 Hz
+    const t = ctx.currentTime + 0.01, dur = 0.55;
+    const osc = ctx.createOscillator(), filt = ctx.createBiquadFilter(), gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(base * 0.8, t);
+    osc.frequency.linearRampToValueAtTime(base * 1.25, t + dur * 0.3);
+    osc.frequency.exponentialRampToValueAtTime(base * 0.65, t + dur);
+    filt.type = 'bandpass'; filt.Q.value = 4;
+    filt.frequency.setValueAtTime(700, t);              // "mee"
+    filt.frequency.linearRampToValueAtTime(1800, t + dur * 0.3);
+    filt.frequency.linearRampToValueAtTime(600, t + dur); // "ow"
+    gain.gain.setValueAtTime(0.001, t);
+    gain.gain.linearRampToValueAtTime(0.5, t + 0.06);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
+    osc.start(t); osc.stop(t + dur + 0.05);
+    setTimeout(() => ctx.close(), 1500);
   } catch (e) {}
 }
 
@@ -2074,10 +2049,10 @@ const CHALLENGE_POOL = [
   {id:'r3', type:'race_finish', text:'Finish a race',     goal:1,  pts:25},
   {id:'r4', type:'race_finish', text:'Race 3 times',      goal:3,  pts:40},
   // Poo pickups
-  {id:'p1', type:'poo', text:'Pick up 3 poos',            goal:3,  pts:20},
-  {id:'p2', type:'poo', text:'Pick up 5 poos',            goal:5,  pts:30},
-  {id:'p3', type:'poo', text:'Pick up 10 poos',           goal:10, pts:50},
-  {id:'p4', type:'poo', text:'Pick up 1 poo',             goal:1,  pts:10},
+  {id:'p1', type:'poo', text:'Clean 3 litter trays',            goal:3,  pts:20},
+  {id:'p2', type:'poo', text:'Clean 5 litter trays',            goal:5,  pts:30},
+  {id:'p3', type:'poo', text:'Clean 10 litter trays',           goal:10, pts:50},
+  {id:'p4', type:'poo', text:'Clean 1 litter tray',             goal:1,  pts:10},
   // Spin wheel
   {id:'s1', type:'spin', text:'Open the daily gift',           goal:1,  pts:15},
   // Feeding
@@ -5022,7 +4997,7 @@ const POWERUPS = [
   { id: 'treat_epic',      label: '🐟 Super Treat Bag',       desc: 'Feed all your Epic cats',                    cost: 75,  duration: 0, rarity: 'Epic'      },
   { id: 'treat_legendary', label: '🐟 Mega Treat Bag',        desc: 'Feed all your Legendary cats',               cost: 150, duration: 0, rarity: 'Legendary' },
   { id: 'treat_ultra',     label: '🍖 Ultra Treat Bag',       desc: 'Feed EVERY cat you own at once, any rarity', cost: 200, duration: 0, rarity: 'All'       },
-  { id: 'pooper_scooper',  label: '🪣 Pooper Scooper',        desc: 'Collect all poos at once & earn the points', cost: 50,  duration: 0 },
+  { id: 'pooper_scooper',  label: '🪣 Litter Scooper',        desc: 'Clean all litter trays at once & earn the points', cost: 50,  duration: 0 },
   { id: 'legendary_bait',  label: '🌟 Legendary Bait',        desc: 'Much higher chance of a Legendary cat for 5 minutes', cost: 30, duration: 300 },
 ];
 
@@ -5061,7 +5036,7 @@ function TasksScreen({ dogs }) {
         if (lastFed === 0) return lastPoo === 0; // never fed — one default poo, gone once collected
         return hoursSinceFed > 4 && lastPoo < lastFed;  // fed, poo not collected since
       });
-      if (targets.length === 0) { showToast('No poos to collect right now!'); addDD(p.cost); logPurchase(p.label, p.cost, 'returned: nothing to collect'); return; }
+      if (targets.length === 0) { showToast('No litter to clean right now!'); addDD(p.cost); logPurchase(p.label, p.cost, 'returned: nothing to collect'); return; }
       let totalPts = 0;
       const failedLocal = runBulk(() => targets.forEach(dog => {
         const rarity = rollPooRarity();
@@ -5074,7 +5049,7 @@ function TasksScreen({ dogs }) {
       if (failedLocal > 0) { addDD(p.cost); logPurchase(p.label, p.cost, 'returned: phone storage full'); showPopup(`⚠️ ${p.label} could not update ${failedLocal} cats because the game's saved-data space on this phone is full. Your ${p.cost} Kitty Coins were returned.`); return; }
       logPurchase(p.label, p.cost, `applied to ${targets.length} cats`);
       addBonusPts(totalPts);
-      showPopup(`${p.label} scooped ${targets.length} poo${targets.length>1?'s':''}! +${totalPts}⭐ earned`);
+      showPopup(`${p.label} cleaned ${targets.length} litter tray${targets.length>1?'s':''}! +${totalPts}⭐ earned`);
     } else if (p.id === 'xp_potion') {
       const best = (dogs || []).reduce((b, d) => { const s = getDogState(d.id); return (!b || (s.level||1) > (b.lvl||1)) ? {id:d.id, name:d.name, lvl:(s.level||1)} : b; }, null);
       if (best) { const s = getDogState(best.id); s.xp = (s.xp||0) + 100; saveDogState(best.id, s); showPopup(`${p.label} gave +100 XP to ${best.name}!`); }
@@ -5309,7 +5284,7 @@ function CatchScreen({ player, dogs, onCatch }) {
     stopAll(); setTimeLeft(null);
     setCatching(true);
     setDogScale(1.4); setTimeout(() => setDogScale(0.8), 150); setTimeout(() => setDogScale(1.2), 300);
-    playBark(breed.name);
+    playMeow(breed.name);
     haptic(breed.rarity === 'Legendary' || breed.rarity === 'Epic' ? 'heavy' : 'medium');
     const gender = Math.random() < 0.5 ? 'Male' : 'Female';
     setCaughtGender(gender);
@@ -6504,7 +6479,7 @@ function MartScreen({ dogs, totalPoints }) {
                     if (lastFed === 0) return lastPoo === 0;
                     return hoursSinceFed > 4 && lastPoo < lastFed;
                   });
-                  if (targets.length === 0) { showMsg('No poos to collect right now!'); addDD(p.cost); logPurchase(p.label, p.cost, 'returned: nothing to collect'); return; }
+                  if (targets.length === 0) { showMsg('No litter to clean right now!'); addDD(p.cost); logPurchase(p.label, p.cost, 'returned: nothing to collect'); return; }
                   let totalPts = 0;
                   const failedLocal = runBulk(() => targets.forEach(dog => {
                     const rarity = rollPooRarity();
@@ -6515,7 +6490,7 @@ function MartScreen({ dogs, totalPoints }) {
                   if (failedLocal > 0) { addDD(p.cost); logPurchase(p.label, p.cost, 'returned: phone storage full'); showPopup(`⚠️ ${p.label} could not update ${failedLocal} cats because the game's saved-data space on this phone is full. Your ${p.cost} Kitty Coins were returned.`); return; }
                   logPurchase(p.label, p.cost, `applied to ${targets.length} cats`);
                   addBonusPts(totalPts);
-                  showPopup(`${p.label} scooped ${targets.length} poo${targets.length>1?'s':''}! +${totalPts}⭐ earned`);
+                  showPopup(`${p.label} cleaned ${targets.length} litter tray${targets.length>1?'s':''}! +${totalPts}⭐ earned`);
                 } else if (p.id === 'xp_potion') {
                   const best = dogs.reduce((b, d) => { const s = getDogState(d.id); return (!b || (s.level||1) > (b.lvl||1)) ? {id:d.id, name:d.name, lvl:(s.level||1)} : b; }, null);
                   if (best) { const s = getDogState(best.id); s.xp = (s.xp||0)+100; saveDogState(best.id, s); showPopup(`${p.label} gave +100 XP to ${best.name}!`); }
@@ -7247,11 +7222,11 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
         const rows = [
           { label: '🐱 Cat Collection',  desc: `${dogs.length} cats across rarities`,         pts: dogPts },
           { label: '🏁 Race Winnings',   desc: `Earned from multiplayer & AI races`,           pts: racePts },
-          { label: '💩 Poo Pickups',     desc: `${pooCount} poos scooped`,                     pts: null },
+          { label: '🧹 Litter Cleanups',     desc: `${pooCount} trays cleaned`,                     pts: null },
           { label: '🧶 Cat Catches',     desc: `${catchCount} cats caught`,                    pts: null },
           { label: '🎁 Daily Gift',      desc: 'Daily gift box for Kitty Coins 🐱',          pts: null },
           // Race winnings are paid in as bonus points, so take them out here to keep the rows adding up to the Grand Total.
-          { label: '⭐ Bonus Pts',       desc: 'Spins, poos, catches, daily login & more',     pts: Math.max(0, bonusPtsVal - racePts) },
+          { label: '⭐ Bonus Pts',       desc: 'Spins, litter, catches, daily login & more',     pts: Math.max(0, bonusPtsVal - racePts) },
         ];
         return (
           <div style={{ background: '#fdf6ff', border: '2px solid #e0d0ff', borderRadius: 16, padding: 16, marginBottom: 16 }}>
@@ -7419,7 +7394,7 @@ export default function App() {
   const [onlineCount, setOnlineCount] = useState(0);
   const [onlineIds, setOnlineIds] = useState(new Set());
   const [friendActivityToast, setFriendActivityToast] = useState(null);
-  // Shows whether a big save (Pooper Scooper, treat bags) actually reached the cloud.
+  // Shows whether a big save (Litter Scooper, treat bags) actually reached the cloud.
   const [saveStatus, setSaveStatus] = useState(null);
   useEffect(() => {
     let timer = null;
