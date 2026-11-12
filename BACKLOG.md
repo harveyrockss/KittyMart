@@ -27,8 +27,10 @@
 
 - Run 13: cat-only Yarn Chase mini-game on Home (15s tap-the-yarn, 3 plays/day, up to +15 pts, meow on hit). v1.14 (APP_VERSION 151). Signup/Home/Catch/Mart/Race checked with playwright, no console errors.
 
+- Run 14: cat-only treat-lure catch twist: 🐟 'Throw a Treat' button on Catch (1 per cat); the cat stops moving and sniffs for 4s (purr), then runs again; resets on each new cat. v1.15 (APP_VERSION 152). Signup/tabs/catch/treat/mart checked with playwright, no console errors.
+
 ## Next (priority order)
-1. Cat-only features for App Store differentiation (one per run): cat-bed house layout (nap button done run 10), (yarn-chase done run 13), treat-lure catch twist, cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
+1. Cat-only features for App Store differentiation (one per run): cat-bed house layout (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
 3. Accounts are per-device offline: a real fix (shared accounts across phones) needs a new KittyMart Supabase project from Harvey. Consider an export/import 'transfer my cats' code.
 

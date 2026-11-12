@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 151; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 152; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5243,6 +5243,8 @@ function CatchScreen({ player, dogs, onCatch }) {
   const comboTimerRef = useRef(null);
 
   const [photoUrl, setPhotoUrl] = useState(null);
+  const [treat, setTreat] = useState(0); // 0 = unused, 1 = cat is sniffing the treat, 2 = used
+  const treatTimerRef = useRef(null);
 
   const stopAll = useCallback(() => {
     clearInterval(intervalRef.current);
@@ -5251,10 +5253,18 @@ function CatchScreen({ player, dogs, onCatch }) {
     clearTimeout(disappearRef.current);
   }, []);
 
+  const throwTreat = () => {
+    if (treat !== 0 || caught || !breed) return;
+    setTreat(1);
+    try { playPurr(); } catch {}
+    clearTimeout(treatTimerRef.current);
+    treatTimerRef.current = setTimeout(() => setTreat(2), 4000);
+  };
+
   const spawnDog = useCallback(async (currentZone) => {
     stopAll();
     catchingRef.current = false;
-    setCaught(false); setCatching(false); setDogScale(1); setPhotoUrl(null); setTimeLeft(null);
+    setCaught(false); setCatching(false); setDogScale(1); setPhotoUrl(null); setTimeLeft(null); clearTimeout(treatTimerRef.current); setTreat(0);
     const b = currentZone ? getBreedForZone(currentZone) : getRandomBreed();
     setBreed(b);
     const startPos = { x: 15 + Math.random() * 65, y: 15 + Math.random() * 60 };
@@ -5303,7 +5313,10 @@ function CatchScreen({ player, dogs, onCatch }) {
     if (!breed || caught) return;
     const cfg = CATCH_CFG[breed.rarity] || CATCH_CFG.Common;
 
-    if (cfg.jitter) {
+    if (treat === 1) {
+      // Treat lure: the cat stops to sniff the fish treat, easy to tap
+      wobbleRef.current = setInterval(() => setWobble(w => !w), 350);
+    } else if (cfg.jitter) {
       // Simple random jump movement for Common/Uncommon
       intervalRef.current = setInterval(() => {
         const p = { x: 10 + Math.random() * 75, y: 10 + Math.random() * 72 };
@@ -5345,7 +5358,7 @@ function CatchScreen({ player, dogs, onCatch }) {
     }
 
     return stopAll;
-  }, [breed, caught, stopAll]);
+  }, [breed, caught, stopAll, treat === 1]);
 
   const requestGPS = () => {
     setLocating(true);
@@ -5362,7 +5375,7 @@ function CatchScreen({ player, dogs, onCatch }) {
   const handleCatch = async () => {
     if (caught || catchingRef.current || !breed) return;
     catchingRef.current = true;
-    stopAll(); setTimeLeft(null);
+    stopAll(); clearTimeout(treatTimerRef.current); setTimeLeft(null);
     setCatching(true);
     setDogScale(1.4); setTimeout(() => setDogScale(0.8), 150); setTimeout(() => setDogScale(1.2), 300);
     playMeow(breed.name);
@@ -5557,6 +5570,11 @@ function CatchScreen({ player, dogs, onCatch }) {
           </div>
         )}
       </div>
+      {!caught && breed && (
+        <button onClick={throwTreat} disabled={treat !== 0} style={{ margin: '0 0 8px', padding: '8px 18px', background: treat === 0 ? 'linear-gradient(135deg,#f4a261,#e76f51)' : '#ddd', color: treat === 0 ? 'white' : '#888', border: 'none', borderRadius: 20, fontSize: 13, fontWeight: 'bold', cursor: treat === 0 ? 'pointer' : 'default' }}>
+          {treat === 1 ? '😻 Sniffing the treat… tap now!' : treat === 2 ? '🐟 Treat used' : '🐟 Throw a Treat (1 per cat)'}
+        </button>
+      )}
       <p style={{ color: '#666', fontSize: 13, margin: 0 }}>{caught ? 'Added to your collection!' : 'Tap the cat to catch it!'}</p>
       {showMysteryBox && <MysteryBoxModal onClose={() => setShowMysteryBox(false)} player={player} onCatch={onCatch} />}
       {showConfetti && <ConfettiEffect onDone={() => setShowConfetti(false)} />}
