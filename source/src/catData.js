@@ -201,12 +201,74 @@ export const CAT_BREEDS = [
   B('Fawn Cat', 'Common', ['A warm, sandy fawn-coloured coat.', 'Soft pinkish-beige nose and paws.', 'Gentle and relaxed.'], { c: FAWN, p: 'solid', e: 'green' }),
 ];
 
+
+// Real photos come from The Cat API (thecatapi.com) by breed id. Breeds not listed here
+// (coat patterns like Calico / Tuxedo / Ginger Tabby, plus Lykoi) have no matching API
+// breed, so they keep their cartoon portrait.
+export const CAT_API_IDS = {
+  "Maine Coon": "mcoo",
+  "Bengal": "beng",
+  "Savannah": "sava",
+  "Sphynx": "sphy",
+  "Norwegian Forest Cat": "norw",
+  "Siberian": "sibe",
+  "Turkish Van": "tvan",
+  "Egyptian Mau": "emau",
+  "Ragdoll": "ragd",
+  "Persian": "pers",
+  "British Shorthair": "bsho",
+  "Russian Blue": "rblu",
+  "Siamese": "siam",
+  "Abyssinian": "abys",
+  "Birman": "birm",
+  "Scottish Fold": "sfol",
+  "Oriental Shorthair": "orie",
+  "Burmese": "bure",
+  "Turkish Angora": "tang",
+  "Devon Rex": "drex",
+  "Cornish Rex": "crex",
+  "American Curl": "acur",
+  "Himalayan": "hima",
+  "Exotic Shorthair": "esho",
+  "Tonkinese": "tonk",
+  "Balinese": "bali",
+  "Ocicat": "ocic",
+  "Manx": "manx",
+  "Japanese Bobtail": "jbob",
+  "Chartreux": "char",
+  "Somali": "soma",
+  "Singapura": "sing",
+  "Korat": "kora",
+  "Munchkin": "munc",
+  "LaPerm": "lape",
+  "Selkirk Rex": "srex",
+  "Australian Mist": "amis",
+  "Snowshoe": "snow",
+  "Havana Brown": "hbro",
+  "Nebelung": "nebe",
+  "American Wirehair": "awir",
+  "Burmilla": "buri",
+  "Pixie-bob": "pixi",
+  "Toyger": "toyg",
+  "Bombay": "bomb",
+  "Cymric": "cymr",
+  "Seal Point": "siam",
+  "Domestic Shorthair": "asho",
+  "Domestic Longhair": "bslo",
+  "Grey Tabby": "asho",
+  "Brown Tabby": "asho",
+  "Silver Tabby": "asho",
+  "Black Cat": "bomb",
+  "White Cat": "tang",
+};
+
 const BREEDS_BY_NAME = {};
 CAT_BREEDS.forEach(b => {
   BREEDS_BY_NAME[b.name] = b;
   // `api` doubles as the default photo for a freshly caught cat: a generated cartoon portrait.
   Object.defineProperty(b, 'api', { enumerable: true, get() { return catArtUrl(b.name); } });
   b.fallback = null;
+  b.catApiId = CAT_API_IDS[b.name] || null;
 });
 
 // Catch-zone pools (names must match CAT_BREEDS above)
@@ -239,3 +301,5 @@ export const CAT_NAMES_FEMALE = [
   'Maple', 'Stella', 'Hazel', 'Peaches', 'Duchess', 'Fluffy', 'Callie', 'Honey', 'Mabel', 'Nova',
   'Juno', 'Ivy', 'Pixie', 'Kiki', 'Smudge', 'Marmalade', 'Biscotti', 'Dot', 'Penny', 'Tabitha',
 ];
+
+export const BREEDS_LOOKUP = BREEDS_BY_NAME;

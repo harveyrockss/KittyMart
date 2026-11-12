@@ -4,6 +4,8 @@ import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { sb, supabaseAuth } from './backend';
 import { CAT_BREEDS, ZONE_BREEDS, CAT_TRAITS, CAT_NAMES_MALE, CAT_NAMES_FEMALE, catArtUrl } from './catData';
+import { fetchBreedPhoto, catPhotoFor, warmBreedPhotos, installPhotoFallback } from './photos';
+installPhotoFallback();
 
 // ─── Local Reminder Notifications (native app only — no-op on web) ────────────
 // Daily nudges to bring lapsed players back: daily gift + mystery dog of the day.
@@ -512,22 +514,21 @@ const CUSTOM_BREED_ART = {};
 const PROTECTED_DOG_IDS = new Set();
 function dogImageSrc(dog) {
   if (!dog) return null;
-  if (dog.photo_url && dog.photo_url.startsWith('data:image/')) return dog.photo_url;
   if (dog.id) {
     const custom = localStorage.getItem(`km_photo_${dog.id}`);
     if (custom) return custom;
   }
-  const art = dog.breed ? catArtUrl(dog.breed) : null;
-  return art || null;
+  return catPhotoFor(dog) || (dog.breed ? catArtUrl(dog.breed) : null);
 }
 async function resolveDogPhoto(dog) {
   if (!dog) return null;
-  if (dog.photo_url && dog.photo_url.startsWith('data:image/')) return dog.photo_url;
-  return (dog.breed && catArtUrl(dog.breed)) || null;
+  const own = catPhotoFor(dog);
+  if (own) return own;
+  const b = dog.breed ? CAT_BREEDS.find(x => x.name === dog.breed) : null;
+  return (b && await fetchBreedPhoto(b)) || (dog.breed && catArtUrl(dog.breed)) || null;
 }
 const DOG_BREEDS = CAT_BREEDS;
 window._DOG_BREEDS = DOG_BREEDS;
-async function fetchBreedPhoto(api) { return api || null; }
 
 const ZONES = {
   home:        { label: '🏠 Home',        desc: 'Backyard & neighbourhood cats',   color: '#a8dadc' },
@@ -1560,7 +1561,7 @@ function PrivacyPolicyModal({ onClose }) {
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', margin:'0 0 16px' }}><h2 style={{ margin:0, color:'#764ba2' }}>🔒 Privacy Policy</h2><button onClick={onClose} aria-label="Close" style={{ background:'none', border:'none', fontSize:24, cursor:'pointer', color:'#888' }}>✕</button></div>
         <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}><strong>Last updated: October 2026</strong></p>
         <h3 style={{ fontSize:14, color:'#333' }}>What we collect</h3>
-        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>We collect your username, your email address (optional, used for password reset), your password (hashed — we never store your plain password), the cats you catch, and any cat photos you choose to upload. If you allow location access, your approximate coordinates are sent to OpenStreetMap's Nominatim service only to work out your catch zone; we do not store your location on our servers.</p>
+        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>We collect your username, your email address (optional, used for password reset), your password (hashed — we never store your plain password), the cats you catch, and any cat photos you choose to upload. If you allow location access, your approximate coordinates are sent to OpenStreetMap's Nominatim service only to work out your catch zone; we do not store your location on our servers. Real cat photos are loaded from The Cat API (thecatapi.com), which receives your device's IP address like any website you visit.</p>
         <h3 style={{ fontSize:14, color:'#333' }}>How we use it</h3>
         <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>Your data is used solely to power KittyMart — displaying your cat collection, race results, and leaderboard rankings.</p>
         <h3 style={{ fontSize:14, color:'#333' }}>Who we share it with</h3>
@@ -1602,7 +1603,7 @@ function MysteryBoxModal({ onClose, player, onCatch }) {
     // Pick the breed NOW so we can show it before claiming
     const validBreeds = DOG_BREEDS.filter(b => b.rarity === rarity);
     const b = validBreeds[Math.floor(Math.random() * validBreeds.length)];
-    const photoUrl = b ? await fetchBreedPhoto(b.api, b.fallback).catch(() => null) : null;
+    const photoUrl = b ? await fetchBreedPhoto(b).catch(() => null) : null;
     setPrize({ type:'dog', rarity, breed: b, photoUrl, label: rarity === 'Legendary' ? 'LEGENDARY Cat!!' : `${rarity} Cat!` });
     setPhase('revealed');
   };
@@ -2689,7 +2690,7 @@ function KittyDexScreen({ dogs, onBack }) {
   const RARITIES = ['Legendary', 'Epic', 'Rare', 'Uncommon', 'Common'];
   // Map breed name → best photo from owned dogs
   const ownedMap = {};
-  dogs.forEach(d => { if (!ownedMap[d.breed]) ownedMap[d.breed] = d.photo_url; });
+  dogs.forEach(d => { if (!ownedMap[d.breed]) ownedMap[d.breed] = catPhotoFor(d) || d.photo_url; });
   const total  = DOG_BREEDS.length;
   const caught = Object.keys(ownedMap).length;
   const pct    = Math.round((caught / total) * 100);
@@ -3047,7 +3048,7 @@ function HomeScreen({ player, dogs, stats, onNavigate }) {
           <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
             {recent.map((r, i) => (
               <div key={i} style={{ textAlign: 'center', minWidth: 60, flex: '0 0 auto' }}>
-                <img src={r.photoUrl} alt={r.breed} style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${RARITY_COLORS[r.rarity] || '#aaa'}` }} onError={e => e.target.src = 'https://placedog.net/52/52'} />
+                <img src={r.photoUrl} alt={r.breed} style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${RARITY_COLORS[r.rarity] || '#aaa'}` }} onError={e => { e.target.onerror = null; e.target.src = catArtUrl(r.breed) || catArtUrl('Domestic Shorthair'); }} />
                 <div style={{ fontSize: 10, color: '#666', marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 60 }}>{r.breed.split(' ')[0]}</div>
               </div>
             ))}
@@ -5214,12 +5215,12 @@ function CatchScreen({ player, dogs, onCatch }) {
     const angle = Math.random() * Math.PI * 2;
     velRef.current = { vx: Math.cos(angle) * cfg.vx * speedMult, vy: Math.sin(angle) * cfg.vy * speedMult };
     // Fetch photo in background — dog starts moving immediately, photo streams in
-    fetchBreedPhoto(b.api, b.fallback).then(url => { if (url) setPhotoUrl(url); });
+    fetchBreedPhoto(b).then(url => { if (url) setPhotoUrl(url); });
     // Pre-fetch next 2 dogs' photos while this dog is being chased, so next spawn is instant
     setTimeout(() => {
       for (let i = 0; i < 2; i++) {
         const next = getRandomBreed();
-        fetchBreedPhoto(next.api, next.fallback).catch(() => {});
+        fetchBreedPhoto(next).catch(() => {});
       }
     }, 800);
   }, [stopAll]);
@@ -5233,9 +5234,9 @@ function CatchScreen({ player, dogs, onCatch }) {
       const b = getRandomBreed();
       if (!seen.has(b.api)) { seen.add(b.api); breeds.push(b); }
     }
-    // Stagger fetches to avoid hammering dog.ceo all at once
+    // Stagger fetches to avoid hammering thecatapi.com all at once
     breeds.forEach((b, i) => {
-      setTimeout(() => fetchBreedPhoto(b.api, b.fallback).catch(() => {}), i * 300);
+      setTimeout(() => fetchBreedPhoto(b).catch(() => {}), i * 300);
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -5381,7 +5382,7 @@ function CatchScreen({ player, dogs, onCatch }) {
     });
     // Pre-fetch the next dog's photo during the 2.2s pause so it appears instantly
     const nextBreed = zone ? getBreedForZone(zone) : getRandomBreed();
-    fetchBreedPhoto(nextBreed.api, nextBreed.fallback).catch(() => {});
+    fetchBreedPhoto(nextBreed).catch(() => {});
     setTimeout(() => spawnDog(zone), 2200); // brief pause to see the catch screen, then next dog
 
     // Save to the server in the background — the catch screen already shown above
@@ -5527,10 +5528,10 @@ function DogDiaryModal({ dog, onClose, showToast }) {
   const [nick, setNick] = React.useState(getDogNick(dog.id) || '');
   const [fav, setFav] = React.useState(localStorage.getItem(favKey) === '1');
   // Custom photo = localStorage cache OR a data URL stored in dog.photo_url (cross-device)
-  const isCustomUrl = (url) => url && (url.startsWith('data:') || url.includes('supabase') === false && !url.includes('dog.ceo') && !url.includes('placedog'));
+  const isCustomUrl = (url) => url && url.startsWith('data:image/') && !url.startsWith('data:image/svg+xml');
   const [customPhoto, setCustomPhoto] = React.useState(() => {
     // Photo saved on the dog (cloud) wins; the local copy is only a fallback
-    if (dog.photo_url && dog.photo_url.startsWith('data:')) return dog.photo_url;
+    if (isCustomUrl(dog.photo_url)) return dog.photo_url;
     return localStorage.getItem(photoKey) || null;
   });
   const [resolvedPhoto, setResolvedPhoto] = React.useState(() => dogImageSrc(dog));
@@ -5559,7 +5560,7 @@ function DogDiaryModal({ dog, onClose, showToast }) {
         <div style={{marginBottom:12}}>
           <div style={{position:'relative'}}>
             {(customPhoto || resolvedPhoto) ? (
-              <img src={customPhoto || resolvedPhoto} alt={dog.breed} style={{width:'100%',borderRadius:12,display:'block',height:220,objectFit:'contain',background:'#0f0f23'}} onError={e=>{e.target.onerror=null;e.target.src='https://placedog.net/400/300';}} />
+              <img src={customPhoto || resolvedPhoto} alt={dog.breed} style={{width:'100%',borderRadius:12,display:'block',height:220,objectFit:'contain',background:'#0f0f23'}} onError={e=>{e.target.onerror=null;e.target.src=catArtUrl(dog.breed)||catArtUrl('Domestic Shorthair');}} />
             ) : (
               <div style={{width:'100%',height:160,borderRadius:12,background:'#2a2a4e',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:8}}>
                 <div style={{fontSize:48}}>🐱</div>
@@ -6218,8 +6219,8 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
     setBreeding(true);
     try {
       // Fetch a real photo for the offspring
-      const photoUrl = await fetchBreedPhoto(breedInfo.api, breedInfo.fallback);
-      const created = await sb('cats','POST',{owner_id:player.id,name,breed:breedInfo.name,rarity:breedInfo.rarity||chosenRarity,photo_url:photoUrl||`https://dog.ceo/api/breed/${breedInfo.fallback}/images/random`,caught_at:new Date().toISOString()});
+      const photoUrl = await fetchBreedPhoto(breedInfo);
+      const created = await sb('cats','POST',{owner_id:player.id,name,breed:breedInfo.name,rarity:breedInfo.rarity||chosenRarity,photo_url:photoUrl||breedInfo.api,caught_at:new Date().toISOString()});
       if (created && created[0]) { setDogGender(created[0].id, gender); setDogs(prev=>[...prev,created[0]]); }
       try { localStorage.setItem('km_bred','true'); } catch {}
       setBreedSelect([]);
@@ -6376,7 +6377,7 @@ function SearchScreen() {
   const selectBreed = async (breed) => {
     setSelected(breed);
     setSearchPhoto(null);
-    const url = await fetchBreedPhoto(breed.api, breed.fallback);
+    const url = await fetchBreedPhoto(breed);
     setSearchPhoto(url);
   };
 
@@ -7384,6 +7385,19 @@ export default function App() {
     window.addEventListener('km_photo_cleared', onCleared);
     return () => window.removeEventListener('km_photo_cleared', onCleared);
   }, []);
+  // Real cat photos arrive in the background: re-render when new ones are cached, and warm
+  // the photo lists for breeds the player owns so older cats can show real photos too.
+  const [, setPhotoTick] = useState(0);
+  useEffect(() => {
+    let t = null;
+    const onPhotos = () => { clearTimeout(t); t = setTimeout(() => setPhotoTick(n => n + 1), 250); };
+    window.addEventListener('km_photos', onPhotos);
+    return () => { window.removeEventListener('km_photos', onPhotos); clearTimeout(t); };
+  }, []);
+  useEffect(() => {
+    if (!dogs.length) return;
+    warmBreedPhotos([...new Set(dogs.map(d => d.breed))]);
+  }, [dogs.length]); // eslint-disable-line react-hooks/exhaustive-deps
   // One-time correction: Tessa (Indiana's Cavoodle) was a girl; an update reset her gender to Male.
   useEffect(() => {
     const TESSA = '9344cd4b-5f62-48f2-8b26-4ad47d47d330';
