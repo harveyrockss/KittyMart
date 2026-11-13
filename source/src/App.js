@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 158; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 159; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5951,14 +5951,23 @@ const COSY_BEDS = [
   { id:'igloo',  emoji:'🛖', name:'Snug Igloo' },
   { id:'cushion',emoji:'🛋️', name:'Soft Cushion' },
 ];
+const COSY_DECOR = [
+  { id:'plant',  emoji:'🪴', name:'Plant' },
+  { id:'yarn',   emoji:'🧶', name:'Yarn Ball' },
+  { id:'window', emoji:'🪟', name:'Sunny Window' },
+  { id:'frame',  emoji:'🖼️', name:'Picture' },
+  { id:'lamp',   emoji:'🪔', name:'Lamp' },
+];
 const COSY_WALLS = ['#ffe3ec','#e3f2ff','#e8f7e4','#fff3cf','#efe3ff'];
-function getCosy() { try { return { bed:'basket', wall:COSY_WALLS[0], ...JSON.parse(localStorage.getItem('km_cosy') || '{}') }; } catch { return { bed:'basket', wall:COSY_WALLS[0] }; } }
+function getCosy() { try { return { bed:'basket', wall:COSY_WALLS[0], decor:[], ...JSON.parse(localStorage.getItem('km_cosy') || '{}') }; } catch { return { bed:'basket', wall:COSY_WALLS[0], decor:[] }; } }
 function CosyCornerScreen({ dogs, onBack }) {
   const [cfg, setCfg] = useState(getCosy);
   const upd = (patch) => { const n = { ...cfg, ...patch }; setCfg(n); try { localStorage.setItem('km_cosy', JSON.stringify(n)); } catch {} };
   let naps = {}; try { naps = JSON.parse(localStorage.getItem('km_nap_times') || '{}'); } catch {}
   const sleepers = dogs.filter(d => Date.now() - (naps[d.id] || 0) < 6 * 3600000).slice(0, 6);
   const bed = COSY_BEDS.find(b => b.id === cfg.bed) || COSY_BEDS[0];
+  const decor = Array.isArray(cfg.decor) ? cfg.decor : [];
+  const toggleDecor = (id) => upd({ decor: decor.includes(id) ? decor.filter(x => x !== id) : [...decor, id] });
   return (
     <div style={{padding:16}}>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:14}}>
@@ -5966,6 +5975,7 @@ function CosyCornerScreen({ dogs, onBack }) {
         <h2 style={{margin:0,color:'#333',fontSize:18}}>🛏️ Cosy Corner</h2>
       </div>
       <div style={{background:cfg.wall,borderRadius:18,padding:14,border:'2px solid #e0d0ff',minHeight:170}}>
+        {decor.length > 0 && <div data-testid="cosy-decor" style={{display:'flex',gap:14,justifyContent:'center',fontSize:30,marginBottom:6}}>{COSY_DECOR.filter(x => decor.includes(x.id)).map(x => <span key={x.id}>{x.emoji}</span>)}</div>}
         <div style={{fontSize:12,color:'#888',marginBottom:8}}>{sleepers.length ? 'Sleepy cats are curled up in their beds 💤' : 'No cats napping yet — tap 😴 on a cat in the Cats tab to tuck it in!'}</div>
         <div style={{display:'flex',flexWrap:'wrap',gap:12,justifyContent:'center'}}>
           {sleepers.map(d => (
@@ -5984,6 +5994,12 @@ function CosyCornerScreen({ dogs, onBack }) {
       <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:6}}>
         {COSY_BEDS.map(b => (
           <button key={b.id} onClick={() => upd({ bed:b.id })} style={{padding:'8px 10px',borderRadius:12,border:cfg.bed===b.id?'3px solid #764ba2':'2px solid #ddd',background:'white',cursor:'pointer',fontSize:12,fontWeight:'bold'}}>{b.emoji} {b.name}</button>
+        ))}
+      </div>
+      <div style={{marginTop:14,fontWeight:'bold',color:'#764ba2',fontSize:13}}>Decorate (tap to add or remove)</div>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:6}}>
+        {COSY_DECOR.map(x => (
+          <button key={x.id} onClick={() => toggleDecor(x.id)} style={{padding:'8px 10px',borderRadius:12,border:decor.includes(x.id)?'3px solid #764ba2':'2px solid #ddd',background:'white',cursor:'pointer',fontSize:12,fontWeight:'bold'}}>{x.emoji} {x.name}</button>
         ))}
       </div>
       <div style={{marginTop:14,fontWeight:'bold',color:'#764ba2',fontSize:13}}>Wall colour</div>
