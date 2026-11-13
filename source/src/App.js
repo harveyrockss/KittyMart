@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 162; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 163; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2449,8 +2449,8 @@ const ACHIEVEMENTS = [
   { id: 'diversity',     label: '🌈 Collector',      desc: 'Own 10 different breeds',           pts: 60,  check: (dogs) => new Set(dogs.map(d=>d.breed)).size >= 10 },
   { id: 'half_dex',      label: '📖 Half-Dex',       desc: 'Discover 50% of all breeds',        pts: 120, check: (dogs) => new Set(dogs.map(d=>d.breed)).size >= Math.floor(DOG_BREEDS.length/2) },
   { id: 'full_dex',      label: '🎖️ Full Dex',      desc: 'Discover every breed',              pts: 500, check: (dogs) => new Set(dogs.map(d=>d.breed)).size >= DOG_BREEDS.length },
-  { id: 'streak_3',      label: '🔥 On Fire',        desc: '3-day login streak',                pts: 30,  check: () => parseInt(localStorage.getItem('km_streak')||'0',10) >= 3 },
-  { id: 'streak_7',      label: '🔥🔥 Week Warrior', desc: '7-day login streak',                pts: 75,  check: () => parseInt(localStorage.getItem('km_streak')||'0',10) >= 7 },
+  { id: 'streak_3',      label: '😺 Purr Streak',    desc: '3-day login streak',                pts: 30,  check: () => parseInt(localStorage.getItem('km_streak')||'0',10) >= 3 },
+  { id: 'streak_7',      label: '😻 Seven Lives',   desc: '7-day login streak',                pts: 75,  check: () => parseInt(localStorage.getItem('km_streak')||'0',10) >= 7 },
   { id: 'streak_30',     label: '🔥🔥🔥 Monthly',   desc: '30-day login streak',               pts: 300, check: () => parseInt(localStorage.getItem('km_streak')||'0',10) >= 30 },
   { id: 'nap_5',         label: '🛏️ Cosy Napper',    desc: 'Tuck cats in for 5 naps (😴 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_nap_count')||'0',10) >= 5 },
   { id: 'purr_10',       label: '😽 Purr Maker',     desc: 'Feed your cats 10 times',           pts: 20,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 10 },
