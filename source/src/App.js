@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 157; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 158; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3024,6 +3024,7 @@ function HomeScreen({ player, dogs, stats, onNavigate }) {
         <button onClick={() => onNavigate('race')} style={{ flex: 1, minWidth: 70, padding: '14px 8px', background: 'linear-gradient(135deg, #f4a261, #e76f51)', color: 'white', border: 'none', borderRadius: 14, fontSize: 13, fontWeight: 'bold', cursor: 'pointer' }}>🏁 Race!</button>
 
         <button onClick={() => onNavigate('vet')} style={{ flex: 1, minWidth: 70, padding: '14px 8px', background: 'linear-gradient(135deg, #48cae4, #0096c7)', color: 'white', border: 'none', borderRadius: 14, fontSize: 13, fontWeight: 'bold', cursor: 'pointer' }}>🏥 Vet</button>
+        <button onClick={() => onNavigate('cosy')} style={{ flex: 1, minWidth: 70, padding: '14px 8px', background: 'linear-gradient(135deg, #ffb6c1, #e07a9a)', color: 'white', border: 'none', borderRadius: 14, fontSize: 13, fontWeight: 'bold', cursor: 'pointer' }}>🛏️ Cosy</button>
       </div>
       {/* Today's Featured Dog */}
       {(() => {
@@ -5943,6 +5944,58 @@ async function importKittyBackup(file) {
   Object.keys(j.data).forEach(k => { if (k.startsWith('km_') && typeof j.data[k] === 'string') { try { localStorage.setItem(k, j.data[k]); } catch {} } });
 }
 
+// ─── Cosy Corner (cat-only): pick a bed + wall colour; napping cats curl up in it ───
+const COSY_BEDS = [
+  { id:'basket', emoji:'🧺', name:'Wicker Basket' },
+  { id:'box',    emoji:'📦', name:'Cardboard Box' },
+  { id:'igloo',  emoji:'🛖', name:'Snug Igloo' },
+  { id:'cushion',emoji:'🛋️', name:'Soft Cushion' },
+];
+const COSY_WALLS = ['#ffe3ec','#e3f2ff','#e8f7e4','#fff3cf','#efe3ff'];
+function getCosy() { try { return { bed:'basket', wall:COSY_WALLS[0], ...JSON.parse(localStorage.getItem('km_cosy') || '{}') }; } catch { return { bed:'basket', wall:COSY_WALLS[0] }; } }
+function CosyCornerScreen({ dogs, onBack }) {
+  const [cfg, setCfg] = useState(getCosy);
+  const upd = (patch) => { const n = { ...cfg, ...patch }; setCfg(n); try { localStorage.setItem('km_cosy', JSON.stringify(n)); } catch {} };
+  let naps = {}; try { naps = JSON.parse(localStorage.getItem('km_nap_times') || '{}'); } catch {}
+  const sleepers = dogs.filter(d => Date.now() - (naps[d.id] || 0) < 6 * 3600000).slice(0, 6);
+  const bed = COSY_BEDS.find(b => b.id === cfg.bed) || COSY_BEDS[0];
+  return (
+    <div style={{padding:16}}>
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:14}}>
+        <button onClick={onBack} style={{padding:'8px 14px',background:'#f0f0f0',border:'none',borderRadius:12,fontWeight:'bold',cursor:'pointer',fontSize:13}}>← Back</button>
+        <h2 style={{margin:0,color:'#333',fontSize:18}}>🛏️ Cosy Corner</h2>
+      </div>
+      <div style={{background:cfg.wall,borderRadius:18,padding:14,border:'2px solid #e0d0ff',minHeight:170}}>
+        <div style={{fontSize:12,color:'#888',marginBottom:8}}>{sleepers.length ? 'Sleepy cats are curled up in their beds 💤' : 'No cats napping yet — tap 😴 on a cat in the Cats tab to tuck it in!'}</div>
+        <div style={{display:'flex',flexWrap:'wrap',gap:12,justifyContent:'center'}}>
+          {sleepers.map(d => (
+            <div key={d.id} style={{textAlign:'center',width:80}}>
+              <div style={{position:'relative',height:70}}>
+                <div style={{fontSize:56,lineHeight:'70px'}}>{bed.emoji}</div>
+                {(dogImageSrc(d) || d.photo_url) && <img src={dogImageSrc(d) || d.photo_url} alt={d.name} style={{position:'absolute',left:'50%',top:8,transform:'translateX(-50%)',width:38,height:38,borderRadius:'50%',objectFit:'cover',border:`2px solid ${RARITY_COLORS[d.rarity]}`}} onError={e=>e.target.style.display='none'} />}
+                <span style={{position:'absolute',right:4,top:0,fontSize:16}}>💤</span>
+              </div>
+              <div style={{fontSize:11,fontWeight:'bold',color:'#555',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.name}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{marginTop:14,fontWeight:'bold',color:'#764ba2',fontSize:13}}>Choose a bed</div>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:6}}>
+        {COSY_BEDS.map(b => (
+          <button key={b.id} onClick={() => upd({ bed:b.id })} style={{padding:'8px 10px',borderRadius:12,border:cfg.bed===b.id?'3px solid #764ba2':'2px solid #ddd',background:'white',cursor:'pointer',fontSize:12,fontWeight:'bold'}}>{b.emoji} {b.name}</button>
+        ))}
+      </div>
+      <div style={{marginTop:14,fontWeight:'bold',color:'#764ba2',fontSize:13}}>Wall colour</div>
+      <div style={{display:'flex',gap:10,marginTop:6}}>
+        {COSY_WALLS.map(c => (
+          <button key={c} aria-label={'wall '+c} onClick={() => upd({ wall:c })} style={{width:38,height:38,borderRadius:'50%',background:c,border:cfg.wall===c?'3px solid #764ba2':'2px solid #ccc',cursor:'pointer'}} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Vet Screen ──────────────────────────────────────────────────────────────
 const VET_FEED_COST = 20;
 function VetScreen({ player, dogs, setDogs, onBack }) {
@@ -7972,6 +8025,7 @@ export default function App() {
           else loadDogs({ silent: true });
         }} />}
         {tab === 'collection'  && <CollectionScreen player={player} dogs={dogs} setDogs={setDogs} onNavigateTrade={() => setTab('trade')} onNavigateSearch={() => setTab('search')} playerScore={player.score} setPlayerScore={s => setPlayer(p=>({...p,score:s}))} dogsLoadError={dogsLoadError} dogsLoaded={dogsLoaded} />}
+        {tab === 'cosy'        && <CosyCornerScreen dogs={dogs} onBack={() => setTab('home')} />}
         {tab === 'vet'         && <VetScreen player={player} dogs={dogs} setDogs={setDogs} onBack={() => setTab('home')} />}
         {tab === 'race'        && <PetRaceScreen player={player} dogs={dogs} setPlayer={setPlayer} onlineCount={onlineCount} />}
         {tab === 'training'    && <TrainingSchoolScreen player={player} dogs={dogs} />}

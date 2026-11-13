@@ -39,9 +39,11 @@
 
 - Run 18: Cats card now also shows worn collar/accessory dress-up emoji (not just hat). v1.20 (APP_VERSION 157). Signup/Catch/Cats/Mart/Race/Home checked with playwright, no console errors; dress-up on a real owned cat NOT verified by screenshot (test account had no cats).
 
+- Run 19: cat-only Cosy Corner screen (Home > 🛏️ Cosy): choose bed (basket/box/igloo/cushion) and wall colour; cats that napped in the last 6h curl up in the bed with 💤. Saved in km_cosy. v1.21 (APP_VERSION 158). Signup/Home/Cosy/tabs checked with playwright, no console errors. Sleeping-cat rendering NOT verified by screenshot (test account had no cats) - please check on a phone.
+
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
-1. Cat-only features for App Store differentiation (one per run): cat-bed house layout (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
+1. Cat-only features for App Store differentiation (one per run): (cat-bed Cosy Corner done run 19; furniture/decor placement still open) (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
 3. Accounts are per-device offline: a real fix needs a new KittyMart Supabase project from Harvey. (File transfer done run 17.)
 
