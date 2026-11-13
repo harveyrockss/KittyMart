@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 167; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 168; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2455,6 +2455,7 @@ const ACHIEVEMENTS = [
   { id: 'nap_5',         label: '🛏️ Cosy Napper',    desc: 'Tuck cats in for 5 naps (😴 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_nap_count')||'0',10) >= 5 },
   { id: 'yarn_50',       label: '🧶 Yarn Master',    desc: 'Catch 50 yarn balls in Yarn Chase', pts: 25,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 50 },
   { id: 'pet_20',         label: '💜 Cat Cuddler',    desc: 'Give your cats 20 pets (💜 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_pet_count')||'0',10) >= 20 },
+  { id: 'treat_10',       label: '🐟 Treat Tosser',   desc: 'Lure 10 cats with a treat on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_treat_count')||'0',10) >= 10 },
   { id: 'purr_10',       label: '😽 Purr Maker',     desc: 'Feed your cats 10 times',           pts: 20,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 10 },
   { id: 'tidy_5',        label: '🧹 Tidy Tray',      desc: 'Scoop 5 litter trays',              pts: 20,  check: () => parseInt(localStorage.getItem('km_poo_count')||'0',10) >= 5 },
   { id: 'nine_lives',    label: '🐈 Nine Lives',     desc: 'Own 9 cats of the same breed',      pts: 60,  check: (dogs) => { const c = {}; return dogs.some(d => (c[d.breed] = (c[d.breed]||0)+1) >= 9); } },
@@ -5296,6 +5297,7 @@ function CatchScreen({ player, dogs, onCatch }) {
   const throwTreat = () => {
     if (treat !== 0 || caught || !breed) return;
     setTreat(1);
+    try { localStorage.setItem('km_treat_count', (parseInt(localStorage.getItem('km_treat_count')||'0',10)+1).toString()); } catch {}
     try { playPurr(); } catch {}
     clearTimeout(treatTimerRef.current);
     treatTimerRef.current = setTimeout(() => setTreat(2), 4000);
