@@ -37,8 +37,10 @@
 
 - Run 17 (bug report from Indiana: Training School showed the cartoon instead of the real photo): Training School (both available and in-training cards), champion card and 2 other thumbnails used `photo_url` directly (cartoon offline); now use `dogImageSrc()` (real photo, cartoon fallback) and the school warms each cat's photo list first. v1.19 (APP_VERSION 156). School tab loads with no console errors; real-photo swap NOT verified by script (sandbox blocks the photo APIs and test account has no Lv5 cat), please confirm on a phone.
 
+- Run 18: Cats card now also shows worn collar/accessory dress-up emoji (not just hat). v1.20 (APP_VERSION 157). Signup/Catch/Cats/Mart/Race/Home checked with playwright, no console errors; dress-up on a real owned cat NOT verified by screenshot (test account had no cats).
+
 ## Next (priority order)
-0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live; dress-up UI should also show on the Cats card.
+0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
 1. Cat-only features for App Store differentiation (one per run): cat-bed house layout (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
 3. Accounts are per-device offline: a real fix needs a new KittyMart Supabase project from Harvey. (File transfer done run 17.)

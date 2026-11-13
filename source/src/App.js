@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 156; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 157; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6441,7 +6441,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
                 <div key={dog.id} onClick={() => setDiaryDog(dog)} style={{ position:'relative', background: isChampion ? 'linear-gradient(135deg,#fffbea,#fff8dc)' : isPending ? '#f5f5f5' : '#fff', border: isChampion ? '2px solid #ffd700' : `2px solid ${isPending ? '#ccc' : RARITY_COLORS[rarity] + '55'}`, borderRadius: 14, padding: 10, textAlign: 'center', opacity: isPending ? 0.7 : 1, cursor:'pointer', boxShadow: isChampion ? '0 0 12px rgba(255,215,0,0.5)' : 'none' }}>
                   {isChampion && <span style={{position:'absolute',top:4,left:4,fontSize:12,zIndex:3}}>👑</span>}
                   {isFav && <span style={{position:'absolute',top:6,right:6,fontSize:14}}>❤️</span>}
-                  {(() => { const cos = getDogCosmetics(dog.id); const hat = cos.hat ? COSMETICS.find(c=>c.id===cos.hat) : null; return hat ? <span style={{position:'absolute',top:-4,left:'50%',transform:'translateX(-50%)',fontSize:18,zIndex:2}}>{hat.emoji}</span> : null; })()}
+                  {(() => { const cos = getDogCosmetics(dog.id); const hat = cos.hat ? COSMETICS.find(c=>c.id===cos.hat) : null; const extra = ['collar','acc'].map(k => cos[k] ? COSMETICS.find(c=>c.id===cos[k]) : null).filter(Boolean); return <>{hat && <span style={{position:'absolute',top:-4,left:'50%',transform:'translateX(-50%)',fontSize:18,zIndex:2}}>{hat.emoji}</span>}{extra.length > 0 && <span style={{position:'absolute',top:62,left:'50%',transform:'translateX(-50%)',fontSize:14,zIndex:2,whiteSpace:'nowrap'}}>{extra.map(c=>c.emoji).join('')}</span>}</>; })()}
                   <img loading="lazy" decoding="async" src={dogImageSrc(dog) || dog.photo_url} alt={dog.name} style={{ width: 70, height: 70, objectFit: 'cover', borderRadius: '50%', border: isChampion ? '3px solid #ffd700' : `3px solid ${isPending ? '#ccc' : RARITY_COLORS[rarity]}`, filter: isPending ? 'grayscale(60%)' : isChampion ? 'drop-shadow(0 0 6px #ffd700)' : 'none' }} onError={e => e.target.style.display='none'} />
                   {nick && <div style={{ fontSize: 11, fontWeight: 'bold', color: '#764ba2', marginTop: 4 }}>{nick}</div>}
                   <div style={{ fontSize: 11, fontWeight: 'bold', color: '#333', marginTop: nick ? 1 : 6 }}>{dog.name}</div>
