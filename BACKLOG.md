@@ -35,6 +35,8 @@
 
 - Run 17: 'Transfer my cats': Settings > 📦 Save My Cats to a File / 📥 Load Cats from a File (JSON backup of all km_ data, photo caches excluded) so Indiana's account can move between phones offline. Tested save + load + reload with playwright, no console errors beyond blocked network. v1.18 (APP_VERSION 155). Loading a backup replaces local data (confirm dialog).
 
+- Run 17 (bug report from Indiana: Training School showed the cartoon instead of the real photo): Training School (both available and in-training cards), champion card and 2 other thumbnails used `photo_url` directly (cartoon offline); now use `dogImageSrc()` (real photo, cartoon fallback) and the school warms each cat's photo list first. v1.19 (APP_VERSION 156). School tab loads with no console errors; real-photo swap NOT verified by script (sandbox blocks the photo APIs and test account has no Lv5 cat), please confirm on a phone.
+
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live; dress-up UI should also show on the Cats card.
 1. Cat-only features for App Store differentiation (one per run): cat-bed house layout (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).

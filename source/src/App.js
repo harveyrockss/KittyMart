@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 155; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 156; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2849,7 +2849,7 @@ function FriendsGalleryModal({ onClose, initialQuery }) {
             <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
               {profileDogs.map((d, i) => (
                 <div key={i} style={{ textAlign:'center', background:'white', borderRadius:14, padding:10, border:`2px solid ${RARITY_COLORS[d.rarity]||'#eee'}` }}>
-                  <img src={d.photo_url} alt={d.breed} style={{ width:60, height:60, borderRadius:'50%', objectFit:'cover', border:`3px solid ${RARITY_COLORS[d.rarity]}` }} onError={e=>e.target.style.display='none'} />
+                  <img src={dogImageSrc(d) || d.photo_url} alt={d.breed} style={{ width:60, height:60, borderRadius:'50%', objectFit:'cover', border:`3px solid ${RARITY_COLORS[d.rarity]}` }} onError={e=>e.target.style.display='none'} />
                   <div style={{ fontSize:10, fontWeight:'bold', color:'#333', marginTop:4, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{d.name||d.breed}</div>
                   <div style={{ fontSize:9, color:RARITY_COLORS[d.rarity], fontWeight:'bold' }}>{d.rarity}</div>
                 </div>
@@ -3792,6 +3792,13 @@ function TrainingSchoolScreen({ player, dogs }) {
     const s = getDogState(d.id);
     return (s.level || 1) >= 5;
   }), [dogs, dogStateTick]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Make sure each cat's real photo list is loaded, then re-render so real photos replace cartoons
+  const [, setPhotoTick] = useState(0);
+  useEffect(() => {
+    let live = true;
+    Promise.all(eligibleDogs.slice(0, 20).map(d => resolveDogPhoto(d).catch(() => null))).then(() => { if (live) setPhotoTick(t => t + 1); });
+    return () => { live = false; };
+  }, [eligibleDogs]);
 
   // How many training sessions are needed to go from current level to next
   function sessionsNeeded(currentLevel) {
@@ -3955,7 +3962,7 @@ function TrainingSchoolScreen({ player, dogs }) {
             return (
               <div key={dog.id} style={{ background:'white', borderRadius:14, padding:14, marginBottom:10, boxShadow:'0 2px 8px rgba(0,0,0,0.08)', border:'2px solid ' + (done ? '#06d6a0' : '#667eea') }}>
                 <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
-                  {dog.photo_url && <img src={dog.photo_url} alt="" style={{ width:44, height:44, borderRadius:10, objectFit:'cover' }} />}
+                  {dog.photo_url && <img src={dogImageSrc(dog) || dog.photo_url} alt="" style={{ width:44, height:44, borderRadius:10, objectFit:'cover' }} />}
                   <div>
                     <div style={{ fontWeight:'bold', fontSize:14 }}>{dog.name || dog.breed}</div>
                     <div style={{ fontSize:12, color:'#888' }}>{dog.breed} · Lv.{s.level} → Lv.{ts.targetLevel}</div>
@@ -4009,7 +4016,7 @@ function TrainingSchoolScreen({ player, dogs }) {
             return (
               <div key={dog.id} style={{ background:'white', borderRadius:14, padding:14, marginBottom:10, boxShadow:'0 2px 8px rgba(0,0,0,0.06)', border:'1.5px solid #e0e0e0' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
-                  {dog.photo_url && <img src={dog.photo_url} alt="" style={{ width:44, height:44, borderRadius:10, objectFit:'cover' }} />}
+                  {dog.photo_url && <img src={dogImageSrc(dog) || dog.photo_url} alt="" style={{ width:44, height:44, borderRadius:10, objectFit:'cover' }} />}
                   <div style={{ flex:1 }}>
                     <div style={{ fontWeight:'bold', fontSize:14 }}>{dog.name || dog.breed}</div>
                     <div style={{ fontSize:12, color:'#888' }}>{dog.breed}</div>
@@ -5982,7 +5989,7 @@ function VetScreen({ player, dogs, setDogs, onBack }) {
             const hColor = h>60?'#52b788':h>30?'#f4a261':'#e63946';
             return (
               <div key={dog.id} style={{background:'white',border:'2px solid #eee',borderRadius:14,padding:12,display:'flex',alignItems:'center',gap:12}}>
-                {dog.photo_url && <img src={dog.photo_url} alt={dog.name} style={{width:50,height:50,borderRadius:'50%',objectFit:'cover',border:`2px solid ${RARITY_COLORS[dog.rarity]}`}} onError={e=>e.target.style.display='none'} />}
+                {dog.photo_url && <img src={dogImageSrc(dog) || dog.photo_url} alt={dog.name} style={{width:50,height:50,borderRadius:'50%',objectFit:'cover',border:`2px solid ${RARITY_COLORS[dog.rarity]}`}} onError={e=>e.target.style.display='none'} />}
                 <div style={{flex:1}}>
                   <div style={{fontWeight:'bold',fontSize:13,color:'#333'}}>{dog.name}</div>
                   <div style={{fontSize:11,color:'#888',marginBottom:4}}>Lv.{ds.level} · {dog.rarity}</div>
@@ -7066,7 +7073,7 @@ function TradeScreen({ player, myDogs, onDogUpdate, onBack }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
           {sortedDogs.map(dog => (
             <div key={dog.id} onClick={() => setSelectedDog(dog)} style={{ background: selectedDog?.id === dog.id ? '#764ba222' : '#f9f9f9', border: `2px solid ${selectedDog?.id === dog.id ? '#764ba2' : '#eee'}`, borderRadius: 12, padding: 10, textAlign: 'center', cursor: 'pointer' }}>
-              {dog.photo_url ? <img src={dog.photo_url} alt={dog.name} style={{ width: 55, height: 55, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${RARITY_COLORS[dog.rarity]}` }} onError={e => e.target.style.display='none'} /> : <div style={{ fontSize: 36 }}>🐱</div>}
+              {dog.photo_url ? <img src={dogImageSrc(dog) || dog.photo_url} alt={dog.name} style={{ width: 55, height: 55, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${RARITY_COLORS[dog.rarity]}` }} onError={e => e.target.style.display='none'} /> : <div style={{ fontSize: 36 }}>🐱</div>}
               <div style={{ fontSize: 11, fontWeight: 'bold', color: '#333', marginTop: 4 }}>{dog.name}</div>
               <div style={{ fontSize: 10, color: RARITY_COLORS[dog.rarity] }}>{dog.rarity}</div>
             </div>
@@ -7296,7 +7303,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
         <div style={{ background: 'linear-gradient(135deg,#fff8e7,#fff3cd)', border: '2px solid #ffd700', borderRadius: 16, padding: 16, marginBottom: 16 }}>
           <div style={{ fontWeight: 'bold', color: '#f4a261', fontSize: 14, marginBottom: 10 }}>🏆 Best in Show</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <img src={champion.photo_url} alt={champion.breed} style={{ width:60, height:60, borderRadius:'50%', objectFit:'cover', border:`3px solid ${RARITY_COLORS[champion.rarity]}` }} onError={e=>e.target.style.display='none'} />
+            <img src={dogImageSrc(champion) || champion.photo_url} alt={champion.breed} style={{ width:60, height:60, borderRadius:'50%', objectFit:'cover', border:`3px solid ${RARITY_COLORS[champion.rarity]}` }} onError={e=>e.target.style.display='none'} />
             <div style={{ flex:1 }}>
               <div style={{ fontWeight:'bold', color:'#333' }}>{getDogNick(champion.id) || champion.name || champion.breed}</div>
               <div style={{ fontSize:12, color:RARITY_COLORS[champion.rarity], fontWeight:'bold' }}>{champion.rarity}</div>
