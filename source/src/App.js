@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 161; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 162; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2875,6 +2875,33 @@ function FriendsGalleryModal({ onClose, initialQuery }) {
 }
 
 // ─── Home Screen ─────────────────────────────────────────────────────────────
+// ─── Cat Fact of the Day (cat-only) ───────────────────────────────────────────
+const CAT_FACTS = [
+  'Cats sleep about 12 to 16 hours a day. Nap time is serious business!',
+  'A cat\'s purr can be a sign of happiness, and sometimes it helps cats calm down.',
+  'Cats have whiskers that help them sense tiny changes in the air around them.',
+  'Cats can rotate their ears about 180 degrees to listen in every direction.',
+  'A group of kittens is called a kindle, and a group of cats is a clowder.',
+  'Cats have a special extra eyelid that helps keep their eyes clean and safe.',
+  'Most cats can jump about five times their own height in one leap.',
+  'Every cat nose has a unique pattern, just like a human fingerprint.',
+  'Cats groom themselves for hours each day to stay clean and cool.',
+  'Kittens are born with their eyes closed and open them after about a week.',
+  'Cats can make over 100 different sounds, but only kittens meow at their mums.',
+  'A cat slow-blinking at you is a sign of trust, like a little kitty kiss.',
+  'Cats land on their feet thanks to a super-flexible spine and quick reflexes.',
+  'Cats walk on their toes, which helps them tiptoe very quietly.',
+];
+function CatFactCard() {
+  const fact = CAT_FACTS[Math.floor(Date.now() / 86400000) % CAT_FACTS.length];
+  return (
+    <div data-testid="cat-fact" style={{ background: '#fff8e1', borderRadius: 16, padding: '10px 14px', margin: '10px 0', border: '2px solid #ffe082' }}>
+      <div style={{ fontWeight: 'bold', fontSize: 13, color: '#8d6e00' }}>🐱 Cat Fact of the Day</div>
+      <div style={{ fontSize: 13, color: '#555', marginTop: 4 }}>{fact}</div>
+    </div>
+  );
+}
+
 // ─── Yarn Chase mini-game (cat-only) ─────────────────────────────────────────
 function YarnChase() {
   const key = 'km_yarn_' + localDateKey();
@@ -3076,6 +3103,7 @@ function HomeScreen({ player, dogs, stats, onNavigate }) {
       })()}
       <CommunityGoalBanner player={player} dogs={dogs} />
       <YarnChase />
+      <CatFactCard />
       <MysteryDogCard player={player} today={todayKey} />
       <TrickOrTreatCard />
       <AdventCalendarCard />
