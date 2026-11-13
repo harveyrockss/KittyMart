@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 163; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 164; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3018,13 +3018,13 @@ function HomeScreen({ player, dogs, stats, onNavigate }) {
     <div style={{ padding: 16 }}>
       {showStreak && (
         <div style={{ position: 'fixed', top: 80, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(135deg,#f4a261,#e76f51)', color: 'white', borderRadius: 20, padding: '12px 24px', fontWeight: 'bold', fontSize: 15, zIndex: 999, boxShadow: '0 4px 20px rgba(0,0,0,0.3)', textAlign: 'center', whiteSpace: 'nowrap' }}>
-          🔥 {streak}-day streak! +{streakInfo.reward}pts bonus!
+          🐾 {streak}-day streak! +{streakInfo.reward}pts bonus!
         </div>
       )}
       <div style={{ background: 'linear-gradient(135deg, #fff3e0, #ffe0b2)', borderRadius: 20, padding: '20px 16px', marginBottom: 16, textAlign: 'center', border: '2px solid #f4a261' }}>
         <div style={{ fontSize: 32, marginBottom: 4 }}>🐾</div>
         <div style={{ fontSize: 20, fontWeight: 'bold', color: '#333' }}>Welcome back, {player.username}!</div>
-        <div style={{ fontSize: 13, color: '#e76f51', fontWeight: 'bold', marginTop: 4 }}>🔥 {streak}-day streak</div>
+        <div style={{ fontSize: 13, color: '#e76f51', fontWeight: 'bold', marginTop: 4 }}>🐾 {streak}-day streak</div>
       </div>
       <div style={{ background: 'white', borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '2px solid #f0e8ff' }}>
         <div style={{ fontWeight: 'bold', color: '#764ba2', marginBottom: 10, fontSize: 14 }}>📊 Your Stats</div>

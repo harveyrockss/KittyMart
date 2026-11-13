@@ -49,6 +49,8 @@
 
 - Run 23: cat-flavoured login-streak achievements ('On Fire' -> '😺 Purr Streak', 'Week Warrior' -> '😻 Seven Lives'; ids unchanged so unlocks persist). v1.26 (APP_VERSION 163). Signup/Home/Catch/Cats/Mart/Race tabs checked with playwright, only blocked-network errors. Home streak banner still says '🔥 N-day streak' (could be paw-flavoured).
 
+- Run 24: Home streak banner/toast 🔥 -> 🐾. v1.27 (APP_VERSION 164). Build OK; login screen loads with no page errors; banner itself not screenshotted (needs logged-in streak).
+
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
 1. Cat-only features for App Store differentiation (one per run): (cat-bed Cosy Corner done run 19; decor toggles done run 20; free-placement of furniture still open) (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
