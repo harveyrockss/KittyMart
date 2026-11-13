@@ -52,6 +52,7 @@
 - Run 24: Home streak banner/toast 🔥 -> 🐾. v1.27 (APP_VERSION 164). Build OK; login screen loads with no page errors; banner itself not screenshotted (needs logged-in streak).
 
 - Run 25: wording sweep re-run (only code comments/identifiers left). New cat-only achievement '🧶 Yarn Master' (50 yarn balls caught in Yarn Chase, tracked in km_yarn_total). v1.28 (APP_VERSION 165). Signup + all 8 tabs loaded with playwright, no page errors; achievement itself not unlocked by script.
+- Run 26: new cat-only achievement '🪴 Cosy Decorator' (3 Cosy Corner decorations). v1.29 (APP_VERSION 166). Build OK; login screen loads with no page errors; achievement not unlocked by script.
 
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
