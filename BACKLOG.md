@@ -43,6 +43,8 @@
 
 - Run 20: Cosy Corner decor: tap-to-toggle plant/yarn ball/sunny window/picture/lamp shown above the beds (km_cosy.decor). Sleeping-cat rendering now VERIFIED by screenshot with 3 seeded cats (2 napping show in igloos with 💤). Signup/Home/Cosy/tab nav checked with playwright, only blocked-network errors. v1.22 (APP_VERSION 159).
 
+- Run 21: cat-flavoured live events: 'Double Point Wednesday' -> '🐾 Whisker Wednesday!', 'Weekend Bonus' -> '😺 Caturday Bonus!' (labels only, odds unchanged). v1.23 (APP_VERSION 160). Signup/Catch/Cats/Mart/Race/Home tabs loaded with playwright, no console errors; events not visible on a Friday so not screenshotted.
+
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
 1. Cat-only features for App Store differentiation (one per run): (cat-bed Cosy Corner done run 19; decor toggles done run 20; free-placement of furniture still open) (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).

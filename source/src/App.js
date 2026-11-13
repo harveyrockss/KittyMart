@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 159; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 160; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -486,14 +486,14 @@ const LIVE_EVENTS = [
   },
   {
     id: 'weekend',
-    label: '🎉 Weekend Bonus!',
+    label: '😺 Caturday Bonus!',
     desc: 'Epic & Legendary cats appear more often this weekend!',
     isActive: () => { const day = new Date().getDay(); return day === 0 || day === 6; },
     weights: { Common: 30, Uncommon: 28, Rare: 22, Epic: 12, Legendary: 8 },
   },
   {
     id: 'double_point_wednesday',
-    label: '⭐ Double Point Wednesday!',
+    label: '🐾 Whisker Wednesday!',
     desc: 'Every cat you catch today is worth double points!',
     isActive: () => new Date().getDay() === 3,
     weights: RARITY_WEIGHTS,
