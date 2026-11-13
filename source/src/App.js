@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 160; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 161; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5912,6 +5912,7 @@ function getOwnedCosmetics() {
 // Cosy Cat Pack entitlement. In the App Store build, window.KM_IAP (RevenueCat bridge) must provide
 // purchase('cosy_cat_pack') -> Promise<boolean> and restore() -> Promise<boolean>. Without it nothing can be bought.
 const COSY_PACK_PRICE = '$2.99';
+const IAP_ENABLED = false; // free launch: set true in the post-approval update that adds in-app purchases
 function hasCosyPack() { try { return localStorage.getItem('km_pack_cosy') === '1'; } catch { return false; } }
 function grantCosyPack() {
   try { localStorage.setItem('km_pack_cosy', '1'); } catch {}
@@ -6667,7 +6668,7 @@ function MartScreen({ dogs, totalPoints }) {
 
   const SECTION_TABS = [
     { id: 'powerups',   label: '⚡ Power-Ups' },
-    { id: 'cosy',       label: '🧶 Cosy Pack' },
+    ...(IAP_ENABLED ? [{ id: 'cosy',       label: '🧶 Cosy Pack' }] : []),
   ];
   const [ownedCosmetics, setOwnedCosmetics] = useState(() => getOwnedCosmetics());
   const [packOwned, setPackOwned] = useState(() => hasCosyPack());
@@ -6700,17 +6701,17 @@ function MartScreen({ dogs, totalPoints }) {
       {msg && <div style={{ background: 'linear-gradient(135deg,#52b788,#2d6a4f)', color: 'white', borderRadius: 12, padding: '10px 14px', marginBottom: 12, fontWeight: 'bold', fontSize: 13, textAlign: 'center' }}>{msg}</div>}
 
       {/* Section tabs */}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
+      {SECTION_TABS.length > 1 && <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
         {SECTION_TABS.map(t => (
           <button key={t.id} onClick={() => setSection(t.id)}
             style={{ flex: 1, padding: '10px 4px', border: 'none', borderRadius: 12, fontWeight: 'bold', fontSize: 12, cursor: 'pointer', background: section === t.id ? 'linear-gradient(135deg,#667eea,#764ba2)' : '#f0f0f0', color: section === t.id ? 'white' : '#666', transition: 'all 0.15s' }}>
             {t.label}
           </button>
         ))}
-      </div>
+      </div>}
 
       {/* ── Cosy Cat Pack (one-time purchase) ── */}
-      {section === 'cosy' && (
+      {IAP_ENABLED && section === 'cosy' && (
         <div>
           <div style={{ background: 'linear-gradient(135deg,#f4a261,#e76f51)', borderRadius: 20, padding: 16, color: 'white', textAlign: 'center', marginBottom: 12 }}>
             <div style={{ fontSize: 34 }}>🧶🧣🔔🛏️</div>
