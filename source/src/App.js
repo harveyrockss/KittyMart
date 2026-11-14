@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 170; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 171; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2082,6 +2082,8 @@ const CHALLENGE_POOL = [
   {id:'f5', type:'feed', text:'Fill 6 food bowls',        goal:6,  pts:30},
   {id:'p5', type:'poo', text:'Scoop 2 litter trays',      goal:2,  pts:15},
   {id:'c10', type:'catch', text:'Find 4 cats curled up napping', goal:4, rarity:'any', pts:20},
+  {id:'pet1', type:'pet', text:'Give 3 cats a gentle pet 💜', goal:3, pts:15},
+  {id:'pet2', type:'pet', text:'Give 6 cats a gentle pet 💜', goal:6, pts:25},
 ];
 
 function localDateKey(d = new Date()) {
@@ -6387,6 +6389,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
     try { localStorage.setItem('km_pet_times', JSON.stringify(pets)); localStorage.setItem('km_pet_count', (parseInt(localStorage.getItem('km_pet_count')||'0')+1).toString()); } catch {}
     addXP(dog.id, 3, showToast);
     playPurr();
+    recordChallenge('pet');
     showToast(`💜 ${dog.name} purrs loudly! +3 XP`);
     forceUpdate(n=>n+1);
   };
