@@ -64,6 +64,8 @@
 - Run 35: Cosy Corner gets 2 more decorations (🌙 Night Light, 🥣 Snack Bowl). v1.38 (APP_VERSION 175). Build OK; signup + Cosy toggles + Catch/Cats/Mart/Race/Home loaded with playwright, no page errors; Cosy screenshot viewed.
 - Run 36: Cosy Corner gets 2 more beds (⛺ Tiny Tent, 🪺 Cosy Nest). v1.39 (APP_VERSION 176). Build OK; login screen loads with playwright, no page errors; new beds not screenshotted (needs login).
 
+- Run 37: Cosy Corner gets 2 more wall colours (peach, mint). v1.40 (APP_VERSION 177). Build OK; login screen loads with playwright, no page errors; new walls not screenshotted (needs login).
+
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
 1. Cat-only features for App Store differentiation (one per run): (cat-bed Cosy Corner done run 19; decor toggles done run 20; free-placement of furniture still open) (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
