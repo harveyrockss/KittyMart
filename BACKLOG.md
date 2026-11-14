@@ -58,6 +58,7 @@
 - Run 29: new cat-only achievement '💤 Sleepy Clowder' (25 naps, reuses km_nap_count). v1.32 (APP_VERSION 169). Wording sweep clean. Build OK; login screen loads with no page errors; achievement not unlocked by script.
 - Run 30: 2 new cat-only achievements ('🧶 Yarn Hero' 200 yarn balls, '😻 Purr Pro' 100 feeds). v1.33 (APP_VERSION 170). Build OK; login screen loads with no page errors; achievements not unlocked by script.
 - Run 31: cat-only 'pet' daily challenges (pet 3 / 6 cats via 💜, reuses recordChallenge). v1.34 (APP_VERSION 171). Build OK; login screen loads with no page errors; challenge not exercised by script (needs owned cats).
+- Run 32: offline-honest Weekly Goal card (offline: '🐾 My Weekly Goal', 'on your own', no 'everyone'/'together'). v1.35 (APP_VERSION 172). Build OK; signup + Home/Catch/Cats/Mart/Race tabs loaded with playwright, no page errors; Home/Mart screenshots viewed.
 
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
@@ -68,4 +69,3 @@
 ## Known issues
 - Automated catch-tap in playwright was flaky (cat moves); catch flow not re-verified by script in run 4 (only playMeow call changed, try/catch-wrapped). Tabs load with no console errors.
 - Google Fonts (Nunito) blocked in sandbox only; harmless.
-- Home "Weekly Community Goal" is local-only offline.

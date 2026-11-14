@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 171; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 172; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2578,8 +2578,8 @@ function CommunityGoalBanner({ player, dogs }) {
     <div style={{ background: completed ? 'linear-gradient(135deg,#ffd700,#ffb300)' : 'linear-gradient(135deg,#e8f5e9,#c8e6c0)', border: `2px solid ${completed ? '#ffd700' : '#81c784'}`, borderRadius: 16, padding: 14, marginBottom: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div>
-          <div style={{ fontWeight: 'bold', fontSize: 13, color: completed ? '#7b4f00' : '#2e7d32' }}>🌍 Weekly Community Goal</div>
-          <div style={{ fontSize: 12, color: completed ? '#7b4f00' : '#555', marginTop: 2 }}>Catch {COMMUNITY_GOAL_TARGET} cats together this week!</div>
+          <div style={{ fontWeight: 'bold', fontSize: 13, color: completed ? '#7b4f00' : '#2e7d32' }}>{ONLINE ? '🌍 Weekly Community Goal' : '🐾 My Weekly Goal'}</div>
+          <div style={{ fontSize: 12, color: completed ? '#7b4f00' : '#555', marginTop: 2 }}>{ONLINE ? `Catch ${COMMUNITY_GOAL_TARGET} cats together this week!` : `Catch ${COMMUNITY_GOAL_TARGET} cats on your own this week!`}</div>
         </div>
         <div style={{ fontSize: 11, fontWeight: 'bold', color: completed ? '#7b4f00' : '#2e7d32', textAlign: 'right' }}>
           {progress}/{COMMUNITY_GOAL_TARGET}
@@ -2595,7 +2595,7 @@ function CommunityGoalBanner({ player, dogs }) {
         </button>
       ) : (
         <div style={{ fontSize: 11, color: '#2e7d32', textAlign: 'center', fontWeight: 'bold' }}>
-          🎁 Goal complete = everyone gets +250 bonus pts! · {pct}% there
+          {ONLINE ? '🎁 Goal complete = everyone gets +250 bonus pts!' : '🎁 Goal complete = +250 bonus pts!'} · {pct}% there
         </div>
       )}
     </div>
