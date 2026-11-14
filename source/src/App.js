@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 172; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 173; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2084,6 +2084,8 @@ const CHALLENGE_POOL = [
   {id:'c10', type:'catch', text:'Find 4 cats curled up napping', goal:4, rarity:'any', pts:20},
   {id:'pet1', type:'pet', text:'Give 3 cats a gentle pet 💜', goal:3, pts:15},
   {id:'pet2', type:'pet', text:'Give 6 cats a gentle pet 💜', goal:6, pts:25},
+  {id:'yarn1', type:'yarn', text:'Catch 10 yarn balls in Yarn Chase 🧶', goal:10, pts:20},
+  {id:'treat1', type:'treat', text:'Lure a cat with a treat on Catch 🐟', goal:1, pts:10},
 ];
 
 function localDateKey(d = new Date()) {
@@ -2933,6 +2935,7 @@ function YarnChase() {
       const pts = Math.min(scoreRef.current, 15);
       try { localStorage.setItem('km_yarn_total', String((parseInt(localStorage.getItem('km_yarn_total')||'0',10)||0) + scoreRef.current)); } catch {}
       if (pts > 0) addBonusPts(pts);
+      for (let i = 0; i < Math.min(scoreRef.current, 30); i++) recordChallenge('yarn');
       setDone(pts);
     }
   }, [time, running]);
@@ -5302,7 +5305,7 @@ function CatchScreen({ player, dogs, onCatch }) {
   const throwTreat = () => {
     if (treat !== 0 || caught || !breed) return;
     setTreat(1);
-    try { localStorage.setItem('km_treat_count', (parseInt(localStorage.getItem('km_treat_count')||'0',10)+1).toString()); } catch {}
+    try { localStorage.setItem('km_treat_count', (parseInt(localStorage.getItem('km_treat_count')||'0',10)+1).toString()); } catch {} recordChallenge('treat');
     try { playPurr(); } catch {}
     clearTimeout(treatTimerRef.current);
     treatTimerRef.current = setTimeout(() => setTreat(2), 4000);
