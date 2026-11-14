@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 169; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 170; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2455,6 +2455,8 @@ const ACHIEVEMENTS = [
   { id: 'nap_5',         label: '🛏️ Cosy Napper',    desc: 'Tuck cats in for 5 naps (😴 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_nap_count')||'0',10) >= 5 },
   { id: 'nap_25',         label: '💤 Sleepy Clowder', desc: 'Tuck cats in for 25 naps (😴 button)', pts: 40, check: () => parseInt(localStorage.getItem('km_nap_count')||'0',10) >= 25 },
   { id: 'yarn_50',      label: '🧶 Yarn Master',    desc: 'Catch 50 yarn balls in Yarn Chase', pts: 25,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 50 },
+  { id: 'yarn_200',     label: '🧶 Yarn Hero',      desc: 'Catch 200 yarn balls in Yarn Chase', pts: 60,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 200 },
+  { id: 'purr_100',      label: '😻 Purr Pro',       desc: 'Feed your cats 100 times',          pts: 50,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 100 },
   { id: 'pet_20',         label: '💜 Cat Cuddler',    desc: 'Give your cats 20 pets (💜 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_pet_count')||'0',10) >= 20 },
   { id: 'treat_10',       label: '🐟 Treat Tosser',   desc: 'Lure 10 cats with a treat on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_treat_count')||'0',10) >= 10 },
   { id: 'purr_10',       label: '😽 Purr Maker',     desc: 'Feed your cats 10 times',           pts: 20,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 10 },

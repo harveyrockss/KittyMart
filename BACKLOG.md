@@ -56,6 +56,7 @@
 - Run 27: new cat-only achievement '💜 Cat Cuddler' (20 pets via the 💜 button, tracked in km_pet_count). v1.30 (APP_VERSION 167). Build OK; signup + tutorial + tab nav loaded with playwright, no page errors; achievement not unlocked by script.
 - Run 28: new cat-only achievement '🐟 Treat Tosser' (10 treat lures on Catch, km_treat_count). v1.31 (APP_VERSION 168). Build OK; login screen loads with no page errors; achievement not unlocked by script.
 - Run 29: new cat-only achievement '💤 Sleepy Clowder' (25 naps, reuses km_nap_count). v1.32 (APP_VERSION 169). Wording sweep clean. Build OK; login screen loads with no page errors; achievement not unlocked by script.
+- Run 30: 2 new cat-only achievements ('🧶 Yarn Hero' 200 yarn balls, '😻 Purr Pro' 100 feeds). v1.33 (APP_VERSION 170). Build OK; login screen loads with no page errors; achievements not unlocked by script.
 
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
