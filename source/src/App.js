@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 175; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 176; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5993,6 +5993,8 @@ const COSY_BEDS = [
   { id:'box',    emoji:'📦', name:'Cardboard Box' },
   { id:'igloo',  emoji:'🛖', name:'Snug Igloo' },
   { id:'cushion',emoji:'🛋️', name:'Soft Cushion' },
+  { id:'tent',   emoji:'⛺', name:'Tiny Tent' },
+  { id:'nest',   emoji:'🪺', name:'Cosy Nest' },
 ];
 const COSY_DECOR = [
   { id:'plant',  emoji:'🪴', name:'Plant' },
