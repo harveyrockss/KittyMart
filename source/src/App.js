@@ -37,7 +37,7 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 180; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 181; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6012,6 +6012,8 @@ const COSY_DECOR = [
   { id:'teddy',  emoji:'🧸', name:'Teddy' },
   { id:'mouse',  emoji:'🐭', name:'Toy Mouse' },
   { id:'bell',   emoji:'🔔', name:'Jingle Bell' },
+  { id:'sock',   emoji:'🧦', name:'Sock Toy' },
+  { id:'milk',   emoji:'🥛', name:'Milk Saucer' },
 ];
 const COSY_WALLS = ['#ffe3ec','#e3f2ff','#e8f7e4','#fff3cf','#efe3ff','#ffe9d6','#dff7f3'];
 function getCosy() { try { return { bed:'basket', wall:COSY_WALLS[0], decor:[], ...JSON.parse(localStorage.getItem('km_cosy') || '{}') }; } catch { return { bed:'basket', wall:COSY_WALLS[0], decor:[] }; } }
