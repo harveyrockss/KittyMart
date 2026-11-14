@@ -65,6 +65,7 @@
 - Run 36: Cosy Corner gets 2 more beds (⛺ Tiny Tent, 🪺 Cosy Nest). v1.39 (APP_VERSION 176). Build OK; login screen loads with playwright, no page errors; new beds not screenshotted (needs login).
 
 - Run 37: Cosy Corner gets 2 more wall colours (peach, mint). v1.40 (APP_VERSION 177). Build OK; login screen loads with playwright, no page errors; new walls not screenshotted (needs login).
+- Run 38: Cosy Corner gets 2 more decorations (🌸 Flower Vase, 📚 Book Stack). v1.41 (APP_VERSION 178). Build OK; login screen loads with playwright, no page errors; new decor not screenshotted (needs login).
 
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
