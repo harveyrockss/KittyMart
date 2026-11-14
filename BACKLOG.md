@@ -61,6 +61,7 @@
 - Run 32: offline-honest Weekly Goal card (offline: '🐾 My Weekly Goal', 'on your own', no 'everyone'/'together'). v1.35 (APP_VERSION 172). Build OK; signup + Home/Catch/Cats/Mart/Race tabs loaded with playwright, no page errors; Home/Mart screenshots viewed.
 - Run 33: 2 cat-only daily challenges ('Catch 10 yarn balls in Yarn Chase', 'Lure a cat with a treat'; Yarn Chase calls recordChallenge('yarn') per ball, treat calls 'treat'). v1.36 (APP_VERSION 173). Build OK; signup + Home/tab nav loaded with playwright, no page errors; challenges not completed by script.
 - Run 34: Cosy Corner gets 2 more decorations (🐠 Fish Bowl, 🌳 Cat Tree). v1.37 (APP_VERSION 174). Build OK; signup + Cosy/Catch/Mart/Race/Cats/Home loaded with playwright, no page errors; Cosy screenshot viewed.
+- Run 35: Cosy Corner gets 2 more decorations (🌙 Night Light, 🥣 Snack Bowl). v1.38 (APP_VERSION 175). Build OK; signup + Cosy toggles + Catch/Cats/Mart/Race/Home loaded with playwright, no page errors; Cosy screenshot viewed.
 
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
