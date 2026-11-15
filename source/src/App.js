@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 192; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 193; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2464,6 +2464,7 @@ const ACHIEVEMENTS = [
   { id: 'yarn_200',     label: '🧶 Yarn Hero',      desc: 'Catch 200 yarn balls in Yarn Chase', pts: 60,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 200 },
   { id: 'purr_100',      label: '😻 Purr Pro',       desc: 'Feed your cats 100 times',          pts: 50,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 100 },
   { id: 'pet_20',         label: '💜 Cat Cuddler',    desc: 'Give your cats 20 pets (💜 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_pet_count')||'0',10) >= 20 },
+  { id: 'lullaby_15',     label: '🌙 Cat Whisperer',  desc: 'Make 15 sleeping cats purr in Cosy Corner', pts: 20, check: () => parseInt(localStorage.getItem('km_cosy_purr')||'0',10) >= 15 },
   { id: 'treat_10',       label: '🐟 Treat Tosser',   desc: 'Lure 10 cats with a treat on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_treat_count')||'0',10) >= 10 },
   { id: 'purr_10',       label: '😽 Purr Maker',     desc: 'Feed your cats 10 times',           pts: 20,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 10 },
   { id: 'tidy_5',        label: '🧹 Tidy Tray',      desc: 'Scoop 5 litter trays',              pts: 20,  check: () => parseInt(localStorage.getItem('km_poo_count')||'0',10) >= 5 },
@@ -6086,7 +6087,7 @@ function CosyCornerScreen({ dogs, onBack }) {
         <div style={{fontSize:12,color:'#888',marginBottom:8}}>{sleepers.length ? 'Sleepy cats are curled up in their beds 💤 (tap one to hear it purr)' : 'No cats napping yet — tap 😴 on a cat in the Cats tab to tuck it in!'}</div>
         <div style={{display:'flex',flexWrap:'wrap',gap:12,justifyContent:'center'}}>
           {sleepers.map(d => (
-            <div key={d.id} data-testid="cosy-sleeper" onClick={() => { try { playPurr(); } catch {} }} style={{textAlign:'center',width:80,cursor:'pointer'}}>
+            <div key={d.id} data-testid="cosy-sleeper" onClick={() => { try { playPurr(); localStorage.setItem('km_cosy_purr', String(parseInt(localStorage.getItem('km_cosy_purr')||'0',10)+1)); } catch {} }} style={{textAlign:'center',width:80,cursor:'pointer'}}>
               <div style={{position:'relative',height:70}}>
                 <div style={{fontSize:56,lineHeight:'70px'}}>{bed.emoji}</div>
                 {(dogImageSrc(d) || d.photo_url) && <img src={dogImageSrc(d) || d.photo_url} alt={d.name} style={{position:'absolute',left:'50%',top:8,transform:'translateX(-50%)',width:38,height:38,borderRadius:'50%',objectFit:'cover',border:`2px solid ${RARITY_COLORS[d.rarity]}`}} onError={e=>e.target.style.display='none'} />}
