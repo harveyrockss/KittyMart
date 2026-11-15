@@ -37,7 +37,9 @@ async function scheduleReminderNotifications() {
   } catch (e) { console.error('Reminder scheduling error:', e); }
 }
 
-const APP_VERSION = 181; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
+function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
+const APP_VERSION = 182; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6573,6 +6575,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
                   {nick && <div style={{ fontSize: 11, fontWeight: 'bold', color: '#764ba2', marginTop: 4 }}>{nick}</div>}
                   <div style={{ fontSize: 11, fontWeight: 'bold', color: '#333', marginTop: nick ? 1 : 6 }}>{dog.name}</div>
                   {(() => { let g = getDogGender(dog.id); if (!g) { g = Math.random()<0.5?'Male':'Female'; try { setDogGender(dog.id, g); } catch {} } return <div style={{ fontSize: 10, color: g === 'Male' ? '#4a90e2' : '#e26b9a' }}>{g === 'Male' ? '♂' : '♀'} {g}</div>; })()}
+                  <div style={{ fontSize: 9, color: '#8d6e9f', marginBottom: 1 }}>{catPersonality(dog.id)}</div>
                   <div style={{ fontSize: 10, color: isPending ? '#aaa' : RARITY_COLORS[rarity], marginBottom: 4 }}>{isPending ? (() => { const msLeft = 24*3600000 - (Date.now() - new Date(pendingEntry?.created_at||Date.now()).getTime()); const h = Math.max(0,Math.floor(msLeft/3600000)); return `⏳ Pending · ${h}h left`; })() : dog.rarity}</div>
                   {/* Level badge — gold for Champion */}
                   <div style={{display:'inline-block',background: isChampion ? 'linear-gradient(135deg,#ffd700,#f4a261)' : '#667eea',color:'white',borderRadius:20,padding:'2px 8px',fontSize:10,fontWeight:'bold',marginBottom:4}}>
