@@ -34,9 +34,12 @@ const breedByUrl = {}; // real photo url -> breed name (so a failed photo can tr
 export const isRealPhoto = u => typeof u === 'string' && /^https?:\/\/([a-z0-9-]+\.)?(thecatapi|cataas)\.com\//i.test(u);
 
 // Pool keys: 'tag:<tag>' for CATAAS coat tags, otherwise a Cat API breed id.
+// App Store build (REACT_APP_APPSTORE=1): only the curated Cat API is used. CATAAS photos are user-uploaded, so they are
+// skipped to keep the app clearly 4+ (no third-party user-generated content). Breeds then use their nearest Cat API breed.
+const APPSTORE = process.env.REACT_APP_APPSTORE === '1';
 const keysFor = b => {
   const k = [];
-  if (b && b.photoTag) k.push('tag:' + b.photoTag);
+  if (b && b.photoTag && !APPSTORE) k.push('tag:' + b.photoTag);
   if (b && b.catApiId) k.push(b.catApiId);
   return k;
 };

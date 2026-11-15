@@ -70,6 +70,7 @@
 - Run 40: Cosy Corner gets 2 more decorations (🐭 Toy Mouse, 🔔 Jingle Bell). v1.43 (APP_VERSION 180). Build OK; login screen loads with playwright, no page errors; new decor not screenshotted (needs login).
 - Run 41: Cosy Corner gets 2 more decorations (🧦 Sock Toy, 🥛 Milk Saucer). v1.44 (APP_VERSION 181). Build OK; login screen loads with playwright, no page errors; new decor not screenshotted (needs login). Suggest next run moves on from decor to something else (e.g. free placement or Super Fan).
 - Run 42: cat-only Personality tag on each cat card (Sleepy/Curious/Playful/Foodie/Sneaky/Brave/Cuddly/Fancy, stable per cat id, display only). v1.45 (APP_VERSION 182). Build OK; signup + 3 seeded cats on Cats tab screenshot viewed, no page errors. Seed key for tests: localStorage `km_db_cats`.
+- Run 43 (Harvey: 'do everything to get a 4+ rating'): audited code (no violence/gambling/UGC/web access offline). Added APP_STORE_4PLUS.md (questionnaire answers + safeguards + to-dos); `REACT_APP_APPSTORE=1` build skips CATAAS (user-uploaded photos). v1.46 (APP_VERSION 183). Both builds compile; tabs load, no page errors. NEEDS HARVEY: real support email (placeholder in mailto), privacy policy URL; consider bundling own cat photos.
 
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
