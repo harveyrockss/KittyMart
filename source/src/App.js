@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 191; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 192; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6083,10 +6083,10 @@ function CosyCornerScreen({ dogs, onBack }) {
       </div>
       <div style={{background:cfg.wall,borderRadius:18,padding:14,border:'2px solid #e0d0ff',minHeight:170}}>
         {decor.length > 0 && <div data-testid="cosy-decor" style={{display:'flex',gap:14,justifyContent:'center',fontSize:30,marginBottom:6}}>{COSY_DECOR.filter(x => decor.includes(x.id)).map(x => <span key={x.id}>{x.emoji}</span>)}</div>}
-        <div style={{fontSize:12,color:'#888',marginBottom:8}}>{sleepers.length ? 'Sleepy cats are curled up in their beds 💤' : 'No cats napping yet — tap 😴 on a cat in the Cats tab to tuck it in!'}</div>
+        <div style={{fontSize:12,color:'#888',marginBottom:8}}>{sleepers.length ? 'Sleepy cats are curled up in their beds 💤 (tap one to hear it purr)' : 'No cats napping yet — tap 😴 on a cat in the Cats tab to tuck it in!'}</div>
         <div style={{display:'flex',flexWrap:'wrap',gap:12,justifyContent:'center'}}>
           {sleepers.map(d => (
-            <div key={d.id} style={{textAlign:'center',width:80}}>
+            <div key={d.id} data-testid="cosy-sleeper" onClick={() => { try { playPurr(); } catch {} }} style={{textAlign:'center',width:80,cursor:'pointer'}}>
               <div style={{position:'relative',height:70}}>
                 <div style={{fontSize:56,lineHeight:'70px'}}>{bed.emoji}</div>
                 {(dogImageSrc(d) || d.photo_url) && <img src={dogImageSrc(d) || d.photo_url} alt={d.name} style={{position:'absolute',left:'50%',top:8,transform:'translateX(-50%)',width:38,height:38,borderRadius:'50%',objectFit:'cover',border:`2px solid ${RARITY_COLORS[d.rarity]}`}} onError={e=>e.target.style.display='none'} />}
