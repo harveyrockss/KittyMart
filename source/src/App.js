@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 186; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 187; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2914,15 +2914,28 @@ const CAT_JOKES = [
   ['What is a cat\'s favourite song?', 'Three Blind Mice... no, Fur Elise!'],
   ['Where do cats go when they lose their tails?', 'A re-tail store!'],
 ];
+const CAT_MOODS = [
+  ['😸','Sunny and playful. Great day to chase some yarn!'],
+  ['😴','Extra sleepy. Perfect weather for a nap in a sunny spot.'],
+  ['😻','Super cuddly. Give your cats lots of pets today!'],
+  ['🐟','Very hungry. Expect lots of snack requests.'],
+  ['🧐','Curious! Something interesting is hiding behind every box.'],
+  ['😼','Feeling sneaky. Watch out for stealthy toe-pounces.'],
+  ['🥰','Purr-fectly happy. Whiskers up, tails high!'],
+];
 function CatFactCard() {
   const day = Math.floor(Date.now() / 86400000);
   const fact = CAT_FACTS[day % CAT_FACTS.length];
   const joke = CAT_JOKES[day % CAT_JOKES.length];
   const [showJoke, setShowJoke] = React.useState(false);
+  const mood = CAT_MOODS[(day + 3) % CAT_MOODS.length];
   return (
     <div data-testid="cat-fact" style={{ background: '#fff8e1', borderRadius: 16, padding: '10px 14px', margin: '10px 0', border: '2px solid #ffe082' }}>
       <div style={{ fontWeight: 'bold', fontSize: 13, color: '#8d6e00' }}>🐱 Cat Fact of the Day</div>
       <div style={{ fontSize: 13, color: '#555', marginTop: 4 }}>{fact}</div>
+      <div data-testid="cat-mood" onClick={() => { try { playPurr(); } catch {} }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
+        <b style={{ color: '#8d6e00' }}>{mood[0]} Cat Mood Forecast:</b> {mood[1]}
+      </div>
       <div data-testid="cat-joke" onClick={() => setShowJoke(v => !v)} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>😹 Joke:</b> {joke[0]} {showJoke ? <b>{joke[1]}</b> : <span style={{ color: '#c49000' }}>(tap for the answer)</span>}
       </div>
