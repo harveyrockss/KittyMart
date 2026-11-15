@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 188; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 189; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2927,6 +2927,10 @@ const CAT_TOYS = [
   ['🧶','Yarn ball'],['🐭','Toy mouse'],['📦','Cardboard box'],['🔔','Jingle bell'],
   ['🪶','Feather wand'],['🧦','Sock toy'],['🔦','Wiggly light dot'],
 ];
+const CAT_NAP_SPOTS = [
+  ['🧺','A warm laundry basket'],['☀️','A sunny windowsill'],['📦','A cardboard box (any size!)'],
+  ['🛋️','The comfiest cushion'],['📚','Right on top of a book'],['🧣','A soft fluffy blanket'],['🌿','Next to a leafy plant'],
+];
 function CatFactCard() {
   const day = Math.floor(Date.now() / 86400000);
   const fact = CAT_FACTS[day % CAT_FACTS.length];
@@ -2934,6 +2938,7 @@ function CatFactCard() {
   const [showJoke, setShowJoke] = React.useState(false);
   const mood = CAT_MOODS[(day + 3) % CAT_MOODS.length];
   const toy = CAT_TOYS[(day + 5) % CAT_TOYS.length];
+  const nap = CAT_NAP_SPOTS[(day + 2) % CAT_NAP_SPOTS.length];
   return (
     <div data-testid="cat-fact" style={{ background: '#fff8e1', borderRadius: 16, padding: '10px 14px', margin: '10px 0', border: '2px solid #ffe082' }}>
       <div style={{ fontWeight: 'bold', fontSize: 13, color: '#8d6e00' }}>🐱 Cat Fact of the Day</div>
@@ -2943,6 +2948,9 @@ function CatFactCard() {
       </div>
       <div data-testid="cat-toy" style={{ fontSize: 13, color: '#555', marginTop: 8, borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>{toy[0]} Lucky Toy Today:</b> {toy[1]}. Your cats are extra excited about it!
+      </div>
+      <div data-testid="cat-nap" style={{ fontSize: 13, color: '#555', marginTop: 8, borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
+        <b style={{ color: '#8d6e00' }}>{nap[0]} Best Nap Spot Today:</b> {nap[1]}.
       </div>
       <div data-testid="cat-joke" onClick={() => setShowJoke(v => !v)} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>😹 Joke:</b> {joke[0]} {showJoke ? <b>{joke[1]}</b> : <span style={{ color: '#c49000' }}>(tap for the answer)</span>}

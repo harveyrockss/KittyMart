@@ -87,3 +87,4 @@
 ## Known issues
 - Automated catch-tap in playwright was flaky (cat moves); catch flow not re-verified by script in run 4 (only playMeow call changed, try/catch-wrapped). Tabs load with no console errors.
 - Google Fonts (Nunito) blocked in sandbox only; harmless.
+- Run 49: cat-only 'Best Nap Spot Today' line in the Home Cat Fact card (7 child-safe spots, rotates daily). v1.52 (APP_VERSION 189). Build OK; signup + Home + tab nav with playwright, no page errors; nap line verified in DOM. Suggest next run moves on from Home text cards to free placement in Cosy Corner or Super Fan.
