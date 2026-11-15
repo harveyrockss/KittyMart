@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 193; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 194; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6083,7 +6083,8 @@ function CosyCornerScreen({ dogs, onBack }) {
         <h2 style={{margin:0,color:'#333',fontSize:18}}>🛏️ Cosy Corner</h2>
       </div>
       <div style={{background:cfg.wall,borderRadius:18,padding:14,border:'2px solid #e0d0ff',minHeight:170}}>
-        {decor.length > 0 && <div data-testid="cosy-decor" style={{display:'flex',gap:14,justifyContent:'center',fontSize:30,marginBottom:6}}>{COSY_DECOR.filter(x => decor.includes(x.id)).map(x => <span key={x.id}>{x.emoji}</span>)}</div>}
+        {decor.length > 0 && <div data-testid="cosy-decor" style={{display:'flex',gap:14,justifyContent:'center',fontSize:30,marginBottom:6}}>{decor.map(id => COSY_DECOR.find(x => x.id === id)).filter(Boolean).map((x, i, arr) => <span key={x.id} data-testid="cosy-decor-item" onClick={() => { if (arr.length < 2) return; const ids = arr.map(y => y.id); const j = (i + 1) % ids.length; [ids[i], ids[j]] = [ids[j], ids[i]]; upd({ decor: ids }); }} style={{cursor:'pointer'}}>{x.emoji}</span>)}</div>}
+        {decor.length > 1 && <div style={{fontSize:11,color:'#888',textAlign:'center',marginBottom:6}}>Tap a decoration to move it along the shelf</div>}
         <div style={{fontSize:12,color:'#888',marginBottom:8}}>{sleepers.length ? 'Sleepy cats are curled up in their beds 💤 (tap one to hear it purr)' : 'No cats napping yet — tap 😴 on a cat in the Cats tab to tuck it in!'}</div>
         <div style={{display:'flex',flexWrap:'wrap',gap:12,justifyContent:'center'}}>
           {sleepers.map(d => (
