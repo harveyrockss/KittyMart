@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 185; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 186; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2905,12 +2905,27 @@ const CAT_FACTS = [
   'Cats land on their feet thanks to a super-flexible spine and quick reflexes.',
   'Cats walk on their toes, which helps them tiptoe very quietly.',
 ];
+const CAT_JOKES = [
+  ['What do you call a pile of kittens?', 'A meowntain!'],
+  ['Why did the cat sit on the computer?', 'To keep an eye on the mouse!'],
+  ['What is a cat\'s favourite colour?', 'Purrple!'],
+  ['Why are cats good at video games?', 'They have nine lives!'],
+  ['What do cats like to eat for breakfast?', 'Mice Krispies!'],
+  ['What is a cat\'s favourite song?', 'Three Blind Mice... no, Fur Elise!'],
+  ['Where do cats go when they lose their tails?', 'A re-tail store!'],
+];
 function CatFactCard() {
-  const fact = CAT_FACTS[Math.floor(Date.now() / 86400000) % CAT_FACTS.length];
+  const day = Math.floor(Date.now() / 86400000);
+  const fact = CAT_FACTS[day % CAT_FACTS.length];
+  const joke = CAT_JOKES[day % CAT_JOKES.length];
+  const [showJoke, setShowJoke] = React.useState(false);
   return (
     <div data-testid="cat-fact" style={{ background: '#fff8e1', borderRadius: 16, padding: '10px 14px', margin: '10px 0', border: '2px solid #ffe082' }}>
       <div style={{ fontWeight: 'bold', fontSize: 13, color: '#8d6e00' }}>🐱 Cat Fact of the Day</div>
       <div style={{ fontSize: 13, color: '#555', marginTop: 4 }}>{fact}</div>
+      <div data-testid="cat-joke" onClick={() => setShowJoke(v => !v)} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
+        <b style={{ color: '#8d6e00' }}>😹 Joke:</b> {joke[0]} {showJoke ? <b>{joke[1]}</b> : <span style={{ color: '#c49000' }}>(tap for the answer)</span>}
+      </div>
     </div>
   );
 }

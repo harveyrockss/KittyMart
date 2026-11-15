@@ -74,6 +74,7 @@
 
 - Run 44: wording sweep found dog leftovers: Halloween trivia options (Golden Retriever/Samoyed/Poodle...) -> cat answers; breeding cross table (Cavoodle/Puggle) -> cat crosses (Siamese+Persian=Himalayan, Siamese+Burmese=Tonkinese, Persian+Exotic=Himalayan). v1.47 (APP_VERSION 184). Build OK; login screen loads, no page errors; trivia/breeding not exercised by script (need login).
 - Run 45: wording sweep: Training School skills (Sit/Stay/Fetch/Roll Over) now display as cat skills (Pounce/Stalk/Climb/Purr Roll); storage keys unchanged so progress is kept. v1.48 (APP_VERSION 185). Build OK; signup + tutorial loaded with playwright, no page errors; training modal itself not screenshotted (needs a cat).
+- Run 46: cat-only 'Joke of the Day' (tap for the answer) in the Cat Fact card on Home (7 child-safe jokes). v1.49 (APP_VERSION 186). Build OK; signup + Home screenshot viewed + tab nav, no page errors.
 
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
