@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 183; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 184; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3181,14 +3181,14 @@ function HomeScreen({ player, dogs, stats, onNavigate }) {
 
 // ─── Trick or Treat Halloween Mini-Game ──────────────────────────────────────
 const TRICK_OR_TREAT_PUZZLES = [
-  { q: '🎃 Which cat is most like a witch\'s familiar?', opts: ['Golden Retriever','Black Cat Dachshund','Labrador','Beagle'], ans: 1, dd: 5 },
+  { q: '🎃 Which cat is most like a witch\'s familiar?', opts: ['Fluffy Ginger Cat','Black Cat','White Cat','Tabby Cat'], ans: 1, dd: 5 },
   { q: '👻 A ghost cat has how many legs?', opts: ['2','4','6','It floats!'], ans: 3, dd: 3 },
   { q: '🦇 Which is the spookiest rarity in KittyMart?', opts: ['Common','Uncommon','Rare','Legendary'], ans: 3, dd: 5 },
   { q: '🕷️ Spider-Cat shoots webs from where?', opts: ['Its tail','Its paws','Its nose','Its ears'], ans: 1, dd: 4 },
   { q: '🎃 What do cats do on Halloween?', opts: ['Trick OR Treat','Howl at the moon','Eat all the candy','Chase zombies'], ans: 1, dd: 3 },
   { q: '💀 A skeleton cat is made of how many fish?', opts: ['No fish','Too many!','206 — just like humans','3 big ones'], ans: 1, dd: 5 },
-  { q: '🧙 What is a witch\'s cat called?', opts: ['A Familiar','A Hellhound','A Spooky Kitten','A Boo-dle'], ans: 0, dd: 4 },
-  { q: '👻 Which breed is nicknamed the "Ghost Cat"?', opts: ['Samoyed','Dalmatian','Poodle','Shiba Inu'], ans: 0, dd: 5 },
+  { q: '🧙 What is a witch\'s cat called?', opts: ['A Familiar','A Grumpy Ghost','A Spooky Kitten','A Boo-tten'], ans: 0, dd: 4 },
+  { q: '👻 Which breed is nicknamed the "Ghost Cat"?', opts: ['Russian Blue','Bengal','Sphynx','Maine Coon'], ans: 0, dd: 5 },
   { q: '🎃 How many pumpkins can a cat carry?', opts: ['1','2','5','As many as their heart desires!'], ans: 3, dd: 3 },
   { q: '🐟 What is a zombie cat\'s favourite treat?', opts: ['Brains','Fish','Kibble','Pumpkin spice biscuits'], ans: 1, dd: 4 },
 ];
@@ -6460,22 +6460,12 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
 
     // Known breed crosses → specific offspring breed
     const BREED_CROSSES = {
-      'King Charles Cavalier+Poodle': 'Cavoodle',
-      'Poodle+King Charles Cavalier': 'Cavoodle',
-      'King Charles Cavalier+Miniature Poodle': 'Cavoodle',
-      'Miniature Poodle+King Charles Cavalier': 'Cavoodle',
-      'King Charles Cavalier+Toy Poodle': 'Cavoodle',
-      'Toy Poodle+King Charles Cavalier': 'Cavoodle',
-      'Cocker Spaniel+Poodle': 'Cockapoo',
-      'Poodle+Cocker Spaniel': 'Cockapoo',
-      'Cocker Spaniel+Miniature Poodle': 'Cockapoo',
-      'Miniature Poodle+Cocker Spaniel': 'Cockapoo',
-      'Pug+Beagle': 'Puggle',
-      'Beagle+Pug': 'Puggle',
-      'Golden Retriever+Poodle': 'Goldendoodle',
-      'Poodle+Golden Retriever': 'Goldendoodle',
-      'Labrador Retriever+Poodle': 'Labradoodle',
-      'Poodle+Labrador Retriever': 'Labradoodle',
+      'Siamese+Persian': 'Himalayan',
+      'Persian+Siamese': 'Himalayan',
+      'Siamese+Burmese': 'Tonkinese',
+      'Burmese+Siamese': 'Tonkinese',
+      'Persian+Exotic Shorthair': 'Himalayan',
+      'Exotic Shorthair+Persian': 'Himalayan',
     };
     const crossKey = `${d1.breed}+${d2.breed}`;
     const crossBreedName = BREED_CROSSES[crossKey];

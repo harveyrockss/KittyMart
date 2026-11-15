@@ -72,6 +72,8 @@
 - Run 42: cat-only Personality tag on each cat card (Sleepy/Curious/Playful/Foodie/Sneaky/Brave/Cuddly/Fancy, stable per cat id, display only). v1.45 (APP_VERSION 182). Build OK; signup + 3 seeded cats on Cats tab screenshot viewed, no page errors. Seed key for tests: localStorage `km_db_cats`.
 - Run 43 (Harvey: 'do everything to get a 4+ rating'): audited code (no violence/gambling/UGC/web access offline). Added APP_STORE_4PLUS.md (questionnaire answers + safeguards + to-dos); `REACT_APP_APPSTORE=1` build skips CATAAS (user-uploaded photos). v1.46 (APP_VERSION 183). Both builds compile; tabs load, no page errors. NEEDS HARVEY: real support email (placeholder in mailto), privacy policy URL; consider bundling own cat photos.
 
+- Run 44: wording sweep found dog leftovers: Halloween trivia options (Golden Retriever/Samoyed/Poodle...) -> cat answers; breeding cross table (Cavoodle/Puggle) -> cat crosses (Siamese+Persian=Himalayan, Siamese+Burmese=Tonkinese, Persian+Exotic=Himalayan). v1.47 (APP_VERSION 184). Build OK; login screen loads, no page errors; trivia/breeding not exercised by script (need login).
+
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
 1. Cat-only features for App Store differentiation (one per run): (cat-bed Cosy Corner done run 19; decor toggles done run 20; free-placement of furniture still open) (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
