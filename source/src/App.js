@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 189; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 190; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -4750,7 +4750,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
                     </div>
                   )}
                   {dog.photo_url
-                    ? <img src={dogImageSrc(dog)} alt={dog.name} style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${RARITY_COLORS[dog.rarity]}` }} onError={e => e.target.style.display='none'} />
+                    ? <img onClick={e => { e.stopPropagation(); try { playMeow(dog.breed); } catch {} }} src={dogImageSrc(dog)} alt={dog.name} style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${RARITY_COLORS[dog.rarity]}` }} onError={e => e.target.style.display='none'} />
                     : <div style={{ width: 60, height: 60, borderRadius: '50%', background: RARITY_COLORS[dog.rarity] + '33', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, margin: '0 auto' }}>🐱</div>
                   }
                   <div style={{ fontSize: 13, fontWeight: 'bold', marginTop: 6 }}>{nick || dog.name}</div>
