@@ -89,3 +89,4 @@
 - Google Fonts (Nunito) blocked in sandbox only; harmless.
 - Run 49: cat-only 'Best Nap Spot Today' line in the Home Cat Fact card (7 child-safe spots, rotates daily). v1.52 (APP_VERSION 189). Build OK; signup + Home + tab nav with playwright, no page errors; nap line verified in DOM. Suggest next run moves on from Home text cards to free placement in Cosy Corner or Super Fan.
 - Run 50: cat-only meow-on-tap: tapping a cat's photo on the Cats tab plays a breed-pitched meow (no card select). v1.53 (APP_VERSION 190). Build OK; login screen loads with playwright, no page errors; tap not exercised by script (needs owned cat). Suggest next: free placement in Cosy Corner or Super Fan.
+- Run 51: cat-only achievement '🏡 Cosy Home' (8 Cosy Corner decorations). v1.54 (APP_VERSION 191). Build OK; login screen loads with playwright, no page errors; achievement not unlocked by script. Suggest next: free placement in Cosy Corner or Super Fan.
