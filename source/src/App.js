@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 184; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 185; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5745,7 +5745,7 @@ function DogDiaryModal({ dog, onClose, showToast }) {
               <div style={{color:'#ccc',fontWeight:'bold',fontSize:13,marginBottom:8}}>📜 Passport · Lv {lvl} · {xp} XP</div>
               {hasTraining ? ['Sit','Stay','Fetch','Roll Over'].map(sk => (
                 <div key={sk} style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:4}}>
-                  <span style={{color:'#aaa',fontSize:12,width:80}}>{sk}</span>
+                  <span style={{color:'#aaa',fontSize:12,width:80}}>{skillLabel(sk)}</span>
                   <span style={{letterSpacing:2,fontSize:14}}>{Array.from({length:5},(_,i)=>i<(skills[sk]||0)?'⭐':'☆').join('')}</span>
                 </div>
               )) : <div style={{color:'#666',fontSize:12}}>Not trained yet — go to your collection to train!</div>}
@@ -5761,6 +5761,9 @@ function DogDiaryModal({ dog, onClose, showToast }) {
 
 // ─── Train Dog Modal ──────────────────────────────────────────────────────────
 const SKILLS = ['Sit', 'Stay', 'Fetch', 'Roll Over'];
+// Stored keys stay the same (saved progress); cats see cat-skill names.
+const SKILL_LABEL = { 'Sit':'Pounce', 'Stay':'Stalk', 'Fetch':'Climb', 'Roll Over':'Purr Roll' };
+const skillLabel = sk => SKILL_LABEL[sk] || sk;
 const SIMON_EMOJIS = ['🐾','❤️','⭐','🐟','🌟','🧶'];
 
 function TrainDogModal({ dog, onClose, setToast }) {
@@ -5850,7 +5853,7 @@ function TrainDogModal({ dog, onClose, setToast }) {
                 <div style={{color:'#888',fontSize:13,marginBottom:16}}>{dog.name || dog.breed} has learned everything — time to graduate to Level 5!</div>
                 {SKILLS.map(skill => (
                   <div key={skill} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 12px',background:'#f5f0ff',borderRadius:12,marginBottom:6}}>
-                    <div style={{fontWeight:'bold',color:'#333',fontSize:14}}>{skill}</div>
+                    <div style={{fontWeight:'bold',color:'#333',fontSize:14}}>{skillLabel(skill)}</div>
                     <div style={{color:'#f59e0b',fontSize:16,letterSpacing:2}}>{stars(skills[skill]||0)}</div>
                   </div>
                 ))}
@@ -5872,7 +5875,7 @@ function TrainDogModal({ dog, onClose, setToast }) {
             {SKILLS.map(skill => (
               <div key={skill} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 12px',background:'#f5f0ff',borderRadius:12,marginBottom:8}}>
                 <div>
-                  <div style={{fontWeight:'bold',color:'#333',fontSize:14}}>{skill}</div>
+                  <div style={{fontWeight:'bold',color:'#333',fontSize:14}}>{skillLabel(skill)}</div>
                   <div style={{color:'#f59e0b',fontSize:16,letterSpacing:2}}>{stars(skills[skill]||0)}</div>
                 </div>
                 <button onClick={() => startGame(skill)} disabled={(skills[skill]||0)>=5} style={{padding:'8px 14px',background:(skills[skill]||0)>=5?'#eee':'linear-gradient(135deg,#667eea,#764ba2)',color:(skills[skill]||0)>=5?'#aaa':'white',border:'none',borderRadius:10,fontWeight:'bold',fontSize:13,cursor:(skills[skill]||0)>=5?'not-allowed':'pointer'}}>
@@ -5885,7 +5888,7 @@ function TrainDogModal({ dog, onClose, setToast }) {
         })()}
         {(phase==='showing'||phase==='input') && (
           <div style={{textAlign:'center'}}>
-            <div style={{fontWeight:'bold',color:'#764ba2',marginBottom:8}}>Training: {activeSkill}</div>
+            <div style={{fontWeight:'bold',color:'#764ba2',marginBottom:8}}>Training: {skillLabel(activeSkill)}</div>
             {phase==='showing' && (
               <div>
                 <p style={{color:'#888',fontSize:13}}>Watch the sequence!</p>
