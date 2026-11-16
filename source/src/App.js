@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 196; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 197; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5635,7 +5635,10 @@ function CatchScreen({ player, dogs, onCatch }) {
       )}
       <div className="pm-catch-box" style={{ position: 'relative', width: '100%', maxWidth: 380, height: 310, background: 'radial-gradient(circle at 30% 30%, #8fc46a, #4f8f3f 60%, #2f6b2f)', borderRadius: 20, margin: '0 auto 16px', overflow: 'hidden', border: '3px solid #fff', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
         {!caught && <button onClick={() => spawnDog(zone)} style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(0,0,0,0.18)', color: 'white', border: 'none', borderRadius: 12, padding: '4px 10px', fontSize: 12, cursor: 'pointer', zIndex: 5 }}>Skip →</button>}
-        <div data-testid="catch-bushes-back" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>{bushLayer(breed?.name, 26, 30, 54, 0.9).map(b => <span key={b.i} style={{ position: 'absolute', left: `${b.x}%`, top: `${b.y}%`, fontSize: b.sz, transform: `translate(-50%,-50%) rotate(${b.r}deg)`, opacity: b.opacity }}>{b.g}</span>)}</div>
+        <style>{`@keyframes kmSway{0%,100%{margin-left:0}50%{margin-left:3px}}`}</style>
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: '38%', background: 'linear-gradient(180deg, rgba(10,50,20,.55), transparent)', pointerEvents: 'none' }} />
+        <BushDepth testid="catch-bushes-back" seed={breed?.name} n={44} min={24} max={40} opacity={0.95} yMin={0} yMax={65} blur={1} zIndex={0} />
+        <BushDepth testid="catch-bushes-mid" seed={(breed?.name || '') + 'm'} n={34} min={36} max={56} opacity={0.95} yMin={20} yMax={90} zIndex={0} />
         {!breed ? (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
             <div style={{ fontSize: 40 }}>🐾</div>
@@ -5652,7 +5655,8 @@ function CatchScreen({ player, dogs, onCatch }) {
             🐱
           </div>
         )}
-        {!caught && <div data-testid="catch-bushes-front" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 3 }}>{bushLayer((breed?.name || '') + 'f', 9, 38, 58, 0.88).map(b => <span key={b.i} style={{ position: 'absolute', left: `${b.x}%`, top: `${b.y}%`, fontSize: b.sz, transform: `translate(-50%,-50%) rotate(${b.r}deg)`, opacity: b.opacity, filter: 'drop-shadow(0 2px 2px rgba(0,0,0,.25))' }}>{b.g}</span>)}</div>}
+        {!caught && <BushDepth testid="catch-bushes-front" seed={(breed?.name || '') + 'f'} n={12} min={46} max={70} opacity={0.9} yMin={35} yMax={112} zIndex={3} />}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4, boxShadow: 'inset 0 0 50px rgba(0,40,0,.55)', borderRadius: 20 }} />
         {zoneInfo && <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255,255,255,0.85)', borderRadius: 12, padding: '4px 10px', fontSize: 12, fontWeight: 'bold' }}>{zoneInfo.label}</div>}
         {caught && (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.92)', padding: 16 }}>
@@ -5688,11 +5692,25 @@ function CatchScreen({ player, dogs, onCatch }) {
   );
 }
 
-function bushLayer(seedStr, n, minSz, maxSz, opacity) {
+function bushLayer(seedStr, n, minSz, maxSz, opacity, yMin = 0, yMax = 100) {
   let h = 0; for (const ch of String(seedStr || 'x')) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
   const rnd = () => { h = (h * 1664525 + 1013904223) >>> 0; return h / 4294967296; };
-  const glyphs = ['🌿', '🍃', '🌱', '🌳', '🌲', '🍀'];
-  return Array.from({ length: n }, (_, i) => ({ i, x: rnd() * 100, y: rnd() * 100, sz: minSz + rnd() * (maxSz - minSz), g: glyphs[Math.floor(rnd() * glyphs.length)], r: Math.floor(rnd() * 60 - 30), opacity }));
+  const glyphs = ['🌿', '🍃', '🌱', '🌳', '🌲', '🍀', '🌿', '🌳'];
+  // perspective: things lower in the box are nearer, so they are bigger and brighter
+  return Array.from({ length: n }, (_, i) => {
+    const y = yMin + rnd() * (yMax - yMin);
+    const depth = Math.max(0, Math.min(1, y / 100));
+    return { i, x: rnd() * 100, y, sz: (minSz + rnd() * (maxSz - minSz)) * (0.75 + depth * 0.5), g: glyphs[Math.floor(rnd() * glyphs.length)], r: Math.floor(rnd() * 50 - 25), opacity, depth, d: (rnd() * 3).toFixed(2) };
+  }).sort((p, q) => p.y - q.y);
+}
+function BushDepth({ seed, n, min, max, opacity, yMin, yMax, blur, zIndex, testid }) {
+  return (
+    <div data-testid={testid} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex }}>
+      {bushLayer(seed, n, min, max, opacity, yMin, yMax).map(b => (
+        <span key={b.i} style={{ position: 'absolute', left: `${b.x}%`, top: `${b.y}%`, fontSize: b.sz, lineHeight: 1, transform: `translate(-50%,-50%) rotate(${b.r}deg)`, opacity: b.opacity, filter: `brightness(${0.6 + b.depth * 0.5}) saturate(1.1) drop-shadow(0 ${2 + b.depth * 5}px ${2 + b.depth * 3}px rgba(0,30,0,${0.25 + b.depth * 0.25}))${blur ? ' blur(' + blur + 'px)' : ''}`, animation: `kmSway ${3 + (b.d % 2)}s ease-in-out ${b.d}s infinite` }}>{b.g}</span>
+      ))}
+    </div>
+  );
 }
 
 // ─── Dog Diary Modal ──────────────────────────────────────────────────────────
