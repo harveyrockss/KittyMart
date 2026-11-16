@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 197; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 198; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6095,6 +6095,68 @@ const COSY_DECOR = [
 ];
 const COSY_WALLS = ['#ffe3ec','#e3f2ff','#e8f7e4','#fff3cf','#efe3ff','#ffe9d6','#dff7f3'];
 function getCosy() { try { return { bed:'basket', wall:COSY_WALLS[0], decor:[], ...JSON.parse(localStorage.getItem('km_cosy') || '{}') }; } catch { return { bed:'basket', wall:COSY_WALLS[0], decor:[] }; } }
+function CatCottage() {
+  const hr = new Date().getHours();
+  const night = hr < 6 || hr >= 19;
+  const sky = night ? ['#1d2a5c', '#5b5a9a'] : ['#7ec8f5', '#e9f7ff'];
+  const glow = night ? 1 : 0.55;
+  return (
+    <svg data-testid="cat-cottage" viewBox="0 0 360 215" style={{ width: '100%', display: 'block', borderRadius: 22, boxShadow: '0 8px 20px rgba(40,20,10,.3)', border: '3px solid #6b4a2f', background: '#000' }} role="img" aria-label="Your cat cottage">
+      <defs>
+        <linearGradient id="ccSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={sky[0]} /><stop offset="1" stopColor={sky[1]} /></linearGradient>
+        <linearGradient id="ccGrass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={night ? '#2f6b45' : '#79c456'} /><stop offset="1" stopColor={night ? '#1b4a30' : '#3f8f3a'} /></linearGradient>
+        <linearGradient id="ccRoof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#4aa3a8" /><stop offset="1" stopColor="#2c6f80" /></linearGradient>
+        <linearGradient id="ccWall" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#f4e3c1" /><stop offset="1" stopColor="#e6cf9f" /></linearGradient>
+        <radialGradient id="ccBush" cx="35%" cy="30%" r="80%"><stop offset="0" stopColor="#8fd16a" /><stop offset="1" stopColor="#2f7a35" /></radialGradient>
+        <radialGradient id="ccLamp"><stop offset="0" stopColor="#fff2a8" stopOpacity="1" /><stop offset="1" stopColor="#ffd35a" stopOpacity="0" /></radialGradient>
+        <pattern id="ccShingle" width="16" height="11" patternUnits="userSpaceOnUse"><path d="M0 0 H16 V5 Q12 11 8 5 Q4 11 0 5 Z" fill="rgba(255,255,255,.14)" stroke="rgba(0,40,60,.45)" strokeWidth="1" /></pattern>
+        <pattern id="ccBlades" width="9" height="9" patternUnits="userSpaceOnUse"><path d="M2 8 L3 3 M6 8 L5 4 M8 7 L8.5 4" stroke="rgba(20,80,20,.35)" strokeWidth="1" strokeLinecap="round" /></pattern>
+        <style>{`@keyframes ccSmoke{0%{transform:translateY(0) scale(.6);opacity:.7}100%{transform:translateY(-34px) scale(1.5);opacity:0}}@keyframes ccFlick{0%,100%{opacity:1}50%{opacity:.8}}`}</style>
+      </defs>
+      <rect width="360" height="215" fill="url(#ccSky)" />
+      {night ? (<g><circle cx="300" cy="30" r="14" fill="#fff6d0" /><circle cx="305" cy="26" r="12" fill="#3a3f7a" opacity=".55" />{[[40,20],[90,40],[140,15],[230,28],[330,70],[20,70]].map(([x,y],i)=><circle key={i} cx={x} cy={y} r="1.5" fill="#fff" />)}</g>)
+       : (<g><circle cx="45" cy="34" r="16" fill="#fff3a0" /><circle cx="45" cy="34" r="24" fill="#fff3a0" opacity=".3" /><g fill="#fff" opacity=".9"><ellipse cx="270" cy="34" rx="26" ry="9" /><ellipse cx="288" cy="28" rx="16" ry="8" /><ellipse cx="120" cy="22" rx="20" ry="7" /></g></g>)}
+      <ellipse cx="70" cy="140" rx="110" ry="38" fill={night ? '#3a5a78' : '#9dc9a0'} opacity=".8" />
+      <ellipse cx="300" cy="145" rx="120" ry="42" fill={night ? '#34506c' : '#8cbf94'} opacity=".8" />
+      <rect y="132" width="360" height="83" fill="url(#ccGrass)" />
+      <rect y="132" width="360" height="83" fill="url(#ccBlades)" />
+      {/* chimney */}
+      <rect x="236" y="34" width="20" height="46" fill="#a4553f" /><rect x="233" y="30" width="26" height="7" fill="#7c3f30" />
+      <path d="M238 44 H254 M238 54 H254 M238 64 H254" stroke="rgba(0,0,0,.25)" strokeWidth="1" />
+      <g fill="#eee" style={{ transformOrigin: '246px 30px' }}>{[0, 1, 2].map(i => <circle key={i} cx={246 + i * 2} cy="28" r="6" style={{ animation: `ccSmoke 4s ease-out ${i * 1.3}s infinite`, transformOrigin: '246px 28px' }} />)}</g>
+      {/* cat ears on the roof peak */}
+      <polygon points="150,56 158,26 178,42" fill="#2c6f80" /><polygon points="156,50 160,34 171,43" fill="#f2a6b8" />
+      <polygon points="210,56 202,26 182,42" fill="#2c6f80" /><polygon points="204,50 200,34 189,43" fill="#f2a6b8" />
+      {/* walls */}
+      <ellipse cx="180" cy="176" rx="130" ry="9" fill="rgba(0,30,0,.35)" />
+      <rect x="76" y="102" width="208" height="70" fill="url(#ccWall)" />
+      <g fill="#7a4f33"><rect x="76" y="102" width="6" height="70" /><rect x="278" y="102" width="6" height="70" /><rect x="146" y="102" width="4" height="70" /><rect x="210" y="102" width="4" height="70" /><rect x="76" y="124" width="208" height="3" /></g>
+      <rect x="72" y="162" width="216" height="12" rx="3" fill="#9a9a9f" /><path d="M72 168 H288 M96 162 V174 M130 162 V174 M170 162 V174 M214 162 V174 M252 162 V174" stroke="rgba(0,0,0,.25)" />
+      {/* roof */}
+      <polygon points="46,106 180,36 314,106 300,112 60,112" fill="url(#ccRoof)" />
+      <polygon points="46,106 180,36 314,106 300,112 60,112" fill="url(#ccShingle)" />
+      <polygon points="46,106 180,36 314,106" fill="none" stroke="#1d4f5e" strokeWidth="3" strokeLinejoin="round" />
+      <rect x="58" y="108" width="244" height="5" rx="2" fill="rgba(0,0,0,.28)" />
+      {/* cat-eye attic window */}
+      <circle cx="180" cy="80" r="15" fill="#7a4f33" /><circle cx="180" cy="80" r="12" fill="#ffd96a" style={{ animation: 'ccFlick 3s ease-in-out infinite' }} /><ellipse cx="180" cy="80" rx="3" ry="10" fill="#3a2a1a" /><circle cx="176" cy="75" r="2.5" fill="#fff" opacity=".8" />
+      {/* windows */}
+      {[[96, 'l'], [222, 'r']].map(([x]) => (
+        <g key={x}><rect x={x - 4} y="112" width="48" height="40" rx="3" fill="#7a4f33" /><rect x={x} y="116" width="40" height="32" rx="2" fill="#ffd96a" opacity={0.85 + glow * 0.15} /><path d={`M${x + 20} 116 V148 M${x} 132 H${x + 40}`} stroke="#7a4f33" strokeWidth="2" />
+          <rect x={x - 6} y="150" width="52" height="9" rx="2" fill="#8a5a32" /><g>{[0,1,2,3,4].map(i => <circle key={i} cx={x - 1 + i * 11} cy="148" r="4" fill={['#ff7aa8','#ffd35a','#ff9b5a','#c08bff','#ff7aa8'][i]} />)}</g></g>
+      ))}
+      {/* door with cat flap */}
+      <path d="M162 172 V134 Q162 118 180 118 Q198 118 198 134 V172 Z" fill="#7a3f6a" /><path d="M162 172 V134 Q162 118 180 118 Q198 118 198 134 V172 Z" fill="none" stroke="#4d2745" strokeWidth="3" />
+      <circle cx="191" cy="148" r="2.2" fill="#ffd35a" /><rect x="172" y="160" width="16" height="11" rx="4" fill="#ffd96a" opacity={glow} stroke="#4d2745" strokeWidth="2" />
+      <text x="180" y="140" textAnchor="middle" fontSize="12">🐾</text>
+      {/* lamp post */}
+      <rect x="323" y="118" width="4" height="56" fill="#2e2e3a" /><circle cx="325" cy="114" r="22" fill="url(#ccLamp)" opacity={night ? 1 : 0.35} /><circle cx="325" cy="114" r="6" fill="#fff2a8" stroke="#2e2e3a" strokeWidth="2" />
+      {/* bushes */}
+      {[[56,168,16],[40,176,12],[78,176,11],[300,172,15],[283,178,10],[344,180,13]].map(([x,y,r],i)=><g key={i}><ellipse cx={x} cy={y + r * .7} rx={r} ry={r * .3} fill="rgba(0,30,0,.35)" /><circle cx={x} cy={y} r={r} fill="url(#ccBush)" /></g>)}
+      {/* paw-print stepping stones */}
+      {[[180,182,10],[168,193,12],[194,201,14],[176,211,16]].map(([x,y,r],i)=><g key={i}><ellipse cx={x} cy={y} rx={r} ry={r*.5} fill="#cfcfd6" stroke="#9a9aa6" /><text x={x} y={y + 3} textAnchor="middle" fontSize={r*.8} opacity=".55">🐾</text></g>)}
+    </svg>
+  );
+}
 function CosyCornerScreen({ dogs, onBack }) {
   const [cfg, setCfg] = useState(getCosy);
   const upd = (patch) => { const n = { ...cfg, ...patch }; setCfg(n); try { localStorage.setItem('km_cosy', JSON.stringify(n)); } catch {} };
@@ -6109,6 +6171,7 @@ function CosyCornerScreen({ dogs, onBack }) {
         <button onClick={onBack} style={{padding:'8px 14px',background:'#f0f0f0',border:'none',borderRadius:12,fontWeight:'bold',cursor:'pointer',fontSize:13}}>← Back</button>
         <h2 style={{margin:0,color:'#333',fontSize:18}}>🛏️ Cosy Corner</h2>
       </div>
+      <div style={{marginBottom:12}}><CatCottage /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night.</div></div>
       <style>{`@keyframes kmFloatZ{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-16px);opacity:0}}@keyframes kmBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes kmDust{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.7;transform:translateY(-6px)}}`}</style>
       <div data-testid="cosy-room" style={{position:'relative',borderRadius:22,overflow:'hidden',border:'3px solid #6b4a2f',boxShadow:'0 8px 20px rgba(60,30,10,.35), inset 0 0 40px rgba(0,0,0,.18)',minHeight:380,background:'#6b4a2f'}}>
         {/* wall */}
