@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 206; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 207; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2462,6 +2462,7 @@ const ACHIEVEMENTS = [
   { id: 'nap_25',         label: '💤 Sleepy Clowder', desc: 'Tuck cats in for 25 naps (😴 button)', pts: 40, check: () => parseInt(localStorage.getItem('km_nap_count')||'0',10) >= 25 },
   { id: 'yarn_50',      label: '🧶 Yarn Master',    desc: 'Catch 50 yarn balls in Yarn Chase', pts: 25,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 50 },
   { id: 'yarn_play10',   label: '🧶 Yarn Regular',   desc: 'Play Yarn Chase 10 times', pts: 20,  check: () => parseInt(localStorage.getItem('km_yarn_games')||'0',10) >= 10 },
+  { id: 'cottage_10',   label: '🏠 Cottage Caller', desc: 'Tap the Cat Cottage door or chimney 10 times', pts: 20, check: () => parseInt(localStorage.getItem('km_cottage_taps')||'0',10) >= 10 },
   { id: 'listen_10',    label: '👂 Sharp Ears',     desc: 'Use Listen for a Meow 10 times on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_listen_count')||'0',10) >= 10 },
   { id: 'yarn_200',     label: '🧶 Yarn Hero',      desc: 'Catch 200 yarn balls in Yarn Chase', pts: 60,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 200 },
   { id: 'purr_100',      label: '😻 Purr Pro',       desc: 'Feed your cats 100 times',          pts: 50,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 100 },
@@ -6178,8 +6179,8 @@ function CatCottage({ wall, roof = 0 }) {
       <path d="M162 172 V134 Q162 118 180 118 Q198 118 198 134 V172 Z" fill="#7a3f6a" /><path d="M162 172 V134 Q162 118 180 118 Q198 118 198 134 V172 Z" fill="none" stroke="#4d2745" strokeWidth="3" />
       <circle cx="191" cy="148" r="2.2" fill="#ffd35a" /><rect x="172" y="160" width="16" height="11" rx="4" fill="#ffd96a" opacity={glow} stroke="#4d2745" strokeWidth="2" />
       <text x="180" y="140" textAnchor="middle" fontSize="12">🐾</text>
-      <rect data-testid="cottage-door" x="160" y="116" width="40" height="58" fill="transparent" style={{ cursor: 'pointer' }} onClick={() => { try { playMeow(); } catch {} }} />
-      <rect data-testid="cottage-chimney" x="232" y="26" width="28" height="56" fill="transparent" style={{ cursor: 'pointer' }} onClick={() => { try { playPurr(); } catch {} }} />
+      <rect data-testid="cottage-door" x="160" y="116" width="40" height="58" fill="transparent" style={{ cursor: 'pointer' }} onClick={() => { try { playMeow(); } catch {} try { localStorage.setItem('km_cottage_taps', String((parseInt(localStorage.getItem('km_cottage_taps')||'0',10)||0) + 1)); } catch {} }} />
+      <rect data-testid="cottage-chimney" x="232" y="26" width="28" height="56" fill="transparent" style={{ cursor: 'pointer' }} onClick={() => { try { playPurr(); } catch {} try { localStorage.setItem('km_cottage_taps', String((parseInt(localStorage.getItem('km_cottage_taps')||'0',10)||0) + 1)); } catch {} }} />
       {/* lamp post */}
       <rect x="323" y="118" width="4" height="56" fill="#2e2e3a" /><circle cx="325" cy="114" r="22" fill="url(#ccLamp)" opacity={night ? 1 : 0.35} /><circle cx="325" cy="114" r="6" fill="#fff2a8" stroke="#2e2e3a" strokeWidth="2" />
       {/* bushes */}
