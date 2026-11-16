@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 209; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 210; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2462,6 +2462,7 @@ const ACHIEVEMENTS = [
   { id: 'nap_25',         label: '💤 Sleepy Clowder', desc: 'Tuck cats in for 25 naps (😴 button)', pts: 40, check: () => parseInt(localStorage.getItem('km_nap_count')||'0',10) >= 25 },
   { id: 'yarn_50',      label: '🧶 Yarn Master',    desc: 'Catch 50 yarn balls in Yarn Chase', pts: 25,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 50 },
   { id: 'yarn_play10',   label: '🧶 Yarn Regular',   desc: 'Play Yarn Chase 10 times', pts: 20,  check: () => parseInt(localStorage.getItem('km_yarn_games')||'0',10) >= 10 },
+  { id: 'meow_25',      label: '🎶 Meow Chorus', desc: 'Tap cat photos to hear 25 meows', pts: 20, check: () => parseInt(localStorage.getItem('km_meow_count')||'0',10) >= 25 },
   { id: 'namer_3',      label: '🏷️ Name Giver', desc: 'Give 3 cats a nickname', pts: 20, check: () => parseInt(localStorage.getItem('km_name_count')||'0',10) >= 3 },
   { id: 'joke_10',      label: '😹 Joke Teller', desc: 'Read 10 cat joke answers on Home', pts: 20, check: () => parseInt(localStorage.getItem('km_joke_count')||'0',10) >= 10 },
   { id: 'cottage_10',   label: '🏠 Cottage Caller', desc: 'Tap the Cat Cottage door or chimney 10 times', pts: 20, check: () => parseInt(localStorage.getItem('km_cottage_taps')||'0',10) >= 10 },
@@ -4762,7 +4763,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
                     </div>
                   )}
                   {dog.photo_url
-                    ? <img onClick={e => { e.stopPropagation(); try { playMeow(dog.breed); } catch {} }} src={dogImageSrc(dog)} alt={dog.name} style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${RARITY_COLORS[dog.rarity]}` }} onError={e => e.target.style.display='none'} />
+                    ? <img onClick={e => { e.stopPropagation(); try { playMeow(dog.breed); } catch {} try { localStorage.setItem('km_meow_count', String((parseInt(localStorage.getItem('km_meow_count')||'0',10)||0) + 1)); } catch {} }} src={dogImageSrc(dog)} alt={dog.name} style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${RARITY_COLORS[dog.rarity]}` }} onError={e => e.target.style.display='none'} />
                     : <div style={{ width: 60, height: 60, borderRadius: '50%', background: RARITY_COLORS[dog.rarity] + '33', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, margin: '0 auto' }}>🐱</div>
                   }
                   <div style={{ fontSize: 13, fontWeight: 'bold', marginTop: 6 }}>{nick || dog.name}</div>
