@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 203; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 204; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -4310,6 +4310,10 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
     { name: 'Cleo',    breed: 'Egyptian Mau',      rarity: 'Legendary', speed: 6.8 },
     { name: 'Smokey',  breed: 'Russian Blue',      rarity: 'Epic',      speed: 5.8 },
     { name: 'Biscuit', breed: 'Domestic Shorthair',rarity: 'Common',    speed: 4.5 },
+    { name: 'Mochi',   breed: 'Ragdoll',           rarity: 'Rare',      speed: 5.2 },
+    { name: 'Pumpkin', breed: 'Ginger Tabby',      rarity: 'Common',    speed: 4.9 },
+    { name: 'Whiskers',breed: 'Maine Coon',        rarity: 'Rare',      speed: 5.5 },
+    { name: 'Shadow',  breed: 'Bombay',            rarity: 'Uncommon',  speed: 5.0 },
   ];
 
   const startAiRace = React.useCallback((dog, useGhost) => {
