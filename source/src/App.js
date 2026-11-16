@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 198; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 199; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6148,6 +6148,8 @@ function CatCottage() {
       <path d="M162 172 V134 Q162 118 180 118 Q198 118 198 134 V172 Z" fill="#7a3f6a" /><path d="M162 172 V134 Q162 118 180 118 Q198 118 198 134 V172 Z" fill="none" stroke="#4d2745" strokeWidth="3" />
       <circle cx="191" cy="148" r="2.2" fill="#ffd35a" /><rect x="172" y="160" width="16" height="11" rx="4" fill="#ffd96a" opacity={glow} stroke="#4d2745" strokeWidth="2" />
       <text x="180" y="140" textAnchor="middle" fontSize="12">🐾</text>
+      <rect data-testid="cottage-door" x="160" y="116" width="40" height="58" fill="transparent" style={{ cursor: 'pointer' }} onClick={() => { try { playMeow(); } catch {} }} />
+      <rect data-testid="cottage-chimney" x="232" y="26" width="28" height="56" fill="transparent" style={{ cursor: 'pointer' }} onClick={() => { try { playPurr(); } catch {} }} />
       {/* lamp post */}
       <rect x="323" y="118" width="4" height="56" fill="#2e2e3a" /><circle cx="325" cy="114" r="22" fill="url(#ccLamp)" opacity={night ? 1 : 0.35} /><circle cx="325" cy="114" r="6" fill="#fff2a8" stroke="#2e2e3a" strokeWidth="2" />
       {/* bushes */}
@@ -6171,7 +6173,7 @@ function CosyCornerScreen({ dogs, onBack }) {
         <button onClick={onBack} style={{padding:'8px 14px',background:'#f0f0f0',border:'none',borderRadius:12,fontWeight:'bold',cursor:'pointer',fontSize:13}}>← Back</button>
         <h2 style={{margin:0,color:'#333',fontSize:18}}>🛏️ Cosy Corner</h2>
       </div>
-      <div style={{marginBottom:12}}><CatCottage /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night.</div></div>
+      <div style={{marginBottom:12}}><CatCottage /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night. Tap the door for a meow, the chimney for a purr!</div></div>
       <style>{`@keyframes kmFloatZ{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-16px);opacity:0}}@keyframes kmBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes kmDust{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.7;transform:translateY(-6px)}}`}</style>
       <div data-testid="cosy-room" style={{position:'relative',borderRadius:22,overflow:'hidden',border:'3px solid #6b4a2f',boxShadow:'0 8px 20px rgba(60,30,10,.35), inset 0 0 40px rgba(0,0,0,.18)',minHeight:380,background:'#6b4a2f'}}>
         {/* wall */}
