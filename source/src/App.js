@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 207; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 208; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2462,6 +2462,7 @@ const ACHIEVEMENTS = [
   { id: 'nap_25',         label: '💤 Sleepy Clowder', desc: 'Tuck cats in for 25 naps (😴 button)', pts: 40, check: () => parseInt(localStorage.getItem('km_nap_count')||'0',10) >= 25 },
   { id: 'yarn_50',      label: '🧶 Yarn Master',    desc: 'Catch 50 yarn balls in Yarn Chase', pts: 25,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 50 },
   { id: 'yarn_play10',   label: '🧶 Yarn Regular',   desc: 'Play Yarn Chase 10 times', pts: 20,  check: () => parseInt(localStorage.getItem('km_yarn_games')||'0',10) >= 10 },
+  { id: 'joke_10',      label: '😹 Joke Teller', desc: 'Read 10 cat joke answers on Home', pts: 20, check: () => parseInt(localStorage.getItem('km_joke_count')||'0',10) >= 10 },
   { id: 'cottage_10',   label: '🏠 Cottage Caller', desc: 'Tap the Cat Cottage door or chimney 10 times', pts: 20, check: () => parseInt(localStorage.getItem('km_cottage_taps')||'0',10) >= 10 },
   { id: 'listen_10',    label: '👂 Sharp Ears',     desc: 'Use Listen for a Meow 10 times on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_listen_count')||'0',10) >= 10 },
   { id: 'yarn_200',     label: '🧶 Yarn Hero',      desc: 'Catch 200 yarn balls in Yarn Chase', pts: 60,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 200 },
@@ -2957,7 +2958,7 @@ function CatFactCard() {
       <div data-testid="cat-nap" style={{ fontSize: 13, color: '#555', marginTop: 8, borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>{nap[0]} Best Nap Spot Today:</b> {nap[1]}.
       </div>
-      <div data-testid="cat-joke" onClick={() => setShowJoke(v => !v)} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
+      <div data-testid="cat-joke" onClick={() => { if (!showJoke) { try { localStorage.setItem('km_joke_count', String((parseInt(localStorage.getItem('km_joke_count')||'0',10)||0) + 1)); } catch {} } setShowJoke(v => !v); }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>😹 Joke:</b> {joke[0]} {showJoke ? <b>{joke[1]}</b> : <span style={{ color: '#c49000' }}>(tap for the answer)</span>}
       </div>
     </div>
