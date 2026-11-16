@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 202; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 203; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5670,7 +5670,7 @@ function CatchScreen({ player, dogs, onCatch }) {
           <div data-testid="meow-ring" style={{ position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, width: 90, height: 90, marginLeft: -45, marginTop: -45, borderRadius: '50%', border: '4px solid rgba(255,255,255,0.9)', boxShadow: '0 0 18px rgba(255,255,255,0.8)', pointerEvents: 'none', zIndex: 4, animation: 'kmMeowRing 0.8s ease-out infinite' }} />
         )}
         <style>{`@keyframes kmMeowRing{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.5);opacity:0}}`}</style>
-        {!caught && <BushDepth testid="catch-bushes-front" seed={(breed?.name || '') + 'f'} n={12} min={46} max={70} opacity={0.9} yMin={35} yMax={112} zIndex={3} />}
+        {!caught && <BushDepth testid="catch-bushes-front" seed={(breed?.name || '') + 'f'} n={({Common:8,Uncommon:10,Rare:12,Epic:14,Legendary:16})[breed?.rarity] || 12} min={46} max={70} opacity={0.9} yMin={35} yMax={112} zIndex={3} />}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4, boxShadow: 'inset 0 0 50px rgba(0,40,0,.55)', borderRadius: 20 }} />
         {zoneInfo && <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255,255,255,0.85)', borderRadius: 12, padding: '4px 10px', fontSize: 12, fontWeight: 'bold' }}>{zoneInfo.label}</div>}
         {caught && (
