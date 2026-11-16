@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 195; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 196; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5633,8 +5633,9 @@ function CatchScreen({ player, dogs, onCatch }) {
           )}
         </div>
       )}
-      <div className="pm-catch-box" style={{ position: 'relative', width: '100%', maxWidth: 380, height: 310, background: zoneInfo ? `linear-gradient(135deg, ${zoneInfo.color}99, ${zoneInfo.color}44)` : 'linear-gradient(135deg, #a8edea, #fed6e3)', borderRadius: 20, margin: '0 auto 16px', overflow: 'hidden', border: '3px solid #fff', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+      <div className="pm-catch-box" style={{ position: 'relative', width: '100%', maxWidth: 380, height: 310, background: 'radial-gradient(circle at 30% 30%, #8fc46a, #4f8f3f 60%, #2f6b2f)', borderRadius: 20, margin: '0 auto 16px', overflow: 'hidden', border: '3px solid #fff', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
         {!caught && <button onClick={() => spawnDog(zone)} style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(0,0,0,0.18)', color: 'white', border: 'none', borderRadius: 12, padding: '4px 10px', fontSize: 12, cursor: 'pointer', zIndex: 5 }}>Skip →</button>}
+        <div data-testid="catch-bushes-back" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>{bushLayer(breed?.name, 26, 30, 54, 0.9).map(b => <span key={b.i} style={{ position: 'absolute', left: `${b.x}%`, top: `${b.y}%`, fontSize: b.sz, transform: `translate(-50%,-50%) rotate(${b.r}deg)`, opacity: b.opacity }}>{b.g}</span>)}</div>
         {!breed ? (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
             <div style={{ fontSize: 40 }}>🐾</div>
@@ -5651,6 +5652,7 @@ function CatchScreen({ player, dogs, onCatch }) {
             🐱
           </div>
         )}
+        {!caught && <div data-testid="catch-bushes-front" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 3 }}>{bushLayer((breed?.name || '') + 'f', 9, 38, 58, 0.88).map(b => <span key={b.i} style={{ position: 'absolute', left: `${b.x}%`, top: `${b.y}%`, fontSize: b.sz, transform: `translate(-50%,-50%) rotate(${b.r}deg)`, opacity: b.opacity, filter: 'drop-shadow(0 2px 2px rgba(0,0,0,.25))' }}>{b.g}</span>)}</div>}
         {zoneInfo && <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255,255,255,0.85)', borderRadius: 12, padding: '4px 10px', fontSize: 12, fontWeight: 'bold' }}>{zoneInfo.label}</div>}
         {caught && (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.92)', padding: 16 }}>
@@ -5673,7 +5675,7 @@ function CatchScreen({ player, dogs, onCatch }) {
           {treat === 1 ? '😻 Sniffing the treat… tap now!' : treat === 2 ? '🐟 Treat used' : '🐟 Throw a Treat (1 per cat)'}
         </button>
       )}
-      <p style={{ color: '#666', fontSize: 13, margin: 0 }}>{caught ? 'Added to your collection!' : 'Tap the cat to catch it!'}</p>
+      <p style={{ color: '#666', fontSize: 13, margin: 0 }}>{caught ? 'Added to your collection!' : 'Look closely — the cat is hiding in the bushes! Tap it to catch it.'}</p>
       {showMysteryBox && <MysteryBoxModal onClose={() => setShowMysteryBox(false)} player={player} onCatch={onCatch} />}
       {showConfetti && <ConfettiEffect onDone={() => setShowConfetti(false)} />}
       {showShareGate && (
@@ -5684,6 +5686,13 @@ function CatchScreen({ player, dogs, onCatch }) {
       )}
     </div>
   );
+}
+
+function bushLayer(seedStr, n, minSz, maxSz, opacity) {
+  let h = 0; for (const ch of String(seedStr || 'x')) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const rnd = () => { h = (h * 1664525 + 1013904223) >>> 0; return h / 4294967296; };
+  const glyphs = ['🌿', '🍃', '🌱', '🌳', '🌲', '🍀'];
+  return Array.from({ length: n }, (_, i) => ({ i, x: rnd() * 100, y: rnd() * 100, sz: minSz + rnd() * (maxSz - minSz), g: glyphs[Math.floor(rnd() * glyphs.length)], r: Math.floor(rnd() * 60 - 30), opacity }));
 }
 
 // ─── Dog Diary Modal ──────────────────────────────────────────────────────────
