@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 201; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 202; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5342,6 +5342,8 @@ function CatchScreen({ player, dogs, onCatch }) {
   const [photoUrl, setPhotoUrl] = useState(null);
   const [treat, setTreat] = useState(0); // 0 = unused, 1 = cat is sniffing the treat, 2 = used
   const treatTimerRef = useRef(null);
+  const [listen, setListen] = useState(0); // 0 = unused, 1 = ring showing, 2 = used
+  const listenTimerRef = useRef(null);
 
   const stopAll = useCallback(() => {
     clearInterval(intervalRef.current);
@@ -5359,8 +5361,17 @@ function CatchScreen({ player, dogs, onCatch }) {
     treatTimerRef.current = setTimeout(() => setTreat(2), 4000);
   };
 
+  const listenForMeow = () => {
+    if (listen !== 0 || caught || !breed) return;
+    setListen(1);
+    try { playMeow(breed.name); } catch {}
+    clearTimeout(listenTimerRef.current);
+    listenTimerRef.current = setTimeout(() => setListen(2), 2500);
+  };
+
   const spawnDog = useCallback(async (currentZone) => {
     stopAll();
+    clearTimeout(listenTimerRef.current); setListen(0);
     catchingRef.current = false;
     setCaught(false); setCatching(false); setDogScale(1); setPhotoUrl(null); setTimeLeft(null); clearTimeout(treatTimerRef.current); setTreat(0);
     const b = currentZone ? getBreedForZone(currentZone) : getRandomBreed();
@@ -5655,6 +5666,10 @@ function CatchScreen({ player, dogs, onCatch }) {
             🐱
           </div>
         )}
+        {listen === 1 && !caught && (
+          <div data-testid="meow-ring" style={{ position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, width: 90, height: 90, marginLeft: -45, marginTop: -45, borderRadius: '50%', border: '4px solid rgba(255,255,255,0.9)', boxShadow: '0 0 18px rgba(255,255,255,0.8)', pointerEvents: 'none', zIndex: 4, animation: 'kmMeowRing 0.8s ease-out infinite' }} />
+        )}
+        <style>{`@keyframes kmMeowRing{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.5);opacity:0}}`}</style>
         {!caught && <BushDepth testid="catch-bushes-front" seed={(breed?.name || '') + 'f'} n={12} min={46} max={70} opacity={0.9} yMin={35} yMax={112} zIndex={3} />}
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4, boxShadow: 'inset 0 0 50px rgba(0,40,0,.55)', borderRadius: 20 }} />
         {zoneInfo && <div style={{ position: 'absolute', top: 10, left: 10, background: 'rgba(255,255,255,0.85)', borderRadius: 12, padding: '4px 10px', fontSize: 12, fontWeight: 'bold' }}>{zoneInfo.label}</div>}
@@ -5677,6 +5692,11 @@ function CatchScreen({ player, dogs, onCatch }) {
       {!caught && breed && (
         <button onClick={throwTreat} disabled={treat !== 0} style={{ margin: '0 0 8px', padding: '8px 18px', background: treat === 0 ? 'linear-gradient(135deg,#f4a261,#e76f51)' : '#ddd', color: treat === 0 ? 'white' : '#888', border: 'none', borderRadius: 20, fontSize: 13, fontWeight: 'bold', cursor: treat === 0 ? 'pointer' : 'default' }}>
           {treat === 1 ? '😻 Sniffing the treat… tap now!' : treat === 2 ? '🐟 Treat used' : '🐟 Throw a Treat (1 per cat)'}
+        </button>
+      )}
+      {!caught && breed && (
+        <button onClick={listenForMeow} disabled={listen !== 0} data-testid="listen-btn" style={{ margin: '0 0 8px 8px', padding: '8px 18px', background: listen === 0 ? 'linear-gradient(135deg,#667eea,#764ba2)' : '#ddd', color: listen === 0 ? 'white' : '#888', border: 'none', borderRadius: 20, fontSize: 13, fontWeight: 'bold', cursor: listen === 0 ? 'pointer' : 'default' }}>
+          {listen === 1 ? '👂 Mrrow! Follow the ring' : listen === 2 ? '👂 Listened' : '👂 Listen for a Meow (1 per cat)'}
         </button>
       )}
       <p style={{ color: '#666', fontSize: 13, margin: 0 }}>{caught ? 'Added to your collection!' : 'Look closely — the cat is hiding in the bushes! Tap it to catch it.'}</p>
