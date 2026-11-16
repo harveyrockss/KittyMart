@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 199; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 200; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6095,7 +6095,7 @@ const COSY_DECOR = [
 ];
 const COSY_WALLS = ['#ffe3ec','#e3f2ff','#e8f7e4','#fff3cf','#efe3ff','#ffe9d6','#dff7f3'];
 function getCosy() { try { return { bed:'basket', wall:COSY_WALLS[0], decor:[], ...JSON.parse(localStorage.getItem('km_cosy') || '{}') }; } catch { return { bed:'basket', wall:COSY_WALLS[0], decor:[] }; } }
-function CatCottage() {
+function CatCottage({ wall }) {
   const hr = new Date().getHours();
   const night = hr < 6 || hr >= 19;
   const sky = night ? ['#1d2a5c', '#5b5a9a'] : ['#7ec8f5', '#e9f7ff'];
@@ -6106,7 +6106,7 @@ function CatCottage() {
         <linearGradient id="ccSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={sky[0]} /><stop offset="1" stopColor={sky[1]} /></linearGradient>
         <linearGradient id="ccGrass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={night ? '#2f6b45' : '#79c456'} /><stop offset="1" stopColor={night ? '#1b4a30' : '#3f8f3a'} /></linearGradient>
         <linearGradient id="ccRoof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#4aa3a8" /><stop offset="1" stopColor="#2c6f80" /></linearGradient>
-        <linearGradient id="ccWall" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#f4e3c1" /><stop offset="1" stopColor="#e6cf9f" /></linearGradient>
+        <linearGradient id="ccWall" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor={wall || '#f4e3c1'} /><stop offset="1" stopColor={wall || '#e6cf9f'} /></linearGradient>
         <radialGradient id="ccBush" cx="35%" cy="30%" r="80%"><stop offset="0" stopColor="#8fd16a" /><stop offset="1" stopColor="#2f7a35" /></radialGradient>
         <radialGradient id="ccLamp"><stop offset="0" stopColor="#fff2a8" stopOpacity="1" /><stop offset="1" stopColor="#ffd35a" stopOpacity="0" /></radialGradient>
         <pattern id="ccShingle" width="16" height="11" patternUnits="userSpaceOnUse"><path d="M0 0 H16 V5 Q12 11 8 5 Q4 11 0 5 Z" fill="rgba(255,255,255,.14)" stroke="rgba(0,40,60,.45)" strokeWidth="1" /></pattern>
@@ -6173,7 +6173,7 @@ function CosyCornerScreen({ dogs, onBack }) {
         <button onClick={onBack} style={{padding:'8px 14px',background:'#f0f0f0',border:'none',borderRadius:12,fontWeight:'bold',cursor:'pointer',fontSize:13}}>← Back</button>
         <h2 style={{margin:0,color:'#333',fontSize:18}}>🛏️ Cosy Corner</h2>
       </div>
-      <div style={{marginBottom:12}}><CatCottage /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night. Tap the door for a meow, the chimney for a purr!</div></div>
+      <div style={{marginBottom:12}}><CatCottage wall={cfg.wall} /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night. Tap the door for a meow, the chimney for a purr! Its walls match your room colour.</div></div>
       <style>{`@keyframes kmFloatZ{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-16px);opacity:0}}@keyframes kmBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes kmDust{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.7;transform:translateY(-6px)}}`}</style>
       <div data-testid="cosy-room" style={{position:'relative',borderRadius:22,overflow:'hidden',border:'3px solid #6b4a2f',boxShadow:'0 8px 20px rgba(60,30,10,.35), inset 0 0 40px rgba(0,0,0,.18)',minHeight:380,background:'#6b4a2f'}}>
         {/* wall */}
