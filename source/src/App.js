@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 208; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 209; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2462,6 +2462,7 @@ const ACHIEVEMENTS = [
   { id: 'nap_25',         label: '💤 Sleepy Clowder', desc: 'Tuck cats in for 25 naps (😴 button)', pts: 40, check: () => parseInt(localStorage.getItem('km_nap_count')||'0',10) >= 25 },
   { id: 'yarn_50',      label: '🧶 Yarn Master',    desc: 'Catch 50 yarn balls in Yarn Chase', pts: 25,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 50 },
   { id: 'yarn_play10',   label: '🧶 Yarn Regular',   desc: 'Play Yarn Chase 10 times', pts: 20,  check: () => parseInt(localStorage.getItem('km_yarn_games')||'0',10) >= 10 },
+  { id: 'namer_3',      label: '🏷️ Name Giver', desc: 'Give 3 cats a nickname', pts: 20, check: () => parseInt(localStorage.getItem('km_name_count')||'0',10) >= 3 },
   { id: 'joke_10',      label: '😹 Joke Teller', desc: 'Read 10 cat joke answers on Home', pts: 20, check: () => parseInt(localStorage.getItem('km_joke_count')||'0',10) >= 10 },
   { id: 'cottage_10',   label: '🏠 Cottage Caller', desc: 'Tap the Cat Cottage door or chimney 10 times', pts: 20, check: () => parseInt(localStorage.getItem('km_cottage_taps')||'0',10) >= 10 },
   { id: 'listen_10',    label: '👂 Sharp Ears',     desc: 'Use Listen for a Meow 10 times on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_listen_count')||'0',10) >= 10 },
@@ -6556,6 +6557,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
   const saveRename = (e, dogId) => {
     e.stopPropagation();
     setDogNick(dogId, renameValue);
+    if ((renameValue||'').trim()) { try { localStorage.setItem('km_name_count', String((parseInt(localStorage.getItem('km_name_count')||'0',10)||0) + 1)); } catch {} }
     setRenamingId(null);
   };
 
