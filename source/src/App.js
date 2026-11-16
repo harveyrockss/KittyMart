@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 194; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 195; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6082,23 +6082,49 @@ function CosyCornerScreen({ dogs, onBack }) {
         <button onClick={onBack} style={{padding:'8px 14px',background:'#f0f0f0',border:'none',borderRadius:12,fontWeight:'bold',cursor:'pointer',fontSize:13}}>← Back</button>
         <h2 style={{margin:0,color:'#333',fontSize:18}}>🛏️ Cosy Corner</h2>
       </div>
-      <div style={{background:cfg.wall,borderRadius:18,padding:14,border:'2px solid #e0d0ff',minHeight:170}}>
-        {decor.length > 0 && <div data-testid="cosy-decor" style={{display:'flex',gap:14,justifyContent:'center',fontSize:30,marginBottom:6}}>{decor.map(id => COSY_DECOR.find(x => x.id === id)).filter(Boolean).map((x, i, arr) => <span key={x.id} data-testid="cosy-decor-item" onClick={() => { if (arr.length < 2) return; const ids = arr.map(y => y.id); const j = (i + 1) % ids.length; [ids[i], ids[j]] = [ids[j], ids[i]]; upd({ decor: ids }); }} style={{cursor:'pointer'}}>{x.emoji}</span>)}</div>}
-        {decor.length > 1 && <div style={{fontSize:11,color:'#888',textAlign:'center',marginBottom:6}}>Tap a decoration to move it along the shelf</div>}
-        <div style={{fontSize:12,color:'#888',marginBottom:8}}>{sleepers.length ? 'Sleepy cats are curled up in their beds 💤 (tap one to hear it purr)' : 'No cats napping yet — tap 😴 on a cat in the Cats tab to tuck it in!'}</div>
-        <div style={{display:'flex',flexWrap:'wrap',gap:12,justifyContent:'center'}}>
+      <style>{`@keyframes kmFloatZ{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-16px);opacity:0}}@keyframes kmBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes kmDust{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.7;transform:translateY(-6px)}}`}</style>
+      <div data-testid="cosy-room" style={{position:'relative',borderRadius:22,overflow:'hidden',border:'3px solid #6b4a2f',boxShadow:'0 8px 20px rgba(60,30,10,.35), inset 0 0 40px rgba(0,0,0,.18)',minHeight:380,background:'#6b4a2f'}}>
+        {/* wall */}
+        <div style={{position:'absolute',left:0,right:0,top:0,height:'52%',background:`repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 2px,transparent 2px 26px),linear-gradient(180deg,rgba(255,255,255,.35),rgba(0,0,0,.12)),${cfg.wall}`}} />
+        {/* sunny window with light beam */}
+        <div style={{position:'absolute',left:'8%',top:'7%',width:70,height:84,borderRadius:'10px 10px 4px 4px',border:'5px solid #fff8ec',background:'linear-gradient(180deg,#bfe6ff,#fff6d6)',boxShadow:'0 3px 8px rgba(0,0,0,.25)'}}>
+          <div style={{position:'absolute',left:'50%',bottom:0,transform:'translateX(-50%)',fontSize:26,lineHeight:'26px',filter:'brightness(0) opacity(.55)'}}>🐈</div>
+          <div style={{position:'absolute',left:'50%',top:0,bottom:0,width:3,background:'#fff8ec'}} />
+          <div style={{position:'absolute',left:0,right:0,top:'50%',height:3,background:'#fff8ec'}} />
+        </div>
+        <div style={{position:'absolute',left:'4%',top:'14%',width:150,height:230,background:'linear-gradient(115deg,rgba(255,244,190,.55),rgba(255,244,190,0))',transform:'skewX(-18deg)',pointerEvents:'none'}} />
+        {[0,1,2,3].map(i => <span key={i} style={{position:'absolute',left:`${14+i*9}%`,top:`${34+(i%2)*12}%`,width:4,height:4,borderRadius:'50%',background:'#fff7c9',animation:`kmDust ${3+i}s ease-in-out infinite`,pointerEvents:'none'}} />)}
+        {/* wall shelf with decorations */}
+        <div style={{position:'absolute',left:'30%',right:'4%',top:'8%'}}>
+          <div data-testid="cosy-decor" style={{display:'flex',gap:10,justifyContent:'center',alignItems:'flex-end',flexWrap:'wrap',minHeight:44,padding:'0 6px'}}>
+            {decor.map(id => COSY_DECOR.find(x => x.id === id)).filter(Boolean).map((x, i, arr) => <span key={x.id} data-testid="cosy-decor-item" onClick={() => { if (arr.length < 2) return; const ids = arr.map(y => y.id); const j = (i + 1) % ids.length; [ids[i], ids[j]] = [ids[j], ids[i]]; upd({ decor: ids }); }} style={{cursor:'pointer',fontSize:30,filter:'drop-shadow(0 4px 3px rgba(0,0,0,.35))'}}>{x.emoji}</span>)}
+          </div>
+          <div style={{height:9,borderRadius:3,background:'linear-gradient(180deg,#c89560,#8a5a32)',boxShadow:'0 5px 6px rgba(0,0,0,.3)'}} />
+        </div>
+        {/* baseboard */}
+        <div style={{position:'absolute',left:0,right:0,top:'52%',height:10,background:'linear-gradient(180deg,#fff,#d9cdbd)',boxShadow:'0 2px 4px rgba(0,0,0,.25)'}} />
+        {/* wooden floor */}
+        <div style={{position:'absolute',left:0,right:0,top:'calc(52% + 10px)',bottom:0,background:'repeating-linear-gradient(90deg,rgba(60,30,10,.22) 0 2px,transparent 2px 44px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 12px,rgba(0,0,0,.05) 12px 24px),linear-gradient(180deg,#d9a566,#b97d44)'}} />
+        {/* rug */}
+        <div style={{position:'absolute',left:'6%',right:'6%',top:'62%',bottom:'5%',borderRadius:'50%',background:'radial-gradient(ellipse at center,#fff4ea 0 38%,#f3b6c8 39% 62%,#e79ab4 63% 100%)',border:'4px dashed rgba(255,255,255,.7)',boxShadow:'0 6px 12px rgba(0,0,0,.3)'}}><span style={{position:'absolute',left:'50%',bottom:'6%',transform:'translateX(-50%)',fontSize:16,letterSpacing:10,opacity:.45}}>🐾🐾🐾</span></div>
+        {/* sleepers */}
+        <div style={{position:'absolute',left:0,right:0,top:'58%',bottom:'4%',display:'flex',flexWrap:'wrap',gap:'6px 10px',justifyContent:'center',alignContent:'center',padding:'0 18px'}}>
           {sleepers.map(d => (
-            <div key={d.id} data-testid="cosy-sleeper" onClick={() => { try { playPurr(); localStorage.setItem('km_cosy_purr', String(parseInt(localStorage.getItem('km_cosy_purr')||'0',10)+1)); } catch {} }} style={{textAlign:'center',width:80,cursor:'pointer'}}>
-              <div style={{position:'relative',height:70}}>
-                <div style={{fontSize:56,lineHeight:'70px'}}>{bed.emoji}</div>
-                {(dogImageSrc(d) || d.photo_url) && <img src={dogImageSrc(d) || d.photo_url} alt={d.name} style={{position:'absolute',left:'50%',top:8,transform:'translateX(-50%)',width:38,height:38,borderRadius:'50%',objectFit:'cover',border:`2px solid ${RARITY_COLORS[d.rarity]}`}} onError={e=>e.target.style.display='none'} />}
-                <span style={{position:'absolute',right:4,top:0,fontSize:16}}>💤</span>
+            <div key={d.id} data-testid="cosy-sleeper" onClick={() => { try { playPurr(); localStorage.setItem('km_cosy_purr', String(parseInt(localStorage.getItem('km_cosy_purr')||'0',10)+1)); } catch {} }} style={{textAlign:'center',width:78,cursor:'pointer'}}>
+              <div style={{position:'relative',height:64,animation:'kmBreathe 3.2s ease-in-out infinite'}}>
+                <div style={{position:'absolute',left:'12%',right:'12%',bottom:2,height:10,borderRadius:'50%',background:'rgba(0,0,0,.28)',filter:'blur(3px)'}} />
+                <div style={{fontSize:52,lineHeight:'64px',filter:'drop-shadow(0 3px 2px rgba(0,0,0,.3))'}}>{bed.emoji}</div>
+                {(dogImageSrc(d) || d.photo_url) && <img src={dogImageSrc(d) || d.photo_url} alt={d.name} style={{position:'absolute',left:'50%',top:8,transform:'translateX(-50%)',width:34,height:34,borderRadius:'50%',objectFit:'cover',border:`2px solid ${RARITY_COLORS[d.rarity]}`,boxShadow:'0 2px 4px rgba(0,0,0,.35)'}} onError={e=>e.target.style.display='none'} />}
+                <span style={{position:'absolute',right:2,top:0,fontSize:14,animation:'kmFloatZ 2.6s ease-in-out infinite'}}>💤</span>
               </div>
-              <div style={{fontSize:11,fontWeight:'bold',color:'#555',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.name}</div>
+              <div style={{fontSize:10,fontWeight:'bold',color:'#4a2f3a',background:'rgba(255,255,255,.75)',borderRadius:8,padding:'0 4px',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{d.name}</div>
             </div>
           ))}
         </div>
+        {/* warm light vignette */}
+        <div style={{position:'absolute',inset:0,pointerEvents:'none',background:'radial-gradient(ellipse at 20% 10%,rgba(255,240,190,.25),transparent 55%),radial-gradient(ellipse at center,transparent 55%,rgba(40,15,0,.35))'}} />
       </div>
+      <div style={{fontSize:12,color:'#777',margin:'8px 2px 0'}}>{sleepers.length ? 'Sleepy cats are curled up on the rug 💤 (tap one to hear it purr)' : 'No cats napping yet — tap 😴 on a cat in the Cats tab to tuck it in!'}{decor.length > 1 ? ' Tap a shelf decoration to move it along.' : ''}</div>
       <div style={{marginTop:14,fontWeight:'bold',color:'#764ba2',fontSize:13}}>Choose a bed</div>
       <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:6}}>
         {COSY_BEDS.map(b => (
