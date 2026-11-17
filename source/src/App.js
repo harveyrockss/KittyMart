@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 217; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 218; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -1236,8 +1236,10 @@ function calcHunger(state) {
 }
 
 // Soft "mee-ow" synth: pitch rises then falls through a sweeping vowel filter. Pitch varies a little per breed.
+function catSoundsOff() { try { return localStorage.getItem('km_sfx_off') === '1'; } catch { return false; } }
 function playMeow(breedName = '') {
   try {
+    if (catSoundsOff()) return;
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     let h = 0; for (const ch of String(breedName)) h = (h * 31 + ch.charCodeAt(0)) % 997;
     const base = 520 + (h % 9) * 35;          // 520-800 Hz
@@ -1263,6 +1265,7 @@ function playMeow(breedName = '') {
 // Gentle purr: low amplitude-modulated rumble (~25 Hz pulses on a 55 Hz tone with filtered noise).
 function playPurr() {
   try {
+    if (catSoundsOff()) return;
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const t = ctx.currentTime + 0.01, dur = 1.4;
     const osc = ctx.createOscillator(), lfo = ctx.createOscillator(), lg = ctx.createGain(), g = ctx.createGain(), f = ctx.createBiquadFilter();
@@ -7868,6 +7871,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
             {showHelpGate && <ParentalGateModal onClose={() => setShowHelpGate(false)} onSuccess={() => { setShowHelpGate(false); window.location.href = `mailto:the KittyMart team?subject=${encodeURIComponent('KittyMart support: ' + player.username)}`; }} />}
           </div>
         </div>, document.body)}
+      <button data-testid="sfx-toggle" onClick={(e) => { try { const off = catSoundsOff(); localStorage.setItem('km_sfx_off', off ? '0' : '1'); e.currentTarget.textContent = off ? '🔊 Meow & Purr Sounds: On' : '🔇 Meow & Purr Sounds: Off'; if (off) playMeow(); } catch {} }} style={{ width: '100%', padding: 14, background: '#fff', color: '#4361ee', border: '2px solid #4361ee', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>{catSoundsOff() ? '🔇 Meow & Purr Sounds: Off' : '🔊 Meow & Purr Sounds: On'}</button>
       <button onClick={() => { try { exportKittyBackup(); } catch { alert('Could not save a backup on this device.'); } }} style={{ width: '100%', padding: 14, background: 'linear-gradient(135deg,#4cc9f0,#4361ee)', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>📦 Save My Cats to a File</button>
       <label style={{ display:'block', boxSizing:'border-box', width: '100%', padding: 14, background: 'linear-gradient(135deg,#7209b7,#560bad)', color: 'white', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10, textAlign:'center' }}>📥 Load Cats from a File
         <input type="file" accept="application/json,.json" style={{ display:'none' }} onChange={async e => { const f = e.target.files && e.target.files[0]; if (!f) return; if (!window.confirm('Load this backup? It replaces the cats and account saved on this phone.')) return; try { await importKittyBackup(f); alert('Backup loaded! The game will now reload.'); window.location.reload(); } catch { alert('That file is not a KittyMart backup.'); } }} />
