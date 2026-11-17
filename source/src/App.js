@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 211; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 212; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2469,6 +2469,7 @@ const ACHIEVEMENTS = [
   { id: 'listen_10',    label: '👂 Sharp Ears',     desc: 'Use Listen for a Meow 10 times on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_listen_count')||'0',10) >= 10 },
   { id: 'yarn_200',     label: '🧶 Yarn Hero',      desc: 'Catch 200 yarn balls in Yarn Chase', pts: 60,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 200 },
   { id: 'purr_100',      label: '😻 Purr Pro',       desc: 'Feed your cats 100 times',          pts: 50,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 100 },
+  { id: 'play_15',       label: '🪶 Feather Friend', desc: 'Play with your cats 15 times (🪶 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_play_count')||'0',10) >= 15 },
   { id: 'groom_15',      label: '✨ Fur Stylist',    desc: 'Brush your cats 15 times (✨ button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_groom_count')||'0',10) >= 15 },
   { id: 'pet_20',         label: '💜 Cat Cuddler',    desc: 'Give your cats 20 pets (💜 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_pet_count')||'0',10) >= 20 },
   { id: 'lullaby_15',     label: '🌙 Cat Whisperer',  desc: 'Make 15 sleeping cats purr in Cosy Corner', pts: 20, check: () => parseInt(localStorage.getItem('km_cosy_purr')||'0',10) >= 15 },
@@ -6637,6 +6638,20 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
     forceUpdate(n=>n+1);
   };
 
+  // Cat-only: play with a feather toy (once per 3h per cat)
+  const handlePlay = (e, dog) => {
+    e.stopPropagation();
+    let pl = {}; try { pl = JSON.parse(localStorage.getItem('km_play_times') || '{}'); } catch {}
+    const left = 3 * 3600000 - (Date.now() - (pl[dog.id] || 0));
+    if (left > 0) { showToast(`🪶 ${dog.name} is tired from playing — try again in ${Math.ceil(left / 60000)}m`); return; }
+    pl[dog.id] = Date.now();
+    try { localStorage.setItem('km_play_times', JSON.stringify(pl)); localStorage.setItem('km_play_count', (parseInt(localStorage.getItem('km_play_count')||'0')+1).toString()); } catch {}
+    addXP(dog.id, 5, showToast);
+    try { playMeow(dog.breed); } catch {}
+    showToast(`🪶 ${dog.name} pounced on the feather! +5 XP`);
+    forceUpdate(n=>n+1);
+  };
+
   const handlePoo = (e, dog) => {
     if (e) e.stopPropagation();
     const rarity = rollPooRarity();
@@ -6804,6 +6819,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
                     <button onClick={e=>handleFeed(e,dog)} style={{flex:1,padding:'3px 4px',background:'#fff3e0',border:'1px solid #f4a261',borderRadius:7,fontSize:10,cursor:'pointer',color:'#e76f51',fontWeight:'bold'}}>🐟 Feed</button>
                     <button onClick={e=>handlePet(e,dog)} aria-label="Pet" style={{padding:'3px 6px',background:'#fce4ec',border:'1px solid #f48fb1',borderRadius:7,fontSize:11,cursor:'pointer'}}>💜</button>
                     <button onClick={e=>handleGroom(e,dog)} aria-label="Brush" style={{padding:'3px 6px',background:'#e0f7fa',border:'1px solid #4dd0e1',borderRadius:7,fontSize:11,cursor:'pointer'}}>✨</button>
+                    <button onClick={e=>handlePlay(e,dog)} aria-label="Play" style={{padding:'3px 6px',background:'#f3e5f5',border:'1px solid #ce93d8',borderRadius:7,fontSize:11,cursor:'pointer'}}>🪶</button>
                     <button onClick={e=>handleNap(e,dog)} aria-label="Nap" style={{padding:'3px 6px',background:'#ede7f6',border:'1px solid #b39ddb',borderRadius:7,fontSize:11,cursor:'pointer'}}>😴</button>
                     {needsPoo && <button onClick={e=>handlePoo(e,dog)} style={{padding:'3px 6px',background:'#fff8e1',border:'1px solid #f59e0b',borderRadius:7,fontSize:12,cursor:'pointer'}}>🧹</button>}
                   </div>
