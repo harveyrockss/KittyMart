@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 221; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 222; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6232,6 +6232,15 @@ function CatCottage({ wall, roof = 0 }) {
 function CosyCornerScreen({ dogs, onBack }) {
   const [cfg, setCfg] = useState(getCosy);
   const upd = (patch) => { const n = { ...cfg, ...patch }; setCfg(n); try { localStorage.setItem('km_cosy', JSON.stringify(n)); } catch {} };
+  const sunKey = 'km_sun_' + localDateKey();
+  const [sunDone, setSunDone] = React.useState(() => { try { return !!localStorage.getItem(sunKey); } catch { return false; } });
+  const soakSun = () => {
+    try { playPurr(); } catch {}
+    if (sunDone) return;
+    try { localStorage.setItem(sunKey, '1'); } catch {}
+    setSunDone(true);
+    addBonusPts(2);
+  };
   let naps = {}; try { naps = JSON.parse(localStorage.getItem('km_nap_times') || '{}'); } catch {}
   const sleepers = dogs.filter(d => Date.now() - (naps[d.id] || 0) < 6 * 3600000).slice(0, 6);
   const bed = COSY_BEDS.find(b => b.id === cfg.bed) || COSY_BEDS[0];
@@ -6249,13 +6258,15 @@ function CosyCornerScreen({ dogs, onBack }) {
         {/* wall */}
         <div style={{position:'absolute',left:0,right:0,top:0,height:'52%',background:`repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 2px,transparent 2px 26px),linear-gradient(180deg,rgba(255,255,255,.35),rgba(0,0,0,.12)),${cfg.wall}`}} />
         {/* sunny window with light beam */}
-        <div style={{position:'absolute',left:'8%',top:'7%',width:70,height:84,borderRadius:'10px 10px 4px 4px',border:'5px solid #fff8ec',background:'linear-gradient(180deg,#bfe6ff,#fff6d6)',boxShadow:'0 3px 8px rgba(0,0,0,.25)'}}>
+        <div data-testid="cosy-sunwindow" onClick={soakSun} style={{cursor:'pointer',zIndex:2,position:'absolute',left:'8%',top:'7%',width:70,height:84,borderRadius:'10px 10px 4px 4px',border:'5px solid #fff8ec',background:'linear-gradient(180deg,#bfe6ff,#fff6d6)',boxShadow:'0 3px 8px rgba(0,0,0,.25)'}}>
           <div style={{position:'absolute',left:'50%',bottom:0,transform:'translateX(-50%)',fontSize:26,lineHeight:'26px',filter:'brightness(0) opacity(.55)'}}>🐈</div>
           <div style={{position:'absolute',left:'50%',top:0,bottom:0,width:3,background:'#fff8ec'}} />
           <div style={{position:'absolute',left:0,right:0,top:'50%',height:3,background:'#fff8ec'}} />
         </div>
         <div style={{position:'absolute',left:'4%',top:'14%',width:150,height:230,background:'linear-gradient(115deg,rgba(255,244,190,.55),rgba(255,244,190,0))',transform:'skewX(-18deg)',pointerEvents:'none'}} />
         {[0,1,2,3].map(i => <span key={i} style={{position:'absolute',left:`${14+i*9}%`,top:`${34+(i%2)*12}%`,width:4,height:4,borderRadius:'50%',background:'#fff7c9',animation:`kmDust ${3+i}s ease-in-out infinite`,pointerEvents:'none'}} />)}
+        {/* sunbeam hint */}
+        <div data-testid="cosy-sunhint" style={{position:'absolute',left:'4%',top:'calc(7% + 92px)',fontSize:11,fontWeight:'bold',color:'#6b4a2f',background:'rgba(255,248,236,.85)',borderRadius:8,padding:'1px 6px',pointerEvents:'none'}}>{sunDone ? '☀️ Sunbeam soaked!' : '☀️ Tap for sunbeam +2'}</div>
         {/* wall shelf with decorations */}
         <div style={{position:'absolute',left:'30%',right:'4%',top:'8%'}}>
           <div data-testid="cosy-decor" style={{display:'flex',gap:10,justifyContent:'center',alignItems:'flex-end',flexWrap:'wrap',minHeight:44,padding:'0 6px'}}>
