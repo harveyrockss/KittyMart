@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 215; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 216; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2473,6 +2473,7 @@ const ACHIEVEMENTS = [
   { id: 'purr_100',      label: '😻 Purr Pro',       desc: 'Feed your cats 100 times',          pts: 50,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 100 },
   { id: 'play_15',       label: '🪶 Feather Friend', desc: 'Play with your cats 15 times (🪶 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_play_count')||'0',10) >= 15 },
   { id: 'groom_15',      label: '✨ Fur Stylist',    desc: 'Brush your cats 15 times (✨ button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_groom_count')||'0',10) >= 15 },
+  { id: 'groom_60',      label: '💅 Salon Star',    desc: 'Brush your cats 60 times (✨ button)', pts: 50,  check: () => parseInt(localStorage.getItem('km_groom_count')||'0',10) >= 60 },
   { id: 'pet_20',         label: '💜 Cat Cuddler',    desc: 'Give your cats 20 pets (💜 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_pet_count')||'0',10) >= 20 },
   { id: 'lullaby_15',     label: '🌙 Cat Whisperer',  desc: 'Make 15 sleeping cats purr in Cosy Corner', pts: 20, check: () => parseInt(localStorage.getItem('km_cosy_purr')||'0',10) >= 15 },
   { id: 'treat_10',       label: '🐟 Treat Tosser',   desc: 'Lure 10 cats with a treat on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_treat_count')||'0',10) >= 10 },
