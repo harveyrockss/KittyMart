@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 213; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 214; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2481,6 +2481,7 @@ const ACHIEVEMENTS = [
   { id: 'nine_lives',    label: '🐈 Nine Lives',     desc: 'Own 9 cats of the same breed',      pts: 60,  check: (dogs) => { const c = {}; return dogs.some(d => (c[d.breed] = (c[d.breed]||0)+1) >= 9); } },
   { id: 'cosy_decor',    label: '🪴 Cosy Decorator', desc: 'Add 3 decorations in your Cosy Corner', pts: 20, check: () => { try { return (JSON.parse(localStorage.getItem('km_cosy')||'{}').decor||[]).length >= 3; } catch { return false; } } },
   { id: 'cosy_home',     label: '🏡 Cosy Home',      desc: 'Add 8 decorations in your Cosy Corner', pts: 40, check: () => { try { return (JSON.parse(localStorage.getItem('km_cosy')||'{}').decor||[]).length >= 8; } catch { return false; } } },
+  { id: 'race_3',        label: '🏁 Whisker Winner', desc: 'Win 3 races against the computer cats', pts: 30,  check: () => parseInt(localStorage.getItem('km_race_wins')||'0',10) >= 3 },
   { id: 'cat_cafe',      label: '☕ Cat Café',        desc: 'Have 20 cats in your collection',   pts: 40,  check: (dogs) => dogs.length >= 20 },
 ];
 
