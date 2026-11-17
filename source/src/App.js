@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 212; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 213; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2087,6 +2087,8 @@ const CHALLENGE_POOL = [
   {id:'pet1', type:'pet', text:'Give 3 cats a gentle pet 💜', goal:3, pts:15},
   {id:'pet2', type:'pet', text:'Give 6 cats a gentle pet 💜', goal:6, pts:25},
   {id:'yarn1', type:'yarn', text:'Catch 10 yarn balls in Yarn Chase 🧶', goal:10, pts:20},
+  {id:'groom1', type:'groom', text:'Brush 2 cats until they are silky ✨', goal:2, pts:15},
+  {id:'play1', type:'play', text:'Play feather games with 2 cats 🪶', goal:2, pts:15},
   {id:'treat1', type:'treat', text:'Lure a cat with a treat on Catch 🐟', goal:1, pts:10},
 ];
 
@@ -6632,6 +6634,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
     if (left > 0) { showToast(`✨ ${dog.name}'s fur is already silky — brush again in ${Math.ceil(left / 60000)}m`); return; }
     gr[dog.id] = Date.now();
     try { localStorage.setItem('km_groom_times', JSON.stringify(gr)); localStorage.setItem('km_groom_count', (parseInt(localStorage.getItem('km_groom_count')||'0')+1).toString()); } catch {}
+    recordChallenge('groom');
     addXP(dog.id, 4, showToast);
     playPurr();
     showToast(`✨ ${dog.name} loves being brushed! +4 XP`);
@@ -6646,6 +6649,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
     if (left > 0) { showToast(`🪶 ${dog.name} is tired from playing — try again in ${Math.ceil(left / 60000)}m`); return; }
     pl[dog.id] = Date.now();
     try { localStorage.setItem('km_play_times', JSON.stringify(pl)); localStorage.setItem('km_play_count', (parseInt(localStorage.getItem('km_play_count')||'0')+1).toString()); } catch {}
+    recordChallenge('play');
     addXP(dog.id, 5, showToast);
     try { playMeow(dog.breed); } catch {}
     showToast(`🪶 ${dog.name} pounced on the feather! +5 XP`);
