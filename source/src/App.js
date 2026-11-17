@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 218; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 219; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2958,6 +2958,15 @@ function CatFactCard() {
   const mood = CAT_MOODS[(day + 3) % CAT_MOODS.length];
   const toy = CAT_TOYS[(day + 5) % CAT_TOYS.length];
   const nap = CAT_NAP_SPOTS[(day + 2) % CAT_NAP_SPOTS.length];
+  const jarKey = 'km_jar_' + localDateKey();
+  const [jarOpen, setJarOpen] = React.useState(() => { try { return !!localStorage.getItem(jarKey); } catch { return false; } });
+  const openJar = () => {
+    if (jarOpen) { try { playPurr(); } catch {} return; }
+    try { localStorage.setItem(jarKey, '1'); } catch {}
+    setJarOpen(true);
+    addBonusPts(3);
+    try { playPurr(); } catch {}
+  };
   return (
     <div data-testid="cat-fact" style={{ background: '#fff8e1', borderRadius: 16, padding: '10px 14px', margin: '10px 0', border: '2px solid #ffe082' }}>
       <div style={{ fontWeight: 'bold', fontSize: 13, color: '#8d6e00' }}>🐱 Cat Fact of the Day</div>
@@ -2970,6 +2979,9 @@ function CatFactCard() {
       </div>
       <div data-testid="cat-nap" style={{ fontSize: 13, color: '#555', marginTop: 8, borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>{nap[0]} Best Nap Spot Today:</b> {nap[1]}.
+      </div>
+      <div data-testid="cat-jar" onClick={openJar} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
+        <b style={{ color: '#8d6e00' }}>🫙 Treat Jar:</b> {jarOpen ? <span>Yum! You shared today's treat (+3 pts). Come back tomorrow!</span> : <span style={{ color: '#c49000' }}>Tap to share a treat with your cats (+3 pts)</span>}
       </div>
       <div data-testid="cat-joke" onClick={() => { if (!showJoke) { try { localStorage.setItem('km_joke_count', String((parseInt(localStorage.getItem('km_joke_count')||'0',10)||0) + 1)); } catch {} } setShowJoke(v => !v); }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>😹 Joke:</b> {joke[0]} {showJoke ? <b>{joke[1]}</b> : <span style={{ color: '#c49000' }}>(tap for the answer)</span>}
