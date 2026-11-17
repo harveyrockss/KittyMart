@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 220; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 221; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2469,6 +2469,7 @@ const ACHIEVEMENTS = [
   { id: 'yarn_play10',   label: '🧶 Yarn Regular',   desc: 'Play Yarn Chase 10 times', pts: 20,  check: () => parseInt(localStorage.getItem('km_yarn_games')||'0',10) >= 10 },
   { id: 'meow_25',      label: '🎶 Meow Chorus', desc: 'Tap cat photos to hear 25 meows', pts: 20, check: () => parseInt(localStorage.getItem('km_meow_count')||'0',10) >= 25 },
   { id: 'namer_3',      label: '🏷️ Name Giver', desc: 'Give 3 cats a nickname', pts: 20, check: () => parseInt(localStorage.getItem('km_name_count')||'0',10) >= 3 },
+  { id: 'water_7',      label: '💧 Hydration Hero', desc: 'Fill the Fresh Water Bowl on 7 different days', pts: 20, check: () => parseInt(localStorage.getItem('km_water_days')||'0',10) >= 7 },
   { id: 'joke_10',      label: '😹 Joke Teller', desc: 'Read 10 cat joke answers on Home', pts: 20, check: () => parseInt(localStorage.getItem('km_joke_count')||'0',10) >= 10 },
   { id: 'cottage_10',   label: '🏠 Cottage Caller', desc: 'Tap the Cat Cottage door or chimney 10 times', pts: 20, check: () => parseInt(localStorage.getItem('km_cottage_taps')||'0',10) >= 10 },
   { id: 'listen_10',    label: '👂 Sharp Ears',     desc: 'Use Listen for a Meow 10 times on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_listen_count')||'0',10) >= 10 },
@@ -2971,7 +2972,7 @@ function CatFactCard() {
   const [waterFilled, setWaterFilled] = React.useState(() => { try { return !!localStorage.getItem(waterKey); } catch { return false; } });
   const fillWater = () => {
     if (waterFilled) { try { playPurr(); } catch {} return; }
-    try { localStorage.setItem(waterKey, '1'); } catch {}
+    try { localStorage.setItem(waterKey, '1'); localStorage.setItem('km_water_days', String((parseInt(localStorage.getItem('km_water_days')||'0',10)||0) + 1)); } catch {}
     setWaterFilled(true);
     addBonusPts(2);
     try { playMeow(); } catch {}
