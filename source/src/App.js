@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 225; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 226; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2091,6 +2091,7 @@ const CHALLENGE_POOL = [
   {id:'pet2', type:'pet', text:'Give 6 cats a gentle pet 💜', goal:6, pts:25},
   {id:'yarn1', type:'yarn', text:'Catch 10 yarn balls in Yarn Chase 🧶', goal:10, pts:20},
   {id:'groom1', type:'groom', text:'Brush 2 cats until they are silky ✨', goal:2, pts:15},
+  {id:'sun1', type:'sun', text:'Soak up the Cosy Corner sunbeam ☀️', goal:1, pts:10},
   {id:'play1', type:'play', text:'Play feather games with 2 cats 🪶', goal:2, pts:15},
   {id:'treat1', type:'treat', text:'Lure a cat with a treat on Catch 🐟', goal:1, pts:10},
 ];
@@ -6243,6 +6244,7 @@ function CosyCornerScreen({ dogs, onBack }) {
     try { localStorage.setItem(sunKey, '1'); localStorage.setItem('km_sun_days', String((parseInt(localStorage.getItem('km_sun_days')||'0',10)||0) + 1)); } catch {}
     setSunDone(true);
     addBonusPts(2);
+    recordChallenge('sun');
   };
   let naps = {}; try { naps = JSON.parse(localStorage.getItem('km_nap_times') || '{}'); } catch {}
   const sleepers = dogs.filter(d => Date.now() - (naps[d.id] || 0) < 6 * 3600000).slice(0, 6);
