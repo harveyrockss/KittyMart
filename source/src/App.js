@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 227; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 228; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6172,7 +6172,9 @@ const COSY_RUGS = [['#fff4ea','#f3b6c8','#e79ab4'],['#f0fbff','#a9d8f5','#7fbbe6
 const COSY_WALLS = ['#ffe3ec','#e3f2ff','#e8f7e4','#fff3cf','#efe3ff','#ffe9d6','#dff7f3'];
 function getCosy() { try { return { bed:'basket', wall:COSY_WALLS[0], decor:[], ...JSON.parse(localStorage.getItem('km_cosy') || '{}') }; } catch { return { bed:'basket', wall:COSY_WALLS[0], decor:[] }; } }
 const COSY_ROOFS = [['#4aa3a8','#2c6f80','#1d4f5e'],['#e07a8a','#b04a62','#7a2e44'],['#8e7be0','#5c4bb0','#3b2f7a'],['#e8a23c','#b8741c','#7a4a10'],['#6fbf6a','#3f8a45','#265a2c']];
-function CatCottage({ wall, roof = 0 }) {
+const COSY_DOORS = [['#7a3f6a','#4d2745'],['#c0392b','#7b241c'],['#2e86c1','#1b4f72'],['#f1c40f','#9a7d0a'],['#27ae60','#145a32']];
+function CatCottage({ wall, roof = 0, door = 0 }) {
+  const dr = COSY_DOORS[door] || COSY_DOORS[0];
   const rf = COSY_ROOFS[roof] || COSY_ROOFS[0];
   const hr = new Date().getHours();
   const night = hr < 6 || hr >= 19;
@@ -6223,8 +6225,8 @@ function CatCottage({ wall, roof = 0 }) {
           <rect x={x - 6} y="150" width="52" height="9" rx="2" fill="#8a5a32" /><g>{[0,1,2,3,4].map(i => <circle key={i} cx={x - 1 + i * 11} cy="148" r="4" fill={['#ff7aa8','#ffd35a','#ff9b5a','#c08bff','#ff7aa8'][i]} />)}</g></g>
       ))}
       {/* door with cat flap */}
-      <path d="M162 172 V134 Q162 118 180 118 Q198 118 198 134 V172 Z" fill="#7a3f6a" /><path d="M162 172 V134 Q162 118 180 118 Q198 118 198 134 V172 Z" fill="none" stroke="#4d2745" strokeWidth="3" />
-      <circle cx="191" cy="148" r="2.2" fill="#ffd35a" /><rect x="172" y="160" width="16" height="11" rx="4" fill="#ffd96a" opacity={glow} stroke="#4d2745" strokeWidth="2" />
+      <path d="M162 172 V134 Q162 118 180 118 Q198 118 198 134 V172 Z" fill={dr[0]} /><path d="M162 172 V134 Q162 118 180 118 Q198 118 198 134 V172 Z" fill="none" stroke={dr[1]} strokeWidth="3" />
+      <circle cx="191" cy="148" r="2.2" fill="#ffd35a" /><rect x="172" y="160" width="16" height="11" rx="4" fill="#ffd96a" opacity={glow} stroke={dr[1]} strokeWidth="2" />
       <text x="180" y="140" textAnchor="middle" fontSize="12">🐾</text>
       <rect data-testid="cottage-door" x="160" y="116" width="40" height="58" fill="transparent" style={{ cursor: 'pointer' }} onClick={() => { try { playMeow(); } catch {} try { localStorage.setItem('km_cottage_taps', String((parseInt(localStorage.getItem('km_cottage_taps')||'0',10)||0) + 1)); } catch {} }} />
       <rect data-testid="cottage-chimney" x="232" y="26" width="28" height="56" fill="transparent" style={{ cursor: 'pointer' }} onClick={() => { try { playPurr(); } catch {} try { localStorage.setItem('km_cottage_taps', String((parseInt(localStorage.getItem('km_cottage_taps')||'0',10)||0) + 1)); } catch {} }} />
@@ -6261,7 +6263,7 @@ function CosyCornerScreen({ dogs, onBack }) {
         <button onClick={onBack} style={{padding:'8px 14px',background:'#f0f0f0',border:'none',borderRadius:12,fontWeight:'bold',cursor:'pointer',fontSize:13}}>← Back</button>
         <h2 style={{margin:0,color:'#333',fontSize:18}}>🛏️ Cosy Corner</h2>
       </div>
-      <div style={{marginBottom:12}}><CatCottage wall={cfg.wall} roof={cfg.roof||0} /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night. Tap the door for a meow, the chimney for a purr! Its walls match your room colour.</div></div>
+      <div style={{marginBottom:12}}><CatCottage wall={cfg.wall} roof={cfg.roof||0} door={cfg.door||0} /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night. Tap the door for a meow, the chimney for a purr! Its walls match your room colour.</div></div>
       <style>{`@keyframes kmFloatZ{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-16px);opacity:0}}@keyframes kmBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes kmDust{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.7;transform:translateY(-6px)}}`}</style>
       <div data-testid="cosy-room" style={{position:'relative',borderRadius:22,overflow:'hidden',border:'3px solid #6b4a2f',boxShadow:'0 8px 20px rgba(60,30,10,.35), inset 0 0 40px rgba(0,0,0,.18)',minHeight:380,background:'#6b4a2f'}}>
         {/* wall */}
@@ -6323,6 +6325,12 @@ function CosyCornerScreen({ dogs, onBack }) {
       <div style={{display:'flex',gap:10,marginTop:6}}>
         {COSY_ROOFS.map((c,i) => (
           <button key={i} aria-label={'roof '+i} onClick={() => upd({ roof:i })} style={{width:38,height:38,borderRadius:'50%',background:c[0],border:(cfg.roof||0)===i?'3px solid #764ba2':'2px solid #ccc',cursor:'pointer'}} />
+        ))}
+      </div>
+      <div style={{marginTop:14,fontWeight:'bold',color:'#764ba2',fontSize:13}}>Cottage door colour</div>
+      <div style={{display:'flex',gap:10,marginTop:6}}>
+        {COSY_DOORS.map((c,i) => (
+          <button key={i} aria-label={'door '+i} onClick={() => upd({ door:i })} style={{width:38,height:38,borderRadius:'50%',background:c[0],border:(cfg.door||0)===i?'3px solid #764ba2':'2px solid #ccc',cursor:'pointer'}} />
         ))}
       </div>
       <div style={{marginTop:14,fontWeight:'bold',color:'#764ba2',fontSize:13}}>Rug colour</div>
