@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 224; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 225; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6163,6 +6163,7 @@ const COSY_DECOR = [
   { id:'sock',   emoji:'🧦', name:'Sock Toy' },
   { id:'milk',   emoji:'🥛', name:'Milk Saucer' },
 ];
+const COSY_RUGS = [['#fff4ea','#f3b6c8','#e79ab4'],['#f0fbff','#a9d8f5','#7fbbe6'],['#f7fff0','#b9e3a6','#8fcb77'],['#fffbe6','#f7d98a','#eebf55'],['#f6efff','#cdb4f0','#b093e0']];
 const COSY_WALLS = ['#ffe3ec','#e3f2ff','#e8f7e4','#fff3cf','#efe3ff','#ffe9d6','#dff7f3'];
 function getCosy() { try { return { bed:'basket', wall:COSY_WALLS[0], decor:[], ...JSON.parse(localStorage.getItem('km_cosy') || '{}') }; } catch { return { bed:'basket', wall:COSY_WALLS[0], decor:[] }; } }
 const COSY_ROOFS = [['#4aa3a8','#2c6f80','#1d4f5e'],['#e07a8a','#b04a62','#7a2e44'],['#8e7be0','#5c4bb0','#3b2f7a'],['#e8a23c','#b8741c','#7a4a10'],['#6fbf6a','#3f8a45','#265a2c']];
@@ -6281,7 +6282,7 @@ function CosyCornerScreen({ dogs, onBack }) {
         {/* wooden floor */}
         <div style={{position:'absolute',left:0,right:0,top:'calc(52% + 10px)',bottom:0,background:'repeating-linear-gradient(90deg,rgba(60,30,10,.22) 0 2px,transparent 2px 44px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 12px,rgba(0,0,0,.05) 12px 24px),linear-gradient(180deg,#d9a566,#b97d44)'}} />
         {/* rug */}
-        <div style={{position:'absolute',left:'6%',right:'6%',top:'62%',bottom:'5%',borderRadius:'50%',background:'radial-gradient(ellipse at center,#fff4ea 0 38%,#f3b6c8 39% 62%,#e79ab4 63% 100%)',border:'4px dashed rgba(255,255,255,.7)',boxShadow:'0 6px 12px rgba(0,0,0,.3)'}}><span style={{position:'absolute',left:'50%',bottom:'6%',transform:'translateX(-50%)',fontSize:16,letterSpacing:10,opacity:.45}}>🐾🐾🐾</span></div>
+        <div style={{position:'absolute',left:'6%',right:'6%',top:'62%',bottom:'5%',borderRadius:'50%',background:(()=>{const r=COSY_RUGS[cfg.rug||0]||COSY_RUGS[0];return `radial-gradient(ellipse at center,${r[0]} 0 38%,${r[1]} 39% 62%,${r[2]} 63% 100%)`;})(),border:'4px dashed rgba(255,255,255,.7)',boxShadow:'0 6px 12px rgba(0,0,0,.3)'}}><span style={{position:'absolute',left:'50%',bottom:'6%',transform:'translateX(-50%)',fontSize:16,letterSpacing:10,opacity:.45}}>🐾🐾🐾</span></div>
         {/* sleepers */}
         <div style={{position:'absolute',left:0,right:0,top:'58%',bottom:'4%',display:'flex',flexWrap:'wrap',gap:'6px 10px',justifyContent:'center',alignContent:'center',padding:'0 18px'}}>
           {sleepers.map(d => (
@@ -6316,6 +6317,12 @@ function CosyCornerScreen({ dogs, onBack }) {
       <div style={{display:'flex',gap:10,marginTop:6}}>
         {COSY_ROOFS.map((c,i) => (
           <button key={i} aria-label={'roof '+i} onClick={() => upd({ roof:i })} style={{width:38,height:38,borderRadius:'50%',background:c[0],border:(cfg.roof||0)===i?'3px solid #764ba2':'2px solid #ccc',cursor:'pointer'}} />
+        ))}
+      </div>
+      <div style={{marginTop:14,fontWeight:'bold',color:'#764ba2',fontSize:13}}>Rug colour</div>
+      <div style={{display:'flex',gap:10,marginTop:6}}>
+        {COSY_RUGS.map((c,i) => (
+          <button key={i} aria-label={'rug '+i} onClick={() => upd({ rug:i })} style={{width:38,height:38,borderRadius:'50%',background:c[1],border:(cfg.rug||0)===i?'3px solid #764ba2':'2px solid #ccc',cursor:'pointer'}} />
         ))}
       </div>
       <div style={{marginTop:14,fontWeight:'bold',color:'#764ba2',fontSize:13}}>Wall colour</div>
