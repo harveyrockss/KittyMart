@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 231; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 232; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6236,6 +6236,7 @@ function CatCottage({ wall, roof = 0, door = 0, flowers = 0 }) {
       <rect data-testid="cottage-chimney" x="232" y="26" width="28" height="56" fill="transparent" style={{ cursor: 'pointer' }} onClick={() => { try { playPurr(); } catch {} try { localStorage.setItem('km_cottage_taps', String((parseInt(localStorage.getItem('km_cottage_taps')||'0',10)||0) + 1)); } catch {} try { recordChallenge('cottage'); } catch {} }} />
       {/* lamp post */}
       <rect x="323" y="118" width="4" height="56" fill="#2e2e3a" /><circle cx="325" cy="114" r="22" fill="url(#ccLamp)" opacity={night ? 1 : 0.35} /><circle cx="325" cy="114" r="6" fill="#fff2a8" stroke="#2e2e3a" strokeWidth="2" />
+      <rect data-testid="cottage-lamp" x="305" y="90" width="40" height="84" fill="transparent" style={{ cursor: 'pointer' }} onClick={() => { try { playMeow(); } catch {} try { localStorage.setItem('km_cottage_taps', String((parseInt(localStorage.getItem('km_cottage_taps')||'0',10)||0) + 1)); } catch {} try { recordChallenge('cottage'); } catch {} }} />
       {/* bushes */}
       {[[56,168,16],[40,176,12],[78,176,11],[300,172,15],[283,178,10],[344,180,13]].map(([x,y,r],i)=><g key={i}><ellipse cx={x} cy={y + r * .7} rx={r} ry={r * .3} fill="rgba(0,30,0,.35)" /><circle cx={x} cy={y} r={r} fill="url(#ccBush)" /></g>)}
       {/* paw-print stepping stones */}
@@ -6267,7 +6268,7 @@ function CosyCornerScreen({ dogs, onBack }) {
         <button onClick={onBack} style={{padding:'8px 14px',background:'#f0f0f0',border:'none',borderRadius:12,fontWeight:'bold',cursor:'pointer',fontSize:13}}>← Back</button>
         <h2 style={{margin:0,color:'#333',fontSize:18}}>🛏️ Cosy Corner</h2>
       </div>
-      <div style={{marginBottom:12}}><CatCottage wall={cfg.wall} roof={cfg.roof||0} door={cfg.door||0} flowers={cfg.flowers||0} /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night. Tap the door for a meow, the chimney for a purr! Its walls match your room colour.</div></div>
+      <div style={{marginBottom:12}}><CatCottage wall={cfg.wall} roof={cfg.roof||0} door={cfg.door||0} flowers={cfg.flowers||0} /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night. Tap the door or lamp post for a meow, the chimney for a purr! Its walls match your room colour.</div></div>
       <style>{`@keyframes kmFloatZ{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-16px);opacity:0}}@keyframes kmBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes kmDust{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.7;transform:translateY(-6px)}}`}</style>
       <div data-testid="cosy-room" style={{position:'relative',borderRadius:22,overflow:'hidden',border:'3px solid #6b4a2f',boxShadow:'0 8px 20px rgba(60,30,10,.35), inset 0 0 40px rgba(0,0,0,.18)',minHeight:380,background:'#6b4a2f'}}>
         {/* wall */}
