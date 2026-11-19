@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 235; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 236; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2475,6 +2475,7 @@ const ACHIEVEMENTS = [
   { id: 'namer_3',      label: '🏷️ Name Giver', desc: 'Give 3 cats a nickname', pts: 20, check: () => parseInt(localStorage.getItem('km_name_count')||'0',10) >= 3 },
   { id: 'sun_7',        label: '☀️ Sunbeam Soaker', desc: 'Soak up the Cosy Corner sunbeam on 7 different days', pts: 20, check: () => parseInt(localStorage.getItem('km_sun_days')||'0',10) >= 7 },
   { id: 'jar_7',        label: '🫙 Treat Keeper', desc: 'Open the Treat Jar on 7 different days', pts: 20, check: () => parseInt(localStorage.getItem('km_jar_days')||'0',10) >= 7 },
+  { id: 'bird_7',       label: '🐦 Bird Watcher', desc: 'Watch the window birds on 7 different days', pts: 20, check: () => parseInt(localStorage.getItem('km_bird_days')||'0',10) >= 7 },
   { id: 'water_7',      label: '💧 Hydration Hero', desc: 'Fill the Fresh Water Bowl on 7 different days', pts: 20, check: () => parseInt(localStorage.getItem('km_water_days')||'0',10) >= 7 },
   { id: 'joke_10',      label: '😹 Joke Teller', desc: 'Read 10 cat joke answers on Home', pts: 20, check: () => parseInt(localStorage.getItem('km_joke_count')||'0',10) >= 10 },
   { id: 'cottage_10',   label: '🏠 Cottage Caller', desc: 'Tap the Cat Cottage door or chimney 10 times', pts: 20, check: () => parseInt(localStorage.getItem('km_cottage_taps')||'0',10) >= 10 },
