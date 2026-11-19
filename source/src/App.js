@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 241; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 242; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2493,6 +2493,7 @@ const ACHIEVEMENTS = [
   { id: 'pet_20',         label: '💜 Cat Cuddler',    desc: 'Give your cats 20 pets (💜 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_pet_count')||'0',10) >= 20 },
   { id: 'lullaby_15',     label: '🌙 Cat Whisperer',  desc: 'Make 15 sleeping cats purr in Cosy Corner', pts: 20, check: () => parseInt(localStorage.getItem('km_cosy_purr')||'0',10) >= 15 },
   { id: 'treat_10',       label: '🐟 Treat Tosser',   desc: 'Lure 10 cats with a treat on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_treat_count')||'0',10) >= 10 },
+  { id: 'treat_50',       label: '🐠 Treat Master',   desc: 'Lure 50 cats with a treat on Catch', pts: 30,  check: () => parseInt(localStorage.getItem('km_treat_count')||'0',10) >= 50 },
   { id: 'purr_10',       label: '😽 Purr Maker',     desc: 'Feed your cats 10 times',           pts: 20,  check: () => parseInt(localStorage.getItem('km_feed_count')||'0',10) >= 10 },
   { id: 'tidy_5',        label: '🧹 Tidy Tray',      desc: 'Scoop 5 litter trays',              pts: 20,  check: () => parseInt(localStorage.getItem('km_poo_count')||'0',10) >= 5 },
   { id: 'nine_lives',    label: '🐈 Nine Lives',     desc: 'Own 9 cats of the same breed',      pts: 60,  check: (dogs) => { const c = {}; return dogs.some(d => (c[d.breed] = (c[d.breed]||0)+1) >= 9); } },
