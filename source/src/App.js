@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 240; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 241; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2097,6 +2097,7 @@ const CHALLENGE_POOL = [
   {id:'water1', type:'water', text:'Fill the Fresh Water Bowl on Home 💧', goal:1, pts:10},
   {id:'bird1', type:'bird', text:'Watch the window birds on Home 🐦', goal:1, pts:10},
   {id:'jar1', type:'jar', text:'Open the Treat Jar on Home 🫙', goal:1, pts:10},
+  {id:'listen1', type:'listen', text:'Use Listen for a Meow on Catch 👂', goal:1, pts:10},
   {id:'treat1', type:'treat', text:'Lure a cat with a treat on Catch 🐟', goal:1, pts:10},
 ];
 
@@ -5442,6 +5443,7 @@ function CatchScreen({ player, dogs, onCatch }) {
     if (listen !== 0 || caught || !breed) return;
     setListen(1);
     try { localStorage.setItem('km_listen_count', String((parseInt(localStorage.getItem('km_listen_count')||'0',10)||0) + 1)); } catch {}
+    try { recordChallenge('listen'); } catch {}
     try { playMeow(breed.name); } catch {}
     clearTimeout(listenTimerRef.current);
     listenTimerRef.current = setTimeout(() => setListen(2), 2500);
