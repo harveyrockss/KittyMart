@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 242; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 243; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2098,6 +2098,7 @@ const CHALLENGE_POOL = [
   {id:'bird1', type:'bird', text:'Watch the window birds on Home 🐦', goal:1, pts:10},
   {id:'jar1', type:'jar', text:'Open the Treat Jar on Home 🫙', goal:1, pts:10},
   {id:'listen1', type:'listen', text:'Use Listen for a Meow on Catch 👂', goal:1, pts:10},
+  {id:'nap1', type:'nap', text:'Tuck 2 cats in for a nap 😴', goal:2, pts:15},
   {id:'treat1', type:'treat', text:'Lure a cat with a treat on Catch 🐟', goal:1, pts:10},
 ];
 
@@ -6706,7 +6707,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
     const left = 6 * 3600000 - (Date.now() - (naps[dog.id] || 0));
     if (left > 0) { showToast(`😴 ${dog.name} is still rested — nap again in ${Math.ceil(left / 3600000)}h`); return; }
     naps[dog.id] = Date.now();
-    try { localStorage.setItem('km_nap_times', JSON.stringify(naps)); localStorage.setItem('km_nap_count', (parseInt(localStorage.getItem('km_nap_count')||'0')+1).toString()); } catch {}
+    try { localStorage.setItem('km_nap_times', JSON.stringify(naps)); localStorage.setItem('km_nap_count', (parseInt(localStorage.getItem('km_nap_count')||'0')+1).toString()); } catch {} recordChallenge('nap');
     addXP(dog.id, 8, showToast);
     playPurr();
     showToast(`😴 ${dog.name} had a cosy nap! +8 XP`);
