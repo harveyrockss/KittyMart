@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 238; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 239; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2471,6 +2471,7 @@ const ACHIEVEMENTS = [
   { id: 'nap_5',         label: '🛏️ Cosy Napper',    desc: 'Tuck cats in for 5 naps (😴 button)', pts: 20,  check: () => parseInt(localStorage.getItem('km_nap_count')||'0',10) >= 5 },
   { id: 'nap_25',         label: '💤 Sleepy Clowder', desc: 'Tuck cats in for 25 naps (😴 button)', pts: 40, check: () => parseInt(localStorage.getItem('km_nap_count')||'0',10) >= 25 },
   { id: 'yarn_50',      label: '🧶 Yarn Master',    desc: 'Catch 50 yarn balls in Yarn Chase', pts: 25,  check: () => parseInt(localStorage.getItem('km_yarn_total')||'0',10) >= 50 },
+  { id: 'yarn_ace20',    label: '🧶 Yarn Ace',       desc: 'Score 20 or more in one Yarn Chase', pts: 25, check: () => parseInt(localStorage.getItem('km_yarn_best')||'0',10) >= 20 },
   { id: 'yarn_play10',   label: '🧶 Yarn Regular',   desc: 'Play Yarn Chase 10 times', pts: 20,  check: () => parseInt(localStorage.getItem('km_yarn_games')||'0',10) >= 10 },
   { id: 'meow_25',      label: '🎶 Meow Chorus', desc: 'Tap cat photos to hear 25 meows', pts: 20, check: () => parseInt(localStorage.getItem('km_meow_count')||'0',10) >= 25 },
   { id: 'namer_3',      label: '🏷️ Name Giver', desc: 'Give 3 cats a nickname', pts: 20, check: () => parseInt(localStorage.getItem('km_name_count')||'0',10) >= 3 },
