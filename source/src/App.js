@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 234; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 235; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2986,6 +2986,15 @@ function CatFactCard() {
     recordChallenge('water');
     try { playMeow(); } catch {}
   };
+  const birdKey = 'km_bird_' + localDateKey();
+  const [birdSeen, setBirdSeen] = React.useState(() => { try { return !!localStorage.getItem(birdKey); } catch { return false; } });
+  const watchBird = () => {
+    if (birdSeen) { try { playPurr(); } catch {} return; }
+    try { localStorage.setItem(birdKey, '1'); localStorage.setItem('km_bird_days', String((parseInt(localStorage.getItem('km_bird_days')||'0',10)||0) + 1)); } catch {}
+    setBirdSeen(true);
+    addBonusPts(2);
+    try { playMeow(); } catch {}
+  };
   return (
     <div data-testid="cat-fact" style={{ background: '#fff8e1', borderRadius: 16, padding: '10px 14px', margin: '10px 0', border: '2px solid #ffe082' }}>
       <div style={{ fontWeight: 'bold', fontSize: 13, color: '#8d6e00' }}>🐱 Cat Fact of the Day</div>
@@ -3004,6 +3013,9 @@ function CatFactCard() {
       </div>
       <div data-testid="cat-water" onClick={fillWater} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>💧 Fresh Water Bowl:</b> {waterFilled ? <span>Lap lap! Your cats are hydrated (+2 pts). Come back tomorrow!</span> : <span style={{ color: '#c49000' }}>Tap to fill the water bowl (+2 pts)</span>}
+      </div>
+      <div data-testid="cat-bird" onClick={watchBird} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
+        <b style={{ color: '#8d6e00' }}>🐦 Window Bird Watch:</b> {birdSeen ? <span>Chirp chirp! Your cats watched a little bird (+2 pts). Come back tomorrow!</span> : <span style={{ color: '#c49000' }}>Tap to watch the birds with your cats (+2 pts)</span>}
       </div>
       <div data-testid="cat-joke" onClick={() => { if (!showJoke) { try { localStorage.setItem('km_joke_count', String((parseInt(localStorage.getItem('km_joke_count')||'0',10)||0) + 1)); } catch {} } setShowJoke(v => !v); }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>😹 Joke:</b> {joke[0]} {showJoke ? <b>{joke[1]}</b> : <span style={{ color: '#c49000' }}>(tap for the answer)</span>}
