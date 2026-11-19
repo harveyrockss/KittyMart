@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 237; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 238; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3037,6 +3037,8 @@ function YarnChase() {
   const [score, setScore] = React.useState(0);
   const [pos, setPos] = React.useState({ x: 50, y: 50 });
   const [done, setDone] = React.useState(null);
+  const [best, setBest] = React.useState(() => { try { return parseInt(localStorage.getItem('km_yarn_best')||'0',10)||0; } catch { return 0; } });
+  const [newBest, setNewBest] = React.useState(false);
   const scoreRef = React.useRef(0);
   React.useEffect(() => {
     if (!running) return;
@@ -3051,13 +3053,15 @@ function YarnChase() {
       try { localStorage.setItem('km_yarn_games', String((parseInt(localStorage.getItem('km_yarn_games')||'0',10)||0) + 1)); } catch {}
       if (pts > 0) addBonusPts(pts);
       for (let i = 0; i < Math.min(scoreRef.current, 30); i++) recordChallenge('yarn');
+      let prev = 0; try { prev = parseInt(localStorage.getItem('km_yarn_best')||'0',10)||0; } catch {}
+      if (scoreRef.current > prev) { try { localStorage.setItem('km_yarn_best', String(scoreRef.current)); } catch {} setBest(scoreRef.current); setNewBest(prev > 0); }
       setDone(pts);
     }
   }, [time, running]);
   const start = () => {
     if (plays >= 3) return;
     try { localStorage.setItem(key, String(plays + 1)); } catch {}
-    setPlays(plays + 1); scoreRef.current = 0; setScore(0); setTime(15); setDone(null); setRunning(true);
+    setPlays(plays + 1); scoreRef.current = 0; setScore(0); setTime(15); setDone(null); setNewBest(false); setRunning(true);
   };
   const hit = () => {
     scoreRef.current += 1; setScore(scoreRef.current);
@@ -3066,8 +3070,8 @@ function YarnChase() {
   };
   return (
     <div data-testid="yarn-chase" style={{ background: 'white', borderRadius: 16, padding: 12, margin: '10px 0', border: '2px solid #ffd6e7' }}>
-      <div style={{ fontWeight: 'bold', fontSize: 13, color: '#c2185b' }}>🧶 Yarn Chase · {3 - plays} play{3 - plays === 1 ? '' : 's'} left today</div>
-      {!running && <div style={{ fontSize: 12, color: '#666', margin: '4px 0 8px' }}>{done !== null ? `Great pounce! ${score} catches = +${done} pts` : 'Tap the yarn ball as fast as you can for 15 seconds. Up to 15 pts!'}</div>}
+      <div style={{ fontWeight: 'bold', fontSize: 13, color: '#c2185b' }}>🧶 Yarn Chase · {3 - plays} play{3 - plays === 1 ? '' : 's'} left today{best > 0 ? ` · 🏅 Best ${best}` : ''}</div>
+      {!running && <div style={{ fontSize: 12, color: '#666', margin: '4px 0 8px' }}>{done !== null ? `Great pounce! ${score} catches = +${done} pts${newBest ? ' · 🏅 New best!' : ''}` : 'Tap the yarn ball as fast as you can for 15 seconds. Up to 15 pts!'}</div>}
       {running ? (
         <div>
           <div style={{ fontSize: 12, fontWeight: 'bold', color: '#764ba2' }}>⏱ {time}s · 🧶 {score}</div>
