@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 255; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 256; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -4566,9 +4566,19 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
     });
   }, [player, startCountdown]); // eslint-disable-line
 
+  const zoomUntilRef = useRef(0);
+  const [zoomies, setZoomies] = useState(false);
   const handleAiTap = () => {
     if (screenRef.current !== 'ai_racing' || aiFinishedRef.current || countdown) return;
-    const inc = 3.5 + Math.random() * 2;
+    let inc = 3.5 + Math.random() * 2;
+    const nowZ = Date.now();
+    // Cat-only Zoomies: random 1.5s burst of extra speed
+    if (nowZ < zoomUntilRef.current) inc *= 1.6;
+    else if (Math.random() < 0.05) {
+      zoomUntilRef.current = nowZ + 1500; setZoomies(true);
+      try { playMeow && playMeow(); } catch (e) {}
+      setTimeout(() => setZoomies(false), 1500);
+    }
     myAiPctRef.current = Math.min(100, myAiPctRef.current + inc);
     const pct = myAiPctRef.current;
     const now = Date.now();
@@ -4932,6 +4942,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
             👻 Racing against your best ghost — beat your own record!
           </div>
         )}
+        {zoomies && <div style={{ background: 'linear-gradient(135deg,#ff9a3c,#ffd700)', borderRadius: 10, padding: '6px 12px', marginBottom: 8, fontSize: 14, color: '#5a3200', fontWeight: 900, textAlign: 'center' }}>⚡ ZOOMIES! Your cat got the zoomies - faster!</div>}
         {aiRoom && <RaceTrack room={aiRoom} mySlot="p1" />}
         {isCountingDown && (
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.55)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
@@ -4943,7 +4954,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
         <button className={isCountingDown ? '' : 'tap-btn'} onPointerDown={handleAiTap} style={{ display: 'block', width: '100%', minHeight: 120, background: finished ? 'linear-gradient(135deg,#aaa,#888)' : isCountingDown ? '#555' : 'linear-gradient(135deg,#ffd700,#f4a261)', color: isCountingDown ? '#999' : '#333', border: 'none', borderRadius: 24, fontSize: 28, fontWeight: 900, cursor: isCountingDown ? 'default' : 'pointer', marginTop: 14, marginBottom: 10, boxShadow: isCountingDown ? 'none' : '0 8px 24px rgba(244,162,97,0.5)' }}>
           {finished ? '✅ Finished!' : isCountingDown ? '⏳ Get ready…' : 'TAP! 🐾'}
         </button>
-        <p style={{ textAlign: 'center', color: '#aaa', fontSize: 12, margin: 0 }}>Beat the AI! 🏁 Tap as fast as you can</p>
+        <p style={{ textAlign: 'center', color: '#aaa', fontSize: 12, margin: 0 }}>Beat the AI! 🏁 Tap fast - watch for the cat zoomies ⚡</p>
       </div>
     );
   }
