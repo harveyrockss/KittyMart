@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 252; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 253; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2510,6 +2510,7 @@ const ACHIEVEMENTS = [
   { id: 'sun_7',        label: '☀️ Sunbeam Soaker', desc: 'Soak up the Cosy Corner sunbeam on 7 different days', pts: 20, check: () => parseInt(localStorage.getItem('km_sun_days')||'0',10) >= 7 },
   { id: 'jar_7',        label: '🫙 Treat Keeper', desc: 'Open the Treat Jar on 7 different days', pts: 20, check: () => parseInt(localStorage.getItem('km_jar_days')||'0',10) >= 7 },
   { id: 'bird_7',       label: '🐦 Bird Watcher', desc: 'Watch the window birds on 7 different days', pts: 20, check: () => parseInt(localStorage.getItem('km_bird_days')||'0',10) >= 7 },
+  { id: 'sun_30',       label: '🌞 Sunbeam Master', desc: 'Soak up the Cosy Corner sunbeam on 30 different days', pts: 40, check: () => parseInt(localStorage.getItem('km_sun_days')||'0',10) >= 30 },
   { id: 'bird_30',      label: '🦉 Bird Master', desc: 'Watch the window birds on 30 different days', pts: 40, check: () => parseInt(localStorage.getItem('km_bird_days')||'0',10) >= 30 },
   { id: 'water_7',      label: '💧 Hydration Hero', desc: 'Fill the Fresh Water Bowl on 7 different days', pts: 20, check: () => parseInt(localStorage.getItem('km_water_days')||'0',10) >= 7 },
   { id: 'jar_30',       label: '🍯 Jar Master', desc: 'Open the Treat Jar on 30 different days', pts: 40, check: () => parseInt(localStorage.getItem('km_jar_days')||'0',10) >= 30 },
