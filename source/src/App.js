@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 254; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 255; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3003,6 +3003,7 @@ function CatFactCard() {
   const fact = CAT_FACTS[day % CAT_FACTS.length];
   const joke = CAT_JOKES[day % CAT_JOKES.length];
   const [showJoke, setShowJoke] = React.useState(false);
+  const [extrasOpen, setExtrasOpen] = React.useState(false);
   const mood = CAT_MOODS[(day + 3) % CAT_MOODS.length];
   const toy = CAT_TOYS[(day + 5) % CAT_TOYS.length];
   const nap = CAT_NAP_SPOTS[(day + 2) % CAT_NAP_SPOTS.length];
@@ -3051,6 +3052,11 @@ function CatFactCard() {
     <div data-testid="cat-fact" style={{ background: '#fff8e1', borderRadius: 16, padding: '10px 14px', margin: '10px 0', border: '2px solid #ffe082' }}>
       <div style={{ fontWeight: 'bold', fontSize: 13, color: '#8d6e00' }}>🐱 Cat Fact of the Day</div>
       <div style={{ fontSize: 13, color: '#555', marginTop: 4 }}>{fact}</div>
+      {(() => { const left = [jarOpen, waterFilled, birdSeen, mailOpen].filter(x => !x).length; return (
+        <button data-testid="cat-extras-toggle" onClick={() => setExtrasOpen(v => !v)} style={{ marginTop: 8, width: '100%', background: '#ffecb3', border: 'none', borderRadius: 10, padding: '7px 10px', fontSize: 13, fontWeight: 'bold', color: '#8d6e00', cursor: 'pointer' }}>
+          {extrasOpen ? '▲ Hide daily extras' : '▼ Daily extras' + (left ? ' (' + left + ' to collect!)' : ' (all collected 🐾)')}
+        </button>); })()}
+      {extrasOpen && <>
       <div data-testid="cat-mood" onClick={() => { try { playPurr(); } catch {} }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>{mood[0]} Cat Mood Forecast:</b> {mood[1]}
       </div>
@@ -3075,6 +3081,7 @@ function CatFactCard() {
       <div data-testid="cat-joke" onClick={() => { if (!showJoke) { try { localStorage.setItem('km_joke_count', String((parseInt(localStorage.getItem('km_joke_count')||'0',10)||0) + 1)); } catch {} } setShowJoke(v => !v); }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>😹 Joke:</b> {joke[0]} {showJoke ? <b>{joke[1]}</b> : <span style={{ color: '#c49000' }}>(tap for the answer)</span>}
       </div>
+      </>}
     </div>
   );
 }
