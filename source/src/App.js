@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 253; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 254; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3036,6 +3036,17 @@ function CatFactCard() {
     recordChallenge('bird');
     try { playMeow(); } catch {}
   };
+  const MAIL = ['Dear friend, I napped in a sunbeam today. Ten out of ten. Love, Whiskers 🐾','Hello! I found a very good box. It is mine now. From Mochi 📦','Meow meow! Please send more tuna. Thank you! Pumpkin 🐟','Dear human, the yarn ball and I are best friends. Shadow 🧶','Purr purr! I hope you have a cosy day. Biscuit 💜','Guess what? I chased my own tail. It was exciting! Ginger 😸','Hi! I watched a bird from the window. I was very quiet. Smokey 🐦'];
+  const mailKey = 'km_mail_' + localDateKey();
+  const [mailOpen, setMailOpen] = React.useState(() => { try { return !!localStorage.getItem(mailKey); } catch { return false; } });
+  const mailIdx = (() => { const d = new Date(); return (d.getFullYear()*372 + d.getMonth()*31 + d.getDate()) % MAIL.length; })();
+  const openMail = () => {
+    if (mailOpen) { try { playPurr(); } catch {} return; }
+    try { localStorage.setItem(mailKey, '1'); } catch {}
+    setMailOpen(true);
+    addBonusPts(2);
+    try { playMeow(); } catch {}
+  };
   return (
     <div data-testid="cat-fact" style={{ background: '#fff8e1', borderRadius: 16, padding: '10px 14px', margin: '10px 0', border: '2px solid #ffe082' }}>
       <div style={{ fontWeight: 'bold', fontSize: 13, color: '#8d6e00' }}>🐱 Cat Fact of the Day</div>
@@ -3057,6 +3068,9 @@ function CatFactCard() {
       </div>
       <div data-testid="cat-bird" onClick={watchBird} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>🐦 Window Bird Watch:</b> {birdSeen ? <span>Chirp chirp! Your cats watched a little bird (+2 pts). Come back tomorrow!</span> : <span style={{ color: '#c49000' }}>Tap to watch the birds with your cats (+2 pts)</span>}
+      </div>
+      <div data-testid="cat-mail" onClick={openMail} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
+        <b style={{ color: '#8d6e00' }}>💌 Cat Mail:</b> {mailOpen ? <span>{MAIL[mailIdx]} (+2 pts)</span> : <span style={{ color: '#c49000' }}>A postcard from a cat arrived! Tap to read it (+2 pts)</span>}
       </div>
       <div data-testid="cat-joke" onClick={() => { if (!showJoke) { try { localStorage.setItem('km_joke_count', String((parseInt(localStorage.getItem('km_joke_count')||'0',10)||0) + 1)); } catch {} } setShowJoke(v => !v); }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>😹 Joke:</b> {joke[0]} {showJoke ? <b>{joke[1]}</b> : <span style={{ color: '#c49000' }}>(tap for the answer)</span>}
