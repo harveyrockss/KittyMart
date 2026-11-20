@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 247; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 248; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -522,6 +522,12 @@ const LIVE_EVENTS = [
     desc: 'Snack time! Uncommon cats show up a little more often today.',
     isActive: () => new Date().getDay() === 2,
     weights: { Common: 36, Uncommon: 34, Rare: 18, Epic: 8, Legendary: 4 },
+  },  {
+    id: 'whisker_monday',
+    label: '😸 Whisker Monday!',
+    desc: 'Fresh week, fresh friends! Rare cats show up a little more often today.',
+    isActive: () => new Date().getDay() === 1,
+    weights: { Common: 36, Uncommon: 28, Rare: 24, Epic: 8, Legendary: 4 },
   },
 ];
 function getActiveEvent() {
