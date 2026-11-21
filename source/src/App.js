@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 256; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 257; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2123,6 +2123,7 @@ const CHALLENGE_POOL = [
   {id:'sun1', type:'sun', text:'Soak up the Cosy Corner sunbeam ☀️', goal:1, pts:10},
   {id:'play1', type:'play', text:'Play feather games with 2 cats 🪶', goal:2, pts:15},
   {id:'water1', type:'water', text:'Fill the Fresh Water Bowl on Home 💧', goal:1, pts:10},
+  {id:'mail1', type:'mail', text:'Open today\'s Cat Mail on Home 💌', goal:1, pts:10},
   {id:'bird1', type:'bird', text:'Watch the window birds on Home 🐦', goal:1, pts:10},
   {id:'jar1', type:'jar', text:'Open the Treat Jar on Home 🫙', goal:1, pts:10},
   {id:'listen1', type:'listen', text:'Use Listen for a Meow on Catch 👂', goal:1, pts:10},
@@ -3046,6 +3047,7 @@ function CatFactCard() {
     try { localStorage.setItem(mailKey, '1'); } catch {}
     setMailOpen(true);
     addBonusPts(2);
+    recordChallenge('mail');
     try { playMeow(); } catch {}
   };
   return (
