@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 257; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 258; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3008,6 +3008,8 @@ function CatFactCard() {
   const mood = CAT_MOODS[(day + 3) % CAT_MOODS.length];
   const toy = CAT_TOYS[(day + 5) % CAT_TOYS.length];
   const nap = CAT_NAP_SPOTS[(day + 2) % CAT_NAP_SPOTS.length];
+  const LUCKY_COLOURS = [['🧡','Orange'],['🤍','White'],['🖤','Black'],['💜','Purple'],['💙','Blue'],['💚','Green'],['💛','Golden']];
+  const luckyCol = LUCKY_COLOURS[(day + 4) % LUCKY_COLOURS.length];
   const jarKey = 'km_jar_' + localDateKey();
   const [jarOpen, setJarOpen] = React.useState(() => { try { return !!localStorage.getItem(jarKey); } catch { return false; } });
   const openJar = () => {
@@ -3064,6 +3066,9 @@ function CatFactCard() {
       </div>
       <div data-testid="cat-toy" style={{ fontSize: 13, color: '#555', marginTop: 8, borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>{toy[0]} Lucky Toy Today:</b> {toy[1]}. Your cats are extra excited about it!
+      </div>
+      <div data-testid="cat-colour" style={{ fontSize: 13, color: '#555', marginTop: 8, borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
+        <b style={{ color: '#8d6e00' }}>{luckyCol[0]} Lucky Colour Today:</b> {luckyCol[1]}. Spot a {luckyCol[1].toLowerCase()} cat and give it a pet!
       </div>
       <div data-testid="cat-nap" style={{ fontSize: 13, color: '#555', marginTop: 8, borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>{nap[0]} Best Nap Spot Today:</b> {nap[1]}.
