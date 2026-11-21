@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 262; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 263; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2535,6 +2535,7 @@ const ACHIEVEMENTS = [
   { id: 'nine_lives',    label: '🐈 Nine Lives',     desc: 'Own 9 cats of the same breed',      pts: 60,  check: (dogs) => { const c = {}; return dogs.some(d => (c[d.breed] = (c[d.breed]||0)+1) >= 9); } },
   { id: 'cosy_decor',    label: '🪴 Cosy Decorator', desc: 'Add 3 decorations in your Cosy Corner', pts: 20, check: () => { try { return (JSON.parse(localStorage.getItem('km_cosy')||'{}').decor||[]).length >= 3; } catch { return false; } } },
   { id: 'cosy_painter', label: '🎨 Cottage Painter', desc: 'Pick a roof, door and flower colour for your Cat Cottage', pts: 20, check: () => { try { const c = JSON.parse(localStorage.getItem('km_cosy')||'{}'); return !!(c.roof && c.door && c.flowers); } catch { return false; } } },
+  { id: 'night_owl',     label: '🦉 Night Owl',      desc: 'Turn the lights off in your Cosy Corner', pts: 15, check: () => { try { return !!JSON.parse(localStorage.getItem('km_cosy')||'{}').night_used; } catch { return false; } } },
   { id: 'cosy_home',     label: '🏡 Cosy Home',      desc: 'Add 8 decorations in your Cosy Corner', pts: 40, check: () => { try { return (JSON.parse(localStorage.getItem('km_cosy')||'{}').decor||[]).length >= 8; } catch { return false; } } },
   { id: 'race_3',        label: '🏁 Whisker Winner', desc: 'Win 3 races against the computer cats', pts: 30,  check: () => parseInt(localStorage.getItem('km_race_wins')||'0',10) >= 3 },
   { id: 'race_25',       label: '🥇 Whisker Legend', desc: 'Win 25 races against the computer cats', pts: 60,  check: () => parseInt(localStorage.getItem('km_race_wins')||'0',10) >= 25 },
@@ -6372,7 +6373,7 @@ function CosyCornerScreen({ dogs, onBack }) {
       </div>
       <div style={{marginBottom:12}}><CatCottage wall={cfg.wall} roof={cfg.roof||0} door={cfg.door||0} flowers={cfg.flowers||0} /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night. Tap the door, lamp post, attic or front windows for a meow, the chimney for a purr! Its walls match your room colour.</div></div>
       <style>{`@keyframes kmFloatZ{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-16px);opacity:0}}@keyframes kmBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes kmDust{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.7;transform:translateY(-6px)}}`}</style>
-      <div style={{margin:'0 0 8px'}}><button data-testid="cosy-lights" onClick={() => upd({ night: !cfg.night })} style={{padding:'6px 12px',border:'none',borderRadius:12,background:cfg.night?'#3b3d6b':'#ffe8a8',color:cfg.night?'#fff':'#6b4a2f',fontWeight:'bold',fontSize:12,cursor:'pointer'}}>{cfg.night ? '🌙 Lights off (tap for day)' : '💡 Lights on (tap for night)'}</button></div>
+      <div style={{margin:'0 0 8px'}}><button data-testid="cosy-lights" onClick={() => upd({ night: !cfg.night, ...(!cfg.night ? { night_used: true } : {}) })} style={{padding:'6px 12px',border:'none',borderRadius:12,background:cfg.night?'#3b3d6b':'#ffe8a8',color:cfg.night?'#fff':'#6b4a2f',fontWeight:'bold',fontSize:12,cursor:'pointer'}}>{cfg.night ? '🌙 Lights off (tap for day)' : '💡 Lights on (tap for night)'}</button></div>
       <div data-testid="cosy-room" style={{position:'relative',borderRadius:22,overflow:'hidden',border:'3px solid #6b4a2f',boxShadow:'0 8px 20px rgba(60,30,10,.35), inset 0 0 40px rgba(0,0,0,.18)',minHeight:380,background:'#6b4a2f'}}>
         {/* wall */}
         <div style={{position:'absolute',left:0,right:0,top:0,height:'52%',background:`repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 2px,transparent 2px 26px),linear-gradient(180deg,rgba(255,255,255,.35),rgba(0,0,0,.12)),${cfg.wall}`}} />
