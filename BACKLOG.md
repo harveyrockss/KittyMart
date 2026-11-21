@@ -77,6 +77,7 @@
 - Run 46: cat-only 'Joke of the Day' (tap for the answer) in the Cat Fact card on Home (7 child-safe jokes). v1.49 (APP_VERSION 186). Build OK; signup + Home screenshot viewed + tab nav, no page errors.
 - Run 47: cat-only 'Cat Mood Forecast' line in the Home Cat Fact card (7 child-safe moods, rotates daily, tap to purr). v1.50 (APP_VERSION 187). Build OK; signup + Home loaded with playwright, no page errors; mood card present in DOM (screenshot of Home taken, mood text lower in card not separately viewed).
 - Run 48: cat-only 'Lucky Toy Today' line in the Home Cat Fact card (7 child-safe toys, rotates daily). v1.51 (APP_VERSION 188). Build OK; signup + Home loaded with playwright, no page errors, toy line verified in DOM.
+- Run 124: 3 new Cosy Corner decorations (🕯️ Candle, ⏰ Cuckoo Clock, ⭐ Star Cushion; 20 total) and cat-only achievement '🏰 Cosy Palace' (12 decorations). v1.127 (APP_VERSION 264). Build OK; signup + 12 decorations seeded, Cosy screenshot viewed (candle shows), all 7 tabs loaded, no page errors. Suggest next: Super Fan (after IAP) or Cosy free placement.
 
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.

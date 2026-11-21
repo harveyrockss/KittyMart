@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 263; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 264; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2536,6 +2536,7 @@ const ACHIEVEMENTS = [
   { id: 'cosy_decor',    label: '🪴 Cosy Decorator', desc: 'Add 3 decorations in your Cosy Corner', pts: 20, check: () => { try { return (JSON.parse(localStorage.getItem('km_cosy')||'{}').decor||[]).length >= 3; } catch { return false; } } },
   { id: 'cosy_painter', label: '🎨 Cottage Painter', desc: 'Pick a roof, door and flower colour for your Cat Cottage', pts: 20, check: () => { try { const c = JSON.parse(localStorage.getItem('km_cosy')||'{}'); return !!(c.roof && c.door && c.flowers); } catch { return false; } } },
   { id: 'night_owl',     label: '🦉 Night Owl',      desc: 'Turn the lights off in your Cosy Corner', pts: 15, check: () => { try { return !!JSON.parse(localStorage.getItem('km_cosy')||'{}').night_used; } catch { return false; } } },
+  { id: 'cosy_palace',  label: '🏰 Cosy Palace',    desc: 'Add 12 decorations in your Cosy Corner', pts: 60, check: () => { try { return (JSON.parse(localStorage.getItem('km_cosy')||'{}').decor||[]).length >= 12; } catch { return false; } } },
   { id: 'cosy_home',     label: '🏡 Cosy Home',      desc: 'Add 8 decorations in your Cosy Corner', pts: 40, check: () => { try { return (JSON.parse(localStorage.getItem('km_cosy')||'{}').decor||[]).length >= 8; } catch { return false; } } },
   { id: 'race_3',        label: '🏁 Whisker Winner', desc: 'Win 3 races against the computer cats', pts: 30,  check: () => parseInt(localStorage.getItem('km_race_wins')||'0',10) >= 3 },
   { id: 'race_25',       label: '🥇 Whisker Legend', desc: 'Win 25 races against the computer cats', pts: 60,  check: () => parseInt(localStorage.getItem('km_race_wins')||'0',10) >= 25 },
@@ -6271,6 +6272,9 @@ const COSY_DECOR = [
   { id:'bell',   emoji:'🔔', name:'Jingle Bell' },
   { id:'sock',   emoji:'🧦', name:'Sock Toy' },
   { id:'milk',   emoji:'🥛', name:'Milk Saucer' },
+  { id:'candle', emoji:'🕯️', name:'Candle' },
+  { id:'clock',  emoji:'⏰', name:'Cuckoo Clock' },
+  { id:'star',   emoji:'⭐', name:'Star Cushion' },
 ];
 const COSY_RUGS = [['#fff4ea','#f3b6c8','#e79ab4'],['#f0fbff','#a9d8f5','#7fbbe6'],['#f7fff0','#b9e3a6','#8fcb77'],['#fffbe6','#f7d98a','#eebf55'],['#f6efff','#cdb4f0','#b093e0']];
 const COSY_WALLS = ['#ffe3ec','#e3f2ff','#e8f7e4','#fff3cf','#efe3ff','#ffe9d6','#dff7f3'];
