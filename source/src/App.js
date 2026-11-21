@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 266; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 267; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2123,6 +2123,7 @@ const CHALLENGE_POOL = [
   {id:'sun1', type:'sun', text:'Soak up the Cosy Corner sunbeam ☀️', goal:1, pts:10},
   {id:'play1', type:'play', text:'Play feather games with 2 cats 🪶', goal:2, pts:15},
   {id:'water1', type:'water', text:'Fill the Fresh Water Bowl on Home 💧', goal:1, pts:10},
+  {id:'mood1', type:'mood', text:'Tap the Cat Mood Forecast on Home 🔮 (5 times)', goal:5, pts:10},
   {id:'mail1', type:'mail', text:'Open today\'s Cat Mail on Home 💌', goal:1, pts:10},
   {id:'bird1', type:'bird', text:'Watch the window birds on Home 🐦', goal:1, pts:10},
   {id:'jar1', type:'jar', text:'Open the Treat Jar on Home 🫙', goal:1, pts:10},
@@ -3066,7 +3067,7 @@ function CatFactCard() {
           {extrasOpen ? '▲ Hide daily extras' : '▼ Daily extras' + (left ? ' (' + left + ' to collect!)' : ' (all collected 🐾)')}
         </button>); })()}
       {extrasOpen && <>
-      <div data-testid="cat-mood" onClick={() => { try { playPurr(); localStorage.setItem('km_mood_count', String((parseInt(localStorage.getItem('km_mood_count')||'0',10)||0) + 1)); } catch {} }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
+      <div data-testid="cat-mood" onClick={() => { try { playPurr(); recordChallenge('mood'); localStorage.setItem('km_mood_count', String((parseInt(localStorage.getItem('km_mood_count')||'0',10)||0) + 1)); } catch {} }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>{mood[0]} Cat Mood Forecast:</b> {mood[1]}
       </div>
       <div data-testid="cat-toy" style={{ fontSize: 13, color: '#555', marginTop: 8, borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
