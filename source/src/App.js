@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 260; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 261; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3042,7 +3042,7 @@ function CatFactCard() {
     recordChallenge('bird');
     try { playMeow(); } catch {}
   };
-  const MAIL = ['Dear friend, I napped in a sunbeam today. Ten out of ten. Love, Whiskers 🐾','Hello! I found a very good box. It is mine now. From Mochi 📦','Meow meow! Please send more tuna. Thank you! Pumpkin 🐟','Dear human, the yarn ball and I are best friends. Shadow 🧶','Purr purr! I hope you have a cosy day. Biscuit 💜','Guess what? I chased my own tail. It was exciting! Ginger 😸','Hi! I watched a bird from the window. I was very quiet. Smokey 🐦'];
+  const MAIL = ['Dear friend, I napped in a sunbeam today. Ten out of ten. Love, Whiskers 🐾','Hello! I found a very good box. It is mine now. From Mochi 📦','Meow meow! Please send more tuna. Thank you! Pumpkin 🐟','Dear human, the yarn ball and I are best friends. Shadow 🧶','Purr purr! I hope you have a cosy day. Biscuit 💜','Guess what? I chased my own tail. It was exciting! Ginger 😸','Hi! I watched a bird from the window. I was very quiet. Smokey 🐦','Dear friend, I learned to open a cupboard. Oops! Love, Luna 🚪','Meow! I made a cosy nest from your jumper. Sorry. Oreo 🧺','Hello! I did a big stretch and a bigger yawn. Peanut 🥱','Purr! I chased a sparkly light all around the room. Maple ✨','Dear human, thank you for the cuddles. I love you lots. Clover 💕','Hi! I hid in a paper bag. Can you see me? Pepper 🛍️','Meow meow! The rain went tap tap tap. I listened all day. Willow 🌧️'];
   const mailKey = 'km_mail_' + localDateKey();
   const [mailOpen, setMailOpen] = React.useState(() => { try { return !!localStorage.getItem(mailKey); } catch { return false; } });
   const mailIdx = (() => { const d = new Date(); return (d.getFullYear()*372 + d.getMonth()*31 + d.getDate()) % MAIL.length; })();
