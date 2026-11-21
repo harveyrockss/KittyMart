@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 265; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 266; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2517,6 +2517,7 @@ const ACHIEVEMENTS = [
   { id: 'water_7',      label: '💧 Hydration Hero', desc: 'Fill the Fresh Water Bowl on 7 different days', pts: 20, check: () => parseInt(localStorage.getItem('km_water_days')||'0',10) >= 7 },
   { id: 'jar_30',       label: '🍯 Jar Master', desc: 'Open the Treat Jar on 30 different days', pts: 40, check: () => parseInt(localStorage.getItem('km_jar_days')||'0',10) >= 30 },
   { id: 'water_30',     label: '🌊 Water Wizard', desc: 'Fill the Fresh Water Bowl on 30 different days', pts: 40, check: () => parseInt(localStorage.getItem('km_water_days')||'0',10) >= 30 },
+  { id: 'mood_15',      label: '🔮 Mood Reader', desc: 'Tap the Cat Mood Forecast 15 times on Home', pts: 20, check: () => parseInt(localStorage.getItem('km_mood_count')||'0',10) >= 15 },
   { id: 'joke_10',      label: '😹 Joke Teller', desc: 'Read 10 cat joke answers on Home', pts: 20, check: () => parseInt(localStorage.getItem('km_joke_count')||'0',10) >= 10 },
   { id: 'cottage_10',   label: '🏠 Cottage Caller', desc: 'Tap the Cat Cottage door or chimney 10 times', pts: 20, check: () => parseInt(localStorage.getItem('km_cottage_taps')||'0',10) >= 10 },
   { id: 'listen_10',    label: '👂 Sharp Ears',     desc: 'Use Listen for a Meow 10 times on Catch', pts: 20,  check: () => parseInt(localStorage.getItem('km_listen_count')||'0',10) >= 10 },
@@ -3065,7 +3066,7 @@ function CatFactCard() {
           {extrasOpen ? '▲ Hide daily extras' : '▼ Daily extras' + (left ? ' (' + left + ' to collect!)' : ' (all collected 🐾)')}
         </button>); })()}
       {extrasOpen && <>
-      <div data-testid="cat-mood" onClick={() => { try { playPurr(); } catch {} }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
+      <div data-testid="cat-mood" onClick={() => { try { playPurr(); localStorage.setItem('km_mood_count', String((parseInt(localStorage.getItem('km_mood_count')||'0',10)||0) + 1)); } catch {} }} style={{ fontSize: 13, color: '#555', marginTop: 8, cursor: 'pointer', borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
         <b style={{ color: '#8d6e00' }}>{mood[0]} Cat Mood Forecast:</b> {mood[1]}
       </div>
       <div data-testid="cat-toy" style={{ fontSize: 13, color: '#555', marginTop: 8, borderTop: '1px dashed #ffe082', paddingTop: 6 }}>
