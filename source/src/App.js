@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 261; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 262; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6372,6 +6372,7 @@ function CosyCornerScreen({ dogs, onBack }) {
       </div>
       <div style={{marginBottom:12}}><CatCottage wall={cfg.wall} roof={cfg.roof||0} door={cfg.door||0} flowers={cfg.flowers||0} /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night. Tap the door, lamp post, attic or front windows for a meow, the chimney for a purr! Its walls match your room colour.</div></div>
       <style>{`@keyframes kmFloatZ{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-16px);opacity:0}}@keyframes kmBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes kmDust{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.7;transform:translateY(-6px)}}`}</style>
+      <div style={{margin:'0 0 8px'}}><button data-testid="cosy-lights" onClick={() => upd({ night: !cfg.night })} style={{padding:'6px 12px',border:'none',borderRadius:12,background:cfg.night?'#3b3d6b':'#ffe8a8',color:cfg.night?'#fff':'#6b4a2f',fontWeight:'bold',fontSize:12,cursor:'pointer'}}>{cfg.night ? '🌙 Lights off (tap for day)' : '💡 Lights on (tap for night)'}</button></div>
       <div data-testid="cosy-room" style={{position:'relative',borderRadius:22,overflow:'hidden',border:'3px solid #6b4a2f',boxShadow:'0 8px 20px rgba(60,30,10,.35), inset 0 0 40px rgba(0,0,0,.18)',minHeight:380,background:'#6b4a2f'}}>
         {/* wall */}
         <div style={{position:'absolute',left:0,right:0,top:0,height:'52%',background:`repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 2px,transparent 2px 26px),linear-gradient(180deg,rgba(255,255,255,.35),rgba(0,0,0,.12)),${cfg.wall}`}} />
@@ -6392,6 +6393,7 @@ function CosyCornerScreen({ dogs, onBack }) {
           </div>
           <div style={{height:9,borderRadius:3,background:'linear-gradient(180deg,#c89560,#8a5a32)',boxShadow:'0 5px 6px rgba(0,0,0,.3)'}} />
         </div>
+        {cfg.night && <div data-testid="cosy-night" style={{position:'absolute',inset:0,zIndex:1,pointerEvents:'none',background:'radial-gradient(circle at 70% 30%,rgba(255,220,140,.25),rgba(10,12,50,.55) 70%)'}} />}
         {/* baseboard */}
         <div style={{position:'absolute',left:0,right:0,top:'52%',height:10,background:'linear-gradient(180deg,#fff,#d9cdbd)',boxShadow:'0 2px 4px rgba(0,0,0,.25)'}} />
         {/* wooden floor */}
