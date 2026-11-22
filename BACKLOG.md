@@ -81,9 +81,10 @@
 
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
-1. Cat-only features for App Store differentiation (one per run): (cat-bed Cosy Corner done run 19; decor toggles done run 20; free-placement of furniture still open) (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) ("Pick up 3 poos" is still PuppyMart flavoured -> litter-box wording), purr sound on cat pet (feed done).
+1. Cat-only features for App Store differentiation (one per run): (cat-bed Cosy Corner done run 19; decor toggles done run 20; free-placement of furniture still open) (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) (litter-tray wording already done), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
 3. Accounts are per-device offline: a real fix needs a new KittyMart Supabase project from Harvey. (File transfer done run 17.)
+- Run 128: wording sweep only (no code change): visible text has no dog/puppy/PuppyMart wording; challenges already say litter trays; removed stale backlog note. Suggest next: Super Fan (after IAP) or Cosy free placement.
 
 ## Known issues
 - Automated catch-tap in playwright was flaky (cat moves); catch flow not re-verified by script in run 4 (only playMeow call changed, try/catch-wrapped). Tabs load with no console errors.
