@@ -81,7 +81,7 @@
 
 ## Next (priority order)
 0. Super Fan unlock (extra daily plays/slots, nothing locked) after Cosy Pack is live.
-1. Cat-only features for App Store differentiation (one per run): (cat-bed Cosy Corner done run 19; decor toggles done run 20; free-placement of furniture still open) (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) (litter-tray wording already done), purr sound on cat pet (feed done).
+1. Cat-only features for App Store differentiation (one per run): (cat-bed Cosy Corner done run 19; decor toggles done run 20; free-placement done run 140) (nap button done run 10), (yarn-chase done run 13), (treat-lure done run 14), cat daily challenges (achievements done run 8) (litter-tray wording already done), purr sound on cat pet (feed done).
 2. Source comments/identifiers still say dog/poo (internal only; low priority).
 3. Accounts are per-device offline: a real fix needs a new KittyMart Supabase project from Harvey. (File transfer done run 17.)
 - Run 128: wording sweep only (no code change): visible text has no dog/puppy/PuppyMart wording; challenges already say litter trays; removed stale backlog note. Suggest next: Super Fan (after IAP) or Cosy free placement.
@@ -178,3 +178,5 @@
 - Run 137: health check only (no code change): root served locally loads (login screen) with playwright, no page errors (v1.130). Still waiting on Harvey (Super Fan after IAP; support email/privacy URL) or the larger Cosy free-placement feature.
 - Run 138: health check only (no code change): root served locally loads (login screen) with playwright, no page errors (v1.130). Still waiting on Harvey (Super Fan after IAP; support email/privacy URL) or the larger Cosy free-placement feature.
 - Run 139: health check only (no code change): root served locally loads (login screen) with playwright, no page errors (v1.130). Still waiting on Harvey (Super Fan after IAP; support email/privacy URL) or the larger Cosy free-placement feature.
+- Run 140: Cosy Corner free placement (distinctive cat-home feature): '✋ Move decorations' lets you drag any decoration anywhere in the room (touch + mouse), '✅ Done moving' locks it, '↩ All back on shelf' resets; positions saved in km_cosy.pos. v1.131 (APP_VERSION 268). Build OK; playwright: mouse + touch drag, reload persistence, reset, night mode, catch (1 cat caught), full AI race, all 8 tabs, no page errors beyond blocked network; screenshots viewed (cartoon art only, photo APIs blocked).
+  Known: Cats tab header says "1 cats" with one cat (minor). Suggest next: fix that; Super Fan (after IAP). Free placement is no longer open.

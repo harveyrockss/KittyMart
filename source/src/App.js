@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 267; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 268; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6371,7 +6371,32 @@ function CosyCornerScreen({ dogs, onBack }) {
   const sleepers = dogs.filter(d => Date.now() - (naps[d.id] || 0) < 6 * 3600000).slice(0, 6);
   const bed = COSY_BEDS.find(b => b.id === cfg.bed) || COSY_BEDS[0];
   const decor = Array.isArray(cfg.decor) ? cfg.decor : [];
-  const toggleDecor = (id) => upd({ decor: decor.includes(id) ? decor.filter(x => x !== id) : [...decor, id] });
+  // Free placement: cfg.pos[id] = {x,y} (% of the room, item centre). Items without a position sit on the shelf.
+  const pos = cfg.pos || {};
+  const [moving, setMoving] = useState(false);
+  const [drag, setDrag] = useState(null);
+  const roomRef = React.useRef(null);
+  const toggleDecor = (id) => {
+    if (!decor.includes(id)) {
+      // In move mode a newly added item appears mid-room, ready to drag
+      upd({ decor: [...decor, id], ...(moving ? { pos: { ...pos, [id]: { x: 50, y: 45 } } } : {}) });
+      return;
+    }
+    const rest = { ...pos }; delete rest[id];
+    upd({ decor: decor.filter(x => x !== id), pos: rest });
+  };
+  const startMoving = () => {
+    const next = { ...pos };
+    decor.forEach((id, i) => { if (!next[id]) next[id] = { x: 38 + (i % 5) * 13, y: 12 + Math.floor(i / 5) * 10 }; });
+    upd({ pos: next });
+    setMoving(true);
+  };
+  const pointAt = (e) => {
+    const r = roomRef.current.getBoundingClientRect();
+    const clamp = (v) => Math.round(Math.max(6, Math.min(94, v)) * 10) / 10;
+    return { x: clamp((e.clientX - r.left) / r.width * 100), y: clamp((e.clientY - r.top) / r.height * 100) };
+  };
+  const endDrag = () => { if (drag) upd({ pos: { ...pos, [drag.id]: { x: drag.x, y: drag.y } } }); setDrag(null); };
   return (
     <div style={{padding:16}}>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:14}}>
@@ -6381,7 +6406,7 @@ function CosyCornerScreen({ dogs, onBack }) {
       <div style={{marginBottom:12}}><CatCottage wall={cfg.wall} roof={cfg.roof||0} door={cfg.door||0} flowers={cfg.flowers||0} /><div style={{fontSize:12,color:'#777',margin:'6px 2px 12px'}}>🏡 Your Cat Cottage — the windows glow warmer at night. Tap the door, lamp post, attic or front windows for a meow, the chimney for a purr! Its walls match your room colour.</div></div>
       <style>{`@keyframes kmFloatZ{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-16px);opacity:0}}@keyframes kmBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes kmDust{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.7;transform:translateY(-6px)}}`}</style>
       <div style={{margin:'0 0 8px'}}><button data-testid="cosy-lights" onClick={() => upd({ night: !cfg.night, ...(!cfg.night ? { night_used: true } : {}) })} style={{padding:'6px 12px',border:'none',borderRadius:12,background:cfg.night?'#3b3d6b':'#ffe8a8',color:cfg.night?'#fff':'#6b4a2f',fontWeight:'bold',fontSize:12,cursor:'pointer'}}>{cfg.night ? '🌙 Lights off (tap for day)' : '💡 Lights on (tap for night)'}</button></div>
-      <div data-testid="cosy-room" style={{position:'relative',borderRadius:22,overflow:'hidden',border:'3px solid #6b4a2f',boxShadow:'0 8px 20px rgba(60,30,10,.35), inset 0 0 40px rgba(0,0,0,.18)',minHeight:380,background:'#6b4a2f'}}>
+      <div ref={roomRef} data-testid="cosy-room" style={{position:'relative',borderRadius:22,overflow:'hidden',border:'3px solid #6b4a2f',boxShadow:'0 8px 20px rgba(60,30,10,.35), inset 0 0 40px rgba(0,0,0,.18)',minHeight:380,background:'#6b4a2f'}}>
         {/* wall */}
         <div style={{position:'absolute',left:0,right:0,top:0,height:'52%',background:`repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 2px,transparent 2px 26px),linear-gradient(180deg,rgba(255,255,255,.35),rgba(0,0,0,.12)),${cfg.wall}`}} />
         {/* sunny window with light beam */}
@@ -6397,7 +6422,7 @@ function CosyCornerScreen({ dogs, onBack }) {
         {/* wall shelf with decorations */}
         <div style={{position:'absolute',left:'30%',right:'4%',top:'8%'}}>
           <div data-testid="cosy-decor" style={{display:'flex',gap:10,justifyContent:'center',alignItems:'flex-end',flexWrap:'wrap',minHeight:44,padding:'0 6px'}}>
-            {decor.map(id => COSY_DECOR.find(x => x.id === id)).filter(Boolean).map((x, i, arr) => <span key={x.id} data-testid="cosy-decor-item" onClick={() => { if (arr.length < 2) return; const ids = arr.map(y => y.id); const j = (i + 1) % ids.length; [ids[i], ids[j]] = [ids[j], ids[i]]; upd({ decor: ids }); }} style={{cursor:'pointer',fontSize:30,filter:'drop-shadow(0 4px 3px rgba(0,0,0,.35))'}}>{x.emoji}</span>)}
+            {decor.filter(id => !pos[id]).map(id => COSY_DECOR.find(x => x.id === id)).filter(Boolean).map((x, i, arr) => <span key={x.id} data-testid="cosy-decor-item" onClick={() => { if (arr.length < 2) return; const ids = [...decor]; const a = ids.indexOf(x.id); const b = ids.indexOf(arr[(i + 1) % arr.length].id); [ids[a], ids[b]] = [ids[b], ids[a]]; upd({ decor: ids }); }} style={{cursor:'pointer',fontSize:30,filter:'drop-shadow(0 4px 3px rgba(0,0,0,.35))'}}>{x.emoji}</span>)}
           </div>
           <div style={{height:9,borderRadius:3,background:'linear-gradient(180deg,#c89560,#8a5a32)',boxShadow:'0 5px 6px rgba(0,0,0,.3)'}} />
         </div>
@@ -6422,10 +6447,26 @@ function CosyCornerScreen({ dogs, onBack }) {
             </div>
           ))}
         </div>
+        {/* freely placed decorations */}
+        {decor.filter(id => pos[id]).map(id => {
+          const x = COSY_DECOR.find(d => d.id === id); if (!x) return null;
+          const at = drag && drag.id === id ? drag : pos[id];
+          return <span key={id} data-testid={'cosy-placed-' + id} role="img" aria-label={x.name}
+            onPointerDown={moving ? (e) => { e.preventDefault(); try { e.currentTarget.setPointerCapture(e.pointerId); } catch {} setDrag({ id, ...pos[id] }); } : undefined}
+            onPointerMove={moving ? (e) => { if (drag && drag.id === id) setDrag({ id, ...pointAt(e) }); } : undefined}
+            onPointerUp={moving ? endDrag : undefined}
+            onPointerCancel={moving ? endDrag : undefined}
+            style={{position:'absolute',left:at.x+'%',top:at.y+'%',transform:`translate(-50%,-50%) scale(${drag && drag.id === id ? 1.25 : 1})`,fontSize:34,lineHeight:1,padding:3,zIndex:moving?3:'auto',touchAction:moving?'none':'auto',userSelect:'none',WebkitUserSelect:'none',WebkitTouchCallout:'none',cursor:moving?'grab':'default',pointerEvents:moving?'auto':'none',filter:'drop-shadow(0 4px 3px rgba(0,0,0,.35))',borderRadius:10,outline:moving?'2px dashed rgba(255,255,255,.9)':'none'}}>{x.emoji}</span>;
+        })}
         {/* warm light vignette */}
         <div style={{position:'absolute',inset:0,pointerEvents:'none',background:'radial-gradient(ellipse at 20% 10%,rgba(255,240,190,.25),transparent 55%),radial-gradient(ellipse at center,transparent 55%,rgba(40,15,0,.35))'}} />
       </div>
-      <div style={{fontSize:12,color:'#777',margin:'8px 2px 0'}}>{sleepers.length ? 'Sleepy cats are curled up on the rug 💤 (tap one to hear it purr)' : 'No cats napping yet — tap 😴 on a cat in the Cats tab to tuck it in!'}{decor.length > 1 ? ' Tap a shelf decoration to move it along.' : ''}</div>
+      <div style={{fontSize:12,color:'#777',margin:'8px 2px 0'}}>{sleepers.length ? 'Sleepy cats are curled up on the rug 💤 (tap one to hear it purr)' : 'No cats napping yet — tap 😴 on a cat in the Cats tab to tuck it in!'}{decor.filter(id => !pos[id]).length > 1 ? ' Tap a shelf decoration to move it along.' : ''}</div>
+      {decor.length > 0 && <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:8}}>
+        <button data-testid="cosy-move" onClick={() => { if (moving) { setMoving(false); setDrag(null); } else startMoving(); }} style={{padding:'8px 12px',border:'none',borderRadius:12,background:moving?'#2e9e5b':'#764ba2',color:'white',fontWeight:'bold',fontSize:12,cursor:'pointer'}}>{moving ? '✅ Done moving' : '✋ Move decorations'}</button>
+        {Object.keys(pos).length > 0 && <button data-testid="cosy-shelve" onClick={() => { upd({ pos: {} }); setMoving(false); setDrag(null); }} style={{padding:'8px 12px',border:'none',borderRadius:12,background:'#f0f0f0',fontWeight:'bold',fontSize:12,cursor:'pointer'}}>↩ All back on shelf</button>}
+      </div>}
+      {moving && <div style={{fontSize:12,color:'#764ba2',fontWeight:'bold',margin:'6px 2px 0'}}>Drag any decoration anywhere in the room!</div>}
       <div style={{marginTop:14,fontWeight:'bold',color:'#764ba2',fontSize:13}}>Choose a bed</div>
       <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:6}}>
         {COSY_BEDS.map(b => (
