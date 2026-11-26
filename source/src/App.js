@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 277; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 278; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -4492,6 +4492,15 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
     try { return JSON.parse(localStorage.getItem(`km_ghost_${dogId}`) || 'null'); }
     catch { return null; }
   };
+  // A finished run beats an unfinished one; then the faster finish (or faster pace) wins.
+  const isBetterGhost = (taps, old) => {
+    if (!old || !old.length) return true;
+    const done = run => run.find(s => s.pct >= 100);
+    const pace = run => run[run.length - 1].pct / Math.max(1, run[run.length - 1].t);
+    const a = done(taps), b = done(old);
+    if (a || b) return !!a && (!b || a.t < b.t);
+    return pace(taps) > pace(old);
+  };
   const saveGhost = (dogId, taps) => {
     try { localStorage.setItem(`km_ghost_${dogId}`, JSON.stringify(taps)); } catch {}
   };
@@ -4595,8 +4604,8 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
         if (anyDone && !aiFinishedRef.current) {
           aiFinishedRef.current = true;
           clearInterval(aiIntervalRef.current);
-          // Save ghost recording (replace old one)
-          if (ghostTapsRef.current.length > 0) {
+          // Save ghost recording only when it beats the saved one (the ghost is your best run)
+          if (ghostTapsRef.current.length > 0 && isBetterGhost(ghostTapsRef.current, getGhost(dog.id))) {
             saveGhost(dog.id, ghostTapsRef.current);
           }
           // Build result — sort finishers by time, DNF slots by progress descending
