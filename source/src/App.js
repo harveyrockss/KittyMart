@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 274; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 275; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3264,7 +3264,7 @@ function HomeScreen({ player, dogs, stats, onNavigate }) {
       )}
       <div style={{ background: 'linear-gradient(135deg, #fff3e0, #ffe0b2)', borderRadius: 20, padding: '20px 16px', marginBottom: 16, textAlign: 'center', border: '2px solid #f4a261' }}>
         <div style={{ fontSize: 32, marginBottom: 4 }}>🐾</div>
-        <div style={{ fontSize: 20, fontWeight: 'bold', color: '#333' }}>Welcome back, {player.username}!</div>
+        <div style={{ fontSize: 20, fontWeight: 'bold', color: '#333' }}>{dogs.length === 0 && streak <= 1 ? 'Welcome' : 'Welcome back'}, {player.username}!</div>
         <div style={{ fontSize: 13, color: '#e76f51', fontWeight: 'bold', marginTop: 4 }}>🐾 {streak}-day streak</div>
       </div>
       <div style={{ background: 'white', borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '2px solid #f0e8ff' }}>
@@ -5834,7 +5834,7 @@ function CatchScreen({ player, dogs, onCatch }) {
       {breed && (
         <div style={{ marginBottom: 12 }}>
           <p style={{ margin: '0 0 2px', color: rarityColor, fontWeight: 'bold', fontSize: 15 }}>✨ {breed.rarity} · {breed.name}</p>
-          {points > 0 && <p style={{ margin: 0, color: '#f4a261', fontWeight: 'bold', fontSize: 13 }}>+{points} points if caught!</p>}
+          {points > 0 && <p style={{ margin: 0, color: '#f4a261', fontWeight: 'bold', fontSize: 13 }}>+{points} point{points === 1 ? '' : 's'} if caught!</p>}
           {timeLeft !== null && !caught && (
             <div style={{ marginTop: 6, display: 'inline-flex', alignItems: 'center', gap: 5, background: timeLeft <= 3 ? '#e63946' : timeLeft <= 6 ? '#f4a261' : '#764ba2', color: 'white', borderRadius: 20, padding: '3px 12px', fontWeight: 'bold', fontSize: 13 }}>
               ⏱ {timeLeft}s — hurry!
@@ -5877,7 +5877,7 @@ function CatchScreen({ player, dogs, onCatch }) {
             <div style={{ fontSize: 22, fontWeight: 'bold', color: '#333' }}>Caught! 🎉</div>
             <div style={{ fontSize: 15, color: rarityColor, fontWeight: 'bold', margin: '4px 0 2px' }}>{breed?.name}</div>
             {caughtGender && <div style={{ fontSize: 13, color: '#555', marginBottom: 2 }}>{caughtGender === 'Male' ? '♂️ Male' : '♀️ Female'}</div>}
-            {points > 0 && <div style={{ fontSize: 14, color: '#f4a261', fontWeight: 'bold' }}>+{points} points! ⭐</div>}
+            {points > 0 && <div style={{ fontSize: 14, color: '#f4a261', fontWeight: 'bold' }}>+{points} point{points === 1 ? '' : 's'}! ⭐</div>}
             {breed?.facts?.[0] && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.4, maxWidth: 240, fontStyle: 'italic', marginTop: 8 }}>"{breed.facts[0]}"</div>}
             {caught && lastCaughtBreed && (
               <button onClick={() => setShowShareGate(true)} style={{ marginTop:10, padding:'8px 20px', background:'linear-gradient(135deg,#667eea,#764ba2)', color:'white', border:'none', borderRadius:20, fontSize:13, fontWeight:'bold', cursor:'pointer' }}>
@@ -6833,7 +6833,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
   const handleDelete = (e, dog) => {
     e.stopPropagation();
     if (PROTECTED_DOG_IDS.has(dog.id)) {
-      try { window.dispatchEvent(new CustomEvent('km_score_popup', { detail: { text: 'Tessa is protected 💛', color: '#764ba2' } })); } catch {}
+      try { window.dispatchEvent(new CustomEvent('km_score_popup', { detail: { text: 'This cat is protected 💛', color: '#764ba2' } })); } catch {}
       return;
     }
     setConfirmDeleteDog(dog);
@@ -7079,7 +7079,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
       </div>
       {['Legendary','Epic','Rare','Uncommon','Common'].map(rarity => grouped[rarity] && (
         <div key={rarity}>
-          <h3 style={{ color: RARITY_COLORS[rarity], margin: '16px 0 8px', fontSize: 14, textTransform: 'uppercase', letterSpacing: 1 }}>{rarity} · {RARITY_POINTS[rarity]}pts each ({grouped[rarity].length})</h3>
+          <h3 style={{ color: RARITY_COLORS[rarity], margin: '16px 0 8px', fontSize: 14, textTransform: 'uppercase', letterSpacing: 1 }}>{rarity} · {RARITY_POINTS[rarity]}pt{RARITY_POINTS[rarity] === 1 ? '' : 's'} each ({grouped[rarity].length})</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
             {grouped[rarity].slice(0, showCount[rarity] || 90).map(dog => {
               const pendingEntry = pendingDogIds.find(p => (p.id || p) === dog.id);
