@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 269; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 270; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2917,6 +2917,7 @@ function FriendsGalleryModal({ onClose, initialQuery }) {
           <h3 style={{ margin:0, color:'#764ba2' }}>👥 Find a Friend</h3>
           <button onClick={onClose} style={{ background:'none', border:'none', fontSize:22, cursor:'pointer' }}>✕</button>
         </div>
+        {!ONLINE && <p style={{ background:'#f5f0ff', color:'#5a3d8a', borderRadius:12, padding:'10px 12px', fontSize:12, lineHeight:1.5, margin:'0 0 14px', textAlign:'center' }}>📴 Offline mode: you can only find players saved on this device.</p>}
         <div style={{ display:'flex', gap:8, marginBottom:16 }}>
           <input value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key==='Enter' && search()}
             placeholder="Enter exact username…" style={{ flex:1, padding:'10px 14px', borderRadius:12, border:'2px solid #c39bd3', fontSize:14, outline:'none' }} />
@@ -4693,7 +4694,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
     return (
       <div style={{ padding: 16 }}>
         <style>{`.tap-btn{animation:tbounce 0.4s infinite}.tap-btn:active{transform:scale(0.88)!important}@keyframes tbounce{0%,100%{transform:scale(1)}50%{transform:scale(0.93)}}`}</style>
-        <h2 style={{ textAlign: 'center', color: '#333', margin: '0 0 4px' }}>🏁 Pet Races</h2>
+        <h2 style={{ textAlign: 'center', color: '#333', margin: '0 0 4px' }}>🏁 Cat Races</h2>
         <p style={{ textAlign: 'center', color: '#888', fontSize: 13, margin: '0 0 16px' }}>{ONLINE ? 'Live multiplayer · up to 4 cats per race' : 'Race the computer cats · up to 4 per race'}</p>
         <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', borderRadius: 14, padding: '10px 14px', marginBottom: 14, border: '2px solid #52b788', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ color: '#a0ffa0', fontWeight: 'bold', fontSize: 13 }}>{ONLINE ? `🟢 ${onlineCount || 0} players online` : '📴 Offline mode · race the computer'}</span>
@@ -7130,7 +7131,7 @@ function SearchScreen() {
       <h2 style={{ margin: '0 0 4px', color: '#333', textAlign: 'center' }}>Cat Encyclopedia 🔍</h2>
       <p style={{ margin: '0 0 16px', color: '#888', fontSize: 13, textAlign: 'center' }}>Search any breed for fun facts!</p>
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <input value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && search()} placeholder="e.g. Corgi, Husky, Poodle..." style={{ flex: 1, padding: '12px', borderRadius: 12, border: '2px solid #e0d0ff', fontSize: 15, outline: 'none', boxSizing: 'border-box' }} />
+        <input value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && search()} placeholder="e.g. Siamese, Persian, Bengal..." style={{ flex: 1, padding: '12px', borderRadius: 12, border: '2px solid #e0d0ff', fontSize: 15, outline: 'none', boxSizing: 'border-box' }} />
         <button onClick={search} style={{ padding: '12px 18px', background: 'linear-gradient(135deg, #667eea, #764ba2)', color: 'white', border: 'none', borderRadius: 12, fontSize: 18, cursor: 'pointer' }}>🔍</button>
       </div>
       {results === null && (
@@ -7170,7 +7171,7 @@ function SearchScreen() {
             <h4 style={{ margin: '0 0 10px', color: '#764ba2', fontSize: 14 }}>🐾 Fun Facts</h4>
             {selected.facts.map((fact, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 10, padding: '10px 12px', background: '#f9f5ff', borderRadius: 10 }}>
-                <span style={{ fontSize: 16, flexShrink: 0 }}>{'🐟🐱✨'[i]}</span>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>{['🐟','🐱','✨'][i]}</span>
                 <p style={{ margin: 0, fontSize: 13, color: '#444', lineHeight: 1.5 }}>{fact}</p>
               </div>
             ))}
@@ -7629,6 +7630,7 @@ function TradeScreen({ player, myDogs, onDogUpdate, onBack }) {
         {onBack && <button onClick={onBack} style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', padding: '0 10px 0 0', color: '#764ba2' }}>←</button>}
         <h2 style={{ margin: 0, color: '#333', flex: 1, textAlign: 'center' }}>Trade Cats 🤝</h2>
       </div>
+      {!ONLINE && <p style={{ background:'#f5f0ff', color:'#5a3d8a', borderRadius:12, padding:'10px 12px', fontSize:12, lineHeight:1.5, margin:'0 0 14px', textAlign:'center' }}>📴 Offline mode: you can only trade with other players saved on this device.</p>}
       {incomingTrades.length > 0 && (
         <div style={{ marginBottom: 24 }}>
           <h3 style={{ color: '#e63946', margin: '0 0 12px', fontSize: 15 }}>📬 Incoming Offers ({incomingTrades.length})</h3>
@@ -7659,7 +7661,7 @@ function TradeScreen({ player, myDogs, onDogUpdate, onBack }) {
       <div style={{ marginBottom: 14 }}>
         <p style={{ margin: '0 0 8px', fontSize: 13, color: '#666' }}>1. Pick a player:</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {players.length === 0 ? <p style={{ color: '#aaa', fontSize: 13 }}>No other players yet!</p> : players.map(p => (
+          {players.length === 0 ? <p style={{ color: '#aaa', fontSize: 13 }}>{ONLINE ? 'No other players yet!' : 'No other players on this device yet. A family member can sign up here to trade with you.'}</p> : players.map(p => (
             <button key={p.id} onClick={() => setSelectedPlayer(p)} style={{ padding: '8px 14px', background: selectedPlayer?.id === p.id ? '#764ba2' : '#f0f0f0', color: selectedPlayer?.id === p.id ? 'white' : '#333', border: 'none', borderRadius: 10, cursor: 'pointer', fontWeight: 'bold', fontSize: 14 }}>👤 {p.username}</button>
           ))}
         </div>
@@ -7685,7 +7687,7 @@ function TradeScreen({ player, myDogs, onDogUpdate, onBack }) {
 }
 
 // ─── Settings Screen ──────────────────────────────────────────────────────────
-const AVATAR_EMOJIS = ['🐱','🐈','🐈‍⬛','🐱‍🦺','🐾','🌟','💎','🏆','👑','🧶','🐟','🐱','🐱','🦊','🦁','🐻'];
+const AVATAR_EMOJIS = ['🐱','🐈','🐈‍⬛','😺','🐾','🌟','💎','🏆','👑','🧶','🐟','😻','😸','🦊','🦁','🐯'];
 
 function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -7922,7 +7924,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
         <div style={{ background: 'linear-gradient(135deg,#667eea,#764ba2)', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ color: 'white', fontWeight: 'bold', fontSize: 17 }}>👥 Friends</div>
-            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, marginTop: 2 }}>{myFriends.length} friend{myFriends.length !== 1 ? 's' : ''} · connect &amp; race together!</div>
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, marginTop: 2 }}>{myFriends.length} friend{myFriends.length !== 1 ? 's' : ''} {ONLINE ? ' · connect & race together!' : ' · on this device'}</div>
           </div>
           <button onClick={() => setShowFriends(true)} style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.2)', color: 'white', border: '2px solid rgba(255,255,255,0.4)', borderRadius: 12, fontSize: 12, fontWeight: 'bold', cursor: 'pointer' }}>
             🔭 Browse
@@ -7930,6 +7932,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
         </div>
 
         <div style={{ background: 'white', padding: 16 }}>
+          {!ONLINE && <p style={{ background:'#f5f0ff', color:'#5a3d8a', borderRadius:12, padding:'10px 12px', fontSize:12, lineHeight:1.5, margin:'0 0 14px', textAlign:'center' }}>📴 Offline mode: friends and codes only work between players saved on this device.</p>}
           {/* Share my code */}
           <div style={{ background: 'linear-gradient(135deg,#f0e8ff,#e8f4fd)', borderRadius: 14, padding: 14, marginBottom: 14, textAlign: 'center' }}>
             <div style={{ fontSize: 11, color: '#764ba2', fontWeight: 'bold', letterSpacing: 1, marginBottom: 6 }}>📤 MY FRIEND CODE — share this!</div>
@@ -7939,10 +7942,12 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
                 style={{ padding: '8px 20px', background: 'linear-gradient(135deg,#667eea,#764ba2)', color: 'white', border: 'none', borderRadius: 12, fontWeight: 'bold', cursor: 'pointer', fontSize: 13 }}>
                 📋 Copy Code
               </button>
+              {ONLINE && (
               <button onClick={() => { try { navigator.share({ title: 'KittyMart', text: `Add me on KittyMart! My friend code is ${myCode} 🐾` }); } catch { try { navigator.clipboard.writeText(`Add me on KittyMart! My friend code is ${myCode} 🐾`); showToast('Copied to clipboard! 📋'); } catch {} } }}
                 style={{ padding: '8px 20px', background: 'linear-gradient(135deg,#06d6a0,#059e76)', color: 'white', border: 'none', borderRadius: 12, fontWeight: 'bold', cursor: 'pointer', fontSize: 13 }}>
                 🔗 Share
               </button>
+              )}
             </div>
           </div>
 
@@ -7951,7 +7956,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
             <div style={{ fontSize: 12, fontWeight: 'bold', color: '#555', marginBottom: 8 }}>➕ ADD A FRIEND</div>
             <div style={{ display: 'flex', gap: 8 }}>
               <input value={friendCode} onChange={e => setFriendCode(e.target.value.toUpperCase())} onKeyDown={e => e.key === 'Enter' && lookupFriend()}
-                placeholder="Enter their friend code…" maxLength={8}
+                placeholder={ONLINE ? "Enter their friend code…" : "Name or code…"} maxLength={8}
                 style={{ flex: 1, padding: '12px 14px', borderRadius: 12, border: '2px solid #c39bd3', fontSize: 15, outline: 'none', fontWeight: 'bold', letterSpacing: 2, textAlign: 'center' }} />
               <button onClick={lookupFriend} disabled={friendLoading}
                 style={{ padding: '12px 18px', background: 'linear-gradient(135deg,#667eea,#764ba2)', color: 'white', border: 'none', borderRadius: 12, fontWeight: 'bold', cursor: 'pointer', fontSize: 15 }}>
@@ -8002,7 +8007,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
           ) : (
             <div style={{ textAlign: 'center', padding: '12px 0', color: '#aaa', fontSize: 13 }}>
               <div style={{ fontSize: 36, marginBottom: 6 }}>🐾</div>
-              No friends yet — share your code to get started!
+              {ONLINE ? 'No friends yet — share your code to get started!' : 'No friends yet — add another player on this device by name.'}
             </div>
           )}
         </div>
