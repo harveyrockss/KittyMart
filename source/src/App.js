@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import { sb, supabaseAuth, ONLINE } from './backend';
+import { sb, supabaseAuth, ONLINE, repairOfflinePlayer, forgetOfflineAuth } from './backend';
 import { CAT_BREEDS, ZONE_BREEDS, CAT_TRAITS, CAT_NAMES_MALE, CAT_NAMES_FEMALE, catArtUrl } from './catData';
 import { fetchBreedPhoto, catPhotoFor, warmBreedPhotos, installPhotoFallback } from './photos';
 installPhotoFallback();
@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 271; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 272; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -1036,6 +1036,34 @@ function _dxFromState(st) {
   const sk = st && st.skills && Object.keys(st.skills).length ? st.skills : null;
   return [st.level || 1, st.xp || 0, st.hunger == null ? 100 : st.hunger, st.lastFed || 0, st.lastPoo || 0, null, null, sk, hasExtra ? extras : null];
 }
+// ── Signing out / switching players on one device ────────────────────────────
+// Offline, this device's storage IS the database, so signing out or signing up must never erase the saved accounts,
+// cats or passwords. Each player's own progress keys are parked under km_db_stash_<id> and put back on login.
+const isDeviceKey = k => k.startsWith('km_db_') || k.startsWith('km_catapi_') || k.startsWith('km_cataas_')
+  || k === 'km_auth' || k === 'km_pack_cosy' || k === 'km_sfx_off';
+function clearPlayerKeys(stashId) {
+  if (_dxTimer) dxFlushNow();
+  const keys = Object.keys(localStorage).filter(k => k.startsWith('km_') && (ONLINE || !isDeviceKey(k)));
+  if (!ONLINE && stashId) {
+    const data = {};
+    keys.forEach(k => { data[k] = localStorage.getItem(k); });
+    try { localStorage.setItem('km_db_stash_' + stashId, JSON.stringify(data)); }
+    catch { return; } // storage full: leave everything in place rather than lose it
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+  clearTimeout(_dxTimer); _dxTimer = null; _dx = null; _dxDirty = 0;
+}
+function restorePlayerStash(id) {
+  if (ONLINE || !id) return;
+  try {
+    const data = JSON.parse(localStorage.getItem('km_db_stash_' + id) || 'null');
+    if (!data) return;
+    clearPlayerKeys(null);
+    localStorage.removeItem('km_db_stash_' + id); // free the space first
+    Object.keys(data).forEach(k => { try { localStorage.setItem(k, data[k]); } catch {} });
+  } catch {}
+}
+
 function _dxEntry(id, create) {
   const m = dxLoad();
   if (!m[id] && create) m[id] = [1, 0, 100, 0, 0, null, null, null, null];
@@ -2005,8 +2033,7 @@ function LoginScreen({ onLogin }) {
         const { data, error: signUpErr } = await supabaseAuth.auth.signUp({ email: regEmail, password: pw });
         if (signUpErr || !data?.user) { setError(signUpErr?.message || 'Could not create account.'); setLoading(false); return; }
         const created = await sb('players', 'POST', { username: username.trim(), email: regEmail, user_id: data.user.id });
-        const keepKeys = ['kittymart_player'];
-        Object.keys(localStorage).filter(k => k.startsWith('km_') && !keepKeys.includes(k)).forEach(k => localStorage.removeItem(k));
+        clearPlayerKeys(null);
         onLogin(created[0]);
       } else {
         const input = username.trim();
@@ -7868,8 +7895,8 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
       setDeleting(false);
       return;
     }
-    Object.keys(localStorage).filter(k => k.startsWith('km_') || k === 'kittymart_player').forEach(k => localStorage.removeItem(k));
-    onLogout();
+    forgetOfflineAuth(player.email);
+    onLogout({ deleted: true });
   };
 
   return (
@@ -8187,7 +8214,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function App() {
-  const [player, setPlayer] = useState(() => { try { return JSON.parse(localStorage.getItem('kittymart_player')); } catch { return null; } });
+  const [player, setPlayer] = useState(() => { try { const p = JSON.parse(localStorage.getItem('kittymart_player')); repairOfflinePlayer(p); return p; } catch { return null; } });
   const [dogs, setDogs] = useState([]);
   // When a custom photo is removed in the dog screen, update the shared dogs list too
   useEffect(() => {
@@ -8486,9 +8513,10 @@ export default function App() {
     };
   }, [player]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleLogin = (p) => { localStorage.setItem('kittymart_player', JSON.stringify(p)); setPlayer(p); };
+  const handleLogin = (p) => { restorePlayerStash(p.id); _bonusPts = Math.max(0, parseInt(localStorage.getItem('km_bonus_pts') || '0', 10) || 0); localStorage.setItem('kittymart_player', JSON.stringify(p)); setPlayer(p); };
   useEffect(() => { if (player) scheduleReminderNotifications(); }, [player]);
-  const handleLogout = async () => {
+  const handleLogout = async (opts) => {
+    const deleted = !!opts && opts.deleted === true;
     // Flush all unsaved state to cloud before wiping localStorage
     if (_bonusPtsPlayerId) {
       // Flush kitty_dollars and player_data on logout.
@@ -8499,7 +8527,8 @@ export default function App() {
       }).catch(() => {});
     }
     _bonusPts = 0; _bonusPtsPlayerId = null; _bonusPtsLoaded = false; _pendingBonusDeltas = []; _offlineQueue = [];
-    Object.keys(localStorage).filter(k => k.startsWith('km_')).forEach(k => localStorage.removeItem(k));
+    clearTimeout(_scheduledSave); _scheduledSave = null;
+    clearPlayerKeys(deleted ? null : player.id);
     localStorage.removeItem('kittymart_player');
     setPlayer(null); setDogs([]); setDogsLoaded(false); setStatsRestored(false);
   };

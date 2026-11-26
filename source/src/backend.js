@@ -173,13 +173,16 @@ function sbOffline(path, method = 'GET', body = null) {
   }
   if (method === 'PATCH') {
     const hit = rows.filter(test);
-    hit.forEach(r => Object.assign(r, body));
+    // Offline the device storage already IS the backup: never keep player_data, even in memory.
+    const { player_data, ...patch } = body || {};
+    hit.forEach(r => Object.assign(r, head === 'players' ? patch : body));
     persist(head);
     return get('select') ? hit.map(r => ({ ...r })) : [];
   }
   if (method === 'DELETE') {
+    const gone = rows.filter(test);
     tables[head] = rows.filter(r => !test(r)); persist(head);
-    return [];
+    return gone.map(r => ({ ...r }));
   }
   let out = rows.filter(test);
   const order = get('order');
@@ -215,13 +218,35 @@ const authOffline = {
     return { data: { user: { id, email } }, error: null };
   },
   async signInWithPassword({ email, password }) {
-    const a = readAuth(); const e = a[String(email).toLowerCase()];
+    const a = readAuth(); const k = String(email).toLowerCase(); let e = a[k];
+    if (!e) {
+      // Older versions erased the saved passwords on sign up. If the account itself survived, adopt the password typed now.
+      const row = load('players').find(r => r.user_id && !r.password && String(r.email).toLowerCase() === k);
+      if (row) { e = a[k] = { id: row.user_id, pw: await hash(password) }; writeAuth(a); }
+    }
     if (!e || e.pw !== await hash(password)) return { data: {}, error: { message: 'Invalid login credentials' } };
-    return { data: { user: { id: e.id, email } }, error: null };
+    return { data: { user: { id: e.id, email }, session: { access_token: 'offline' } }, error: null };
   },
   async resetPasswordForEmail() { return { data: {}, error: { message: 'Password reset needs the online KittyMart server, which is not set up yet.' } }; },
   async updateUser() { return { data: {}, error: { message: 'Changing this needs the online KittyMart server, which is not set up yet.' } }; },
 };
+
+// Offline only: if the signed-in player's account row was erased (a bug in older versions), put it back.
+export function repairOfflinePlayer(player) {
+  if (ONLINE || !player || !player.id) return;
+  const rows = load('players');
+  if (rows.some(r => r.id === player.id)) return;
+  let bonus = 0;
+  try { bonus = parseInt(localStorage.getItem('km_bonus_pts') || '0', 10) || 0; } catch {}
+  const { player_data, ...row } = player;
+  rows.push({ ...row, bonus_pts: Math.max(bonus, player.bonus_pts || 0) });
+  persist('players');
+}
+// Offline only: forget the saved password of a deleted account.
+export function forgetOfflineAuth(email) {
+  if (ONLINE || !email) return;
+  const a = readAuth(); delete a[String(email).toLowerCase()]; writeAuth(a);
+}
 
 export const sb = async (path, method = 'GET', body = null, timeoutMs = 8000) =>
   ONLINE ? sbOnline(path, method, body, timeoutMs) : sbOffline(path, method, body);
