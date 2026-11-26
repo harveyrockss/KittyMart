@@ -132,7 +132,8 @@ export async function fetchBreedPhoto(breed) {
       if (fresh) urls = fresh;
     }
     if (!urls || !urls.length) continue;
-    const choices = urls.length > 1 ? urls.filter(u => u !== lastPicked[id]) : urls;
+    const others = urls.filter(u => u !== lastPicked[id]);
+    const choices = others.length ? others : urls; // a one-photo (or all-duplicate) pool must not yield undefined
     for (let i = 0; i < 2; i++) {
       const url = choices[Math.floor(Math.random() * choices.length)];
       if (await probe(url)) { lastPicked[id] = url; fallbackByUrl[url] = art; breedByUrl[url] = breed.name; notify(); return url; }

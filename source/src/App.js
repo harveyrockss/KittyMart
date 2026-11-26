@@ -39,7 +39,8 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 273; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
+const APP_VERSION = 274; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -1616,19 +1617,19 @@ function PrivacyPolicyModal({ onClose }) {
     <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center', boxSizing:'border-box', padding:'calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px)' }} onClick={onClose}>
       <div style={{ background:'white', borderRadius:20, padding:24, maxWidth:400, width:'100%', maxHeight:'100%', overflowY:'auto', WebkitOverflowScrolling:'touch' }} onClick={e => e.stopPropagation()}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', margin:'0 0 16px' }}><h2 style={{ margin:0, color:'#764ba2' }}>🔒 Privacy Policy</h2><button onClick={onClose} aria-label="Close" style={{ background:'none', border:'none', fontSize:24, cursor:'pointer', color:'#888' }}>✕</button></div>
-        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}><strong>Last updated: October 2026</strong></p>
+        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}><strong>Last updated: November 2026</strong></p>
         <h3 style={{ fontSize:14, color:'#333' }}>What we collect</h3>
-        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>We collect your username, your email address (optional, used for password reset), your password (hashed — we never store your plain password), the cats you catch, and any cat photos you choose to upload. If you allow location access, your approximate coordinates are sent to OpenStreetMap's Nominatim service only to work out your catch zone; we do not store your location on our servers. Real cat photos are loaded from The Cat API (thecatapi.com) and CATAAS (cataas.com), which receive your device's IP address like any website you visit.</p>
+        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>{ONLINE ? <>We collect your username, your email address (optional, used for password reset), your password (hashed — we never store your plain password), the cats you catch, and any cat photos you choose to upload. If you allow location access, your approximate coordinates are sent to OpenStreetMap's Nominatim service only to work out your catch zone; we do not store your location on our servers. Real cat photos are loaded from The Cat API (thecatapi.com) and CATAAS (cataas.com), which receive your device's IP address like any website you visit.</> : <>KittyMart has no game server yet. Your username, email (only if you type one), password (stored hashed), cats and any photos you choose stay on this device and are not sent to us. If you allow location access, your approximate coordinates are sent to OpenStreetMap's Nominatim service only to work out your catch zone; we do not save your location. Real cat photos are loaded from The Cat API (thecatapi.com) and CATAAS (cataas.com), and fonts from Google Fonts; like any website, these receive your device's IP address.</>}</p>
         <h3 style={{ fontSize:14, color:'#333' }}>How we use it</h3>
-        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>Your data is used solely to power KittyMart — displaying your cat collection, race results, and leaderboard rankings.</p>
+        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>{ONLINE ? <>Your data is used solely to power KittyMart — displaying your cat collection, race results, and leaderboard rankings.</> : <>What is saved is only used to run the game on this device: your cat collection, race results and scores.</>}</p>
         <h3 style={{ fontSize:14, color:'#333' }}>Who we share it with</h3>
-        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>We use Supabase (supabase.com) to store game data, and OpenStreetMap Nominatim to look up your catch zone from your approximate location. We do not sell or share your personal information with any third parties for advertising purposes.</p>
+        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>{ONLINE ? <>We use Supabase (supabase.com) to store game data, and OpenStreetMap Nominatim to look up your catch zone from your approximate location. We do not sell or share your personal information with any third parties for advertising purposes.</> : <>We do not receive your game data, so we cannot sell or share it. There are no ads or analytics. The only outside services are the ones listed above.</>}</p>
         <h3 style={{ fontSize:14, color:'#333' }}>Your rights</h3>
-        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>You can delete your account at any time from Settings → Delete Account. This permanently removes all your data from our servers.</p>
+        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>{ONLINE ? <>You can delete your account at any time from Settings → Delete Account. This permanently removes all your data from our servers.</> : <>You can delete your account at any time from Me → Delete Account. This removes that account and its cats from this device. Copies you saved with 'Save My Cats to a File' stay wherever you put them.</>}</p>
         <h3 style={{ fontSize:14, color:'#333' }}>Parental controls</h3>
         <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>KittyMart works with Apple's built-in Screen Time. Parents can set daily time limits or schedule Downtime (e.g. at bedtime) for KittyMart from Settings → Screen Time → App Limits on the device. Actions that leave the app, like sharing a catch, require solving a simple parental gate first.</p>
         <h3 style={{ fontSize:14, color:'#333' }}>Contact</h3>
-        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>For privacy questions, contact us at the KittyMart team</p>
+        <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>For privacy questions, {SUPPORT_EMAIL ? `email ${SUPPORT_EMAIL}` : 'a contact address will be added before KittyMart is released in an app store'}</p>
         <button onClick={onClose} style={{ width:'100%', padding:12, background:'linear-gradient(135deg,#667eea,#764ba2)', color:'white', border:'none', borderRadius:12, fontSize:15, fontWeight:'bold', cursor:'pointer', marginTop:8 }}>Close</button>
       </div>
     </div>,
@@ -2978,13 +2979,13 @@ function FriendsGalleryModal({ onClose, initialQuery }) {
             </div>
             {profileDogs.length === 50 && <p style={{ color:'#aaa', fontSize:12, textAlign:'center', marginTop:8 }}>Showing top 50 cats by rarity</p>}
             <div style={{ display:'flex', gap:8, marginTop:16 }}>
-              <button onClick={() => setShowReportGate(true)} style={{ flex:1, padding:10, background:'#fff3cd', color:'#856404', border:'none', borderRadius:10, fontWeight:'bold', fontSize:13, cursor:'pointer' }}>🚩 Report</button>
+              {SUPPORT_EMAIL && <button onClick={() => setShowReportGate(true)} style={{ flex:1, padding:10, background:'#fff3cd', color:'#856404', border:'none', borderRadius:10, fontWeight:'bold', fontSize:13, cursor:'pointer' }}>🚩 Report</button>}
               <button onClick={() => { blockPlayer(profile.id); setProfile(null); setProfileDogs([]); setError('Player blocked. You will no longer see them.'); }} style={{ flex:1, padding:10, background:'#f8d7da', color:'#721c24', border:'none', borderRadius:10, fontWeight:'bold', fontSize:13, cursor:'pointer' }}>🚫 Block</button>
             </div>
             {showReportGate && (
               <ParentalGateModal
                 onClose={() => setShowReportGate(false)}
-                onSuccess={() => { setShowReportGate(false); window.location.href = `mailto:the KittyMart team?subject=${encodeURIComponent('Report player: ' + profile.username)}&body=${encodeURIComponent('Player ID: ' + profile.id + '\nReason: ')}`; }}
+                onSuccess={() => { setShowReportGate(false); window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Report player: ' + profile.username)}&body=${encodeURIComponent('Player ID: ' + profile.id + '\nReason: ')}`; }}
               />
             )}
           </div>
@@ -8147,18 +8148,20 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
         ))}
       </div>
       <button onClick={() => setShowPrivacy(true)} style={{ width: '100%', padding: 14, background: 'linear-gradient(135deg,#4cc9f0,#4361ee)', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>🔒 Privacy Policy</button>
-      <button onClick={() => setShowHelp(true)} style={{ width: '100%', padding: 14, background: 'linear-gradient(135deg,#f6a6c1,#e26b9a)', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>💬 Help &amp; Contact</button>
+      <button onClick={() => setShowHelp(true)} style={{ width: '100%', padding: 14, background: 'linear-gradient(135deg,#f6a6c1,#e26b9a)', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>💬 Help{SUPPORT_EMAIL ? ' & Contact' : ''}</button>
       {showHelp && ReactDOM.createPortal(
         <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:1100, display:'flex', alignItems:'center', justifyContent:'center', padding:16 }} onClick={() => setShowHelp(false)}>
           <div style={{ background:'white', borderRadius:20, padding:24, maxWidth:360, width:'100%', maxHeight:'85vh', overflowY:'auto' }} onClick={e => e.stopPropagation()}>
-            <h2 style={{ margin:'0 0 12px', color:'#764ba2' }}>💬 Help &amp; Contact</h2>
-            <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}><strong>Report a player:</strong> tap a player on the Board (or use Find a Friend), then tap 🚩 Report. You can also 🚫 Block them so you no longer see them.</p>
+            <h2 style={{ margin:'0 0 12px', color:'#764ba2' }}>💬 Help{SUPPORT_EMAIL ? ' & Contact' : ''}</h2>
+            <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>{SUPPORT_EMAIL ? <><strong>Report a player:</strong> tap a player on the Board (or use Find a Friend), then tap 🚩 Report. You can also 🚫 Block them so you no longer see them.</> : <><strong>Hide a player:</strong> tap a player on the Board (or use Find a Friend), then tap 🚫 Block so you no longer see them.</>}</p>
             <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}><strong>Delete your account:</strong> Me → Delete Account. This removes your profile and cats.</p>
-            <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}><strong>A purchase didn't work?</strong> Kitty Coins are returned automatically if a power-up can't be applied. If something still looks wrong, email us with your username.</p>
-            <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>Contact: <strong>the KittyMart team</strong></p>
-            <button onClick={() => setShowHelpGate(true)} style={{ width:'100%', padding:12, background:'linear-gradient(135deg,#667eea,#764ba2)', color:'white', border:'none', borderRadius:12, fontSize:15, fontWeight:'bold', cursor:'pointer', marginTop:8 }}>✉️ Email support</button>
+            <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}><strong>A purchase didn't work?</strong> Kitty Coins are returned automatically if a power-up can't be applied. If something still looks wrong, {SUPPORT_EMAIL ? 'email us with your username' : 'ask a grown-up to help'}.</p>
+            {SUPPORT_EMAIL && <>
+              <p style={{ fontSize:13, color:'#555', lineHeight:1.6 }}>Contact: <strong>{SUPPORT_EMAIL}</strong></p>
+              <button onClick={() => setShowHelpGate(true)} style={{ width:'100%', padding:12, background:'linear-gradient(135deg,#667eea,#764ba2)', color:'white', border:'none', borderRadius:12, fontSize:15, fontWeight:'bold', cursor:'pointer', marginTop:8 }}>✉️ Email support</button>
+            </>}
             <button onClick={() => setShowHelp(false)} style={{ width:'100%', padding:12, background:'#f0f0f0', color:'#333', border:'none', borderRadius:12, fontSize:15, fontWeight:'bold', cursor:'pointer', marginTop:8 }}>Close</button>
-            {showHelpGate && <ParentalGateModal onClose={() => setShowHelpGate(false)} onSuccess={() => { setShowHelpGate(false); window.location.href = `mailto:the KittyMart team?subject=${encodeURIComponent('KittyMart support: ' + player.username)}`; }} />}
+            {showHelpGate && <ParentalGateModal onClose={() => setShowHelpGate(false)} onSuccess={() => { setShowHelpGate(false); window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('KittyMart support: ' + player.username)}`; }} />}
           </div>
         </div>, document.body)}
       <button data-testid="sfx-toggle" onClick={(e) => { try { const off = catSoundsOff(); localStorage.setItem('km_sfx_off', off ? '0' : '1'); e.currentTarget.textContent = off ? '🔊 Meow & Purr Sounds: On' : '🔇 Meow & Purr Sounds: Off'; if (off) playMeow(); } catch {} }} style={{ width: '100%', padding: 14, background: '#fff', color: '#4361ee', border: '2px solid #4361ee', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>{catSoundsOff() ? '🔇 Meow & Purr Sounds: Off' : '🔊 Meow & Purr Sounds: On'}</button>
