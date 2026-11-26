@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 276; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 277; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3675,6 +3675,15 @@ const PLACE_LABELS = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th'];
 const ELITE_DD_PLACE = [50, 20, 10, 5];
 const LANE_COLORS = ['#667eea', '#f72585', '#06d6a0', '#ffd700'];
 
+// Photo for a race lane: the racer's own cat photo if we have it, else a real photo of the breed, else cartoon.
+function laneCatPhoto(room, slot) {
+  if (room[`${slot}_photo`]) return room[`${slot}_photo`];
+  const label = room[`${slot}_dog`] || '';
+  const breed = (label.match(/\(([^()]+)\)$/) || [])[1] || label; // "Nickname (Breed)" or "Breed"
+  const src = catPhotoFor({ breed, name: slot + breed }) || catArtUrl(breed);
+  return src ? { src, breed } : null;
+}
+
 function RaceTrack({ room, mySlot }) {
   const slots = ['p1','p2','p3','p4'].filter(n => room[`${n}_id`]);
   return (
@@ -3690,6 +3699,7 @@ function RaceTrack({ room, mySlot }) {
         const rarity = room[`${n}_rarity`] || 'Common';
         const isMe = n === mySlot;
         const color = LANE_COLORS[i];
+        const photo = laneCatPhoto(room, n);
         return (
           <div key={n} style={{ marginBottom: i < slots.length - 1 ? 10 : 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
@@ -3715,7 +3725,9 @@ function RaceTrack({ room, mySlot }) {
                 fontSize: 18, boxShadow: isMe ? `0 0 12px ${color}` : '0 2px 8px rgba(0,0,0,0.4)',
                 zIndex: 2, overflow: 'hidden'
               }}>
-                <span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>🐱</span>
+                {photo
+                  ? <img key={photo.src} src={photo.src} alt={photo.breed} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : <span style={{ display: 'inline-block', transform: 'scaleX(-1)' }}>🐱</span>}
               </div>
               {/* Finish flag */}
               <div style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', fontSize: 18, opacity: pct >= 100 ? 1 : 0.35 }}>🏁</div>
@@ -4520,6 +4532,13 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
     };
     // speeds[0] = ghost/ai1, speeds[1] = ai2, speeds[2] = ai3
     const aiSpeeds = ghost ? opponents.map(o => o.speed) : opponents.map(o => o.speed);
+    // show the player's own cat (and its ghost) with the same photo as on the Cats tab
+    const myPhoto = dogImageSrc(dog);
+    if (myPhoto) {
+      initial.p1_photo = { src: myPhoto, breed: dog.breed };
+      if (ghost) initial.p2_photo = initial.p1_photo;
+    }
+    warmBreedPhotos(opponents.map(o => o.breed));
     aiRef.current = { room: initial, speeds: aiSpeeds, finishedAt: [null, null, null, null], ghost, ghostIdx: 0 };
     aiFinishedRef.current = false;
     myAiPctRef.current = 0;
