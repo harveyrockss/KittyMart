@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 268; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 269; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2054,7 +2054,7 @@ function LoginScreen({ onLogin }) {
     <div style={{ minHeight: '100vh', background: loginHoliday ? loginHoliday.gradient : 'linear-gradient(180deg,#b8e8c8 0%,#e8f5e0 40%,#fffbe6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: '"Nunito","Comic Sans MS",Georgia,serif' }}>
       <div style={{ background: 'white', borderRadius: 24, padding: 40, width: 320, boxShadow: '0 20px 60px rgba(0,0,0,0.3)', textAlign: 'center' }}>
         <img src={kmLogo(loginHoliday)} alt="KittyMart" style={{ width: loginHoliday?.name === 'Halloween' ? 180 : 100, borderRadius: 20, marginBottom: 12 }} />
-        <p style={{ color: '#888', margin: '0 0 24px', fontSize: 14 }}>Catch & trade cats with friends!</p>
+        <p style={{ color: '#888', margin: '0 0 24px', fontSize: 14 }}>{ONLINE ? 'Catch & trade cats with friends!' : 'Catch, cuddle & collect cats!'}</p>
         <div style={{ display: 'flex', background: '#f0f0f0', borderRadius: 12, padding: 4, marginBottom: 20 }}>
           {['login','register'].map(m => (
             <button key={m} onClick={() => { setMode(m); setError(''); }} style={{ flex: 1, padding: '8px', border: 'none', borderRadius: 10, cursor: 'pointer', fontWeight: 'bold', fontSize: 14, background: mode === m ? 'white' : 'transparent', color: mode === m ? '#764ba2' : '#888', boxShadow: mode === m ? '0 2px 8px rgba(0,0,0,0.1)' : 'none' }}>
@@ -2538,6 +2538,7 @@ const ACHIEVEMENTS = [
   { id: 'cosy_decor',    label: '🪴 Cosy Decorator', desc: 'Add 3 decorations in your Cosy Corner', pts: 20, check: () => { try { return (JSON.parse(localStorage.getItem('km_cosy')||'{}').decor||[]).length >= 3; } catch { return false; } } },
   { id: 'cosy_painter', label: '🎨 Cottage Painter', desc: 'Pick a roof, door and flower colour for your Cat Cottage', pts: 20, check: () => { try { const c = JSON.parse(localStorage.getItem('km_cosy')||'{}'); return !!(c.roof && c.door && c.flowers); } catch { return false; } } },
   { id: 'night_owl',     label: '🦉 Night Owl',      desc: 'Turn the lights off in your Cosy Corner', pts: 15, check: () => { try { return !!JSON.parse(localStorage.getItem('km_cosy')||'{}').night_used; } catch { return false; } } },
+  { id: 'cosy_designer', label: '🛋️ Room Designer',  desc: 'Move 5 decorations around your Cosy Corner', pts: 30, check: () => { try { return Object.keys(JSON.parse(localStorage.getItem('km_cosy')||'{}').pos||{}).length >= 5; } catch { return false; } } },
   { id: 'cosy_palace',  label: '🏰 Cosy Palace',    desc: 'Add 12 decorations in your Cosy Corner', pts: 60, check: () => { try { return (JSON.parse(localStorage.getItem('km_cosy')||'{}').decor||[]).length >= 12; } catch { return false; } } },
   { id: 'cosy_home',     label: '🏡 Cosy Home',      desc: 'Add 8 decorations in your Cosy Corner', pts: 40, check: () => { try { return (JSON.parse(localStorage.getItem('km_cosy')||'{}').decor||[]).length >= 8; } catch { return false; } } },
   { id: 'race_3',        label: '🏁 Whisker Winner', desc: 'Win 3 races against the computer cats', pts: 30,  check: () => parseInt(localStorage.getItem('km_race_wins')||'0',10) >= 3 },
@@ -2930,7 +2931,7 @@ function FriendsGalleryModal({ onClose, initialQuery }) {
               <div style={{ fontSize:40, marginBottom:4 }}>🐾</div>
               <div style={{ fontWeight:'bold', fontSize:18, color:'#333' }}>{publicName(profile.username)}</div>
               <div style={{ fontSize:13, color:'#888', marginTop:4 }}>
-                🐱 {profileDogs.length} cats shown · 🏁 {profile.race_wins||0} race wins · ⭐ {profile.total_pts||0} pts
+                🐱 {profileDogs.length} {profileDogs.length === 1 ? 'cat' : 'cats'} shown · 🏁 {profile.race_wins||0} race wins · ⭐ {profile.total_pts||0} pts
               </div>
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
@@ -3548,7 +3549,7 @@ function TrickOrTreatCard() {
 
 // ─── Onboarding Tutorial ─────────────────────────────────────────────────────
 const ONBOARDING_STEPS = [
-  { emoji: '🐾', title: 'Welcome to KittyMart!', body: 'The world\'s most fun cat collecting game. Catch rare cats, train them, race them, and trade with friends!' },
+  { emoji: '🐾', title: 'Welcome to KittyMart!', body: ONLINE ? 'The world\'s most fun cat collecting game. Catch rare cats, train them, race them, and trade with friends!' : 'Catch rare cats, train them, race them and make them a cosy home!' },
   { emoji: '🧶', title: 'Go Catch Cats!', body: 'Tap "Go Catch!" to find wild cats. Common cats wander slowly — Legendary cats dart away fast! Tap them before they escape.' },
   { emoji: '✨', title: 'Rarity Matters', body: 'Cats come in 5 rarities: Common, Uncommon, Rare, Epic, and Legendary. Higher rarity = more points and bragging rights!' },
   { emoji: '🏁', title: 'Race Your Cats', body: 'Challenge your cats in races to earn bonus points and climb the leaderboard. Higher-rarity cats win more often.' },
@@ -6624,7 +6625,7 @@ function ShareMyPackModal({ player, dogs, onClose }) {
     // Stats bar
     ctx.fillStyle = 'rgba(90,171,106,0.15)'; ctx.beginPath(); ctx.roundRect(40,100,W-80,48,12); ctx.fill();
     ctx.font = 'bold 18px "Nunito", sans-serif'; ctx.fillStyle = '#2d6a4f'; ctx.textAlign = 'left';
-    ctx.fillText(`🐱 ${dogs.length} cats`, 60, 130);
+    ctx.fillText(`🐱 ${dogs.length} ${dogs.length === 1 ? 'cat' : 'cats'}`, 60, 130);
     ctx.textAlign = 'center';
     ctx.fillText(`⭐ ${totalPts} pts`, W/2, 130);
     ctx.textAlign = 'right';
@@ -7010,7 +7011,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
         <button onClick={() => setShowSharePack(true)} style={{ flex: 1, padding: '10px', background: 'linear-gradient(135deg,#5aab6a,#4a9e5c)', color: 'white', border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 'bold', cursor: 'pointer' }}>📤 Share</button>
       </div>
       <div style={{ background: 'linear-gradient(135deg, #5aab6a22, #4a9e5c22)', border: '2px solid #5aab6a44', borderRadius: 16, padding: '12px 16px', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div><div style={{ fontWeight: 'bold', color: '#333', fontSize: 16 }}>🐱 {dogs.length} cats</div><div style={{ color: '#4a9e5c', fontSize: 13 }}>⭐ {totalPoints} points</div></div>
+        <div><div style={{ fontWeight: 'bold', color: '#333', fontSize: 16 }}>🐱 {dogs.length} {dogs.length === 1 ? 'cat' : 'cats'}</div><div style={{ color: '#4a9e5c', fontSize: 13 }}>⭐ {totalPoints} points</div></div>
         <div style={{ textAlign: 'right', fontSize: 12, color: '#888' }}>🏪 Store open!</div>
       </div>
       {['Legendary','Epic','Rare','Uncommon','Common'].map(rarity => grouped[rarity] && (
@@ -7889,7 +7890,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
             </div>
           </div>
         )}
-        <div style={{ color: '#888', fontSize: 14, marginTop: 8 }}>{dogs.length} cats · ⭐ {totalPoints} points</div>
+        <div style={{ color: '#888', fontSize: 14, marginTop: 8 }}>{dogs.length} {dogs.length === 1 ? 'cat' : 'cats'} · ⭐ {totalPoints} points</div>
         <div style={{ marginTop: 8, fontSize: 12, color: '#888' }}>Code: <span style={{ fontWeight: 'bold', color: '#764ba2', letterSpacing: 1 }}>{myCode}</span></div>
       </div>
 
@@ -8042,10 +8043,10 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
         const catchCount = parseInt(localStorage.getItem('km_catch_count') || '0', 10);
         const streakPts = parseInt(localStorage.getItem('km_streak_pts_total') || '0', 10);
         const rows = [
-          { label: '🐱 Cat Collection',  desc: `${dogs.length} cats across rarities`,         pts: dogPts },
+          { label: '🐱 Cat Collection',  desc: `${dogs.length} ${dogs.length === 1 ? 'cat' : 'cats'} across rarities`,         pts: dogPts },
           { label: '🏁 Race Winnings',   desc: `Earned from multiplayer & AI races`,           pts: racePts },
           { label: '🧹 Litter Cleanups',     desc: `${pooCount} trays cleaned`,                     pts: null },
-          { label: '🧶 Cat Catches',     desc: `${catchCount} cats caught`,                    pts: null },
+          { label: '🧶 Cat Catches',     desc: `${catchCount} ${catchCount === 1 ? 'cat' : 'cats'} caught`,                    pts: null },
           { label: '🎁 Daily Gift',      desc: 'Daily gift box for Kitty Coins 🐱',          pts: null },
           // Race winnings are paid in as bonus points, so take them out here to keep the rows adding up to the Grand Total.
           { label: '⭐ Bonus Pts',       desc: 'Spins, litter, catches, daily login & more',     pts: Math.max(0, bonusPtsVal - racePts) },
