@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 272; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 273; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2102,6 +2102,9 @@ function LoginScreen({ onLogin }) {
         </button>
         {mode === 'login' && (
           <button onClick={() => setShowForgot(true)} style={{ marginTop:12, background:'none', border:'none', color:'#764ba2', fontSize:13, cursor:'pointer', fontWeight:'bold' }}>Forgot password?</button>
+        )}
+        {!ONLINE && mode === 'login' && (
+          <LoadBackupButton label="📥 Moving phones? Load my cats from a file" style={{ marginTop:12, color:'#764ba2', fontSize:13, fontWeight:'bold' }} />
         )}
         <button onClick={() => setShowPrivacy(true)} style={{ display:'block', margin:'14px auto 0', background:'none', border:'none', color:'#aaa', fontSize:12, cursor:'pointer', textDecoration:'underline' }}>Privacy Policy</button>
       </div>
@@ -6276,7 +6279,36 @@ function exportKittyBackup() {
 async function importKittyBackup(file) {
   const j = JSON.parse(await file.text());
   if (!j || j.kittymart_backup !== 1 || !j.data || typeof j.data !== 'object') throw new Error('not a KittyMart backup');
-  Object.keys(j.data).forEach(k => { if (k.startsWith('km_') && typeof j.data[k] === 'string') { try { localStorage.setItem(k, j.data[k]); } catch {} } });
+  const incoming = Object.keys(j.data).filter(k => k.startsWith('km_') && typeof j.data[k] === 'string');
+  if (!incoming.length) throw new Error('not a KittyMart backup');
+  // Really replace what is on this phone (no mixing two players' progress), and put it all back if it does not fit.
+  clearTimeout(_dxTimer); _dxTimer = null; _dx = null; _dxDirty = 0;
+  const mine = () => Object.keys(localStorage).filter(k => k.startsWith('km_') && !k.startsWith('km_catapi_') && !k.startsWith('km_cataas_'));
+  const before = {};
+  mine().forEach(k => { before[k] = localStorage.getItem(k); });
+  mine().forEach(k => localStorage.removeItem(k));
+  try {
+    try { localStorage.removeItem('km_catapi_pool_v1'); } catch {} // photo lists download again; make room
+    incoming.forEach(k => localStorage.setItem(k, j.data[k]));
+    // Settings that belong to the phone stay if the file does not have them
+    ['km_pack_cosy', 'km_sfx_off'].forEach(k => { if (before[k] != null && j.data[k] == null) localStorage.setItem(k, before[k]); });
+  } catch {
+    mine().forEach(k => localStorage.removeItem(k));
+    Object.keys(before).forEach(k => { try { localStorage.setItem(k, before[k]); } catch {} });
+    throw new Error('full');
+  }
+}
+function LoadBackupButton({ style, label }) {
+  return (
+    <label style={{ display:'block', boxSizing:'border-box', width:'100%', textAlign:'center', cursor:'pointer', ...style }}>{label}
+      <input type="file" accept="application/json,.json" style={{ display:'none' }} onChange={async e => {
+        const input = e.target; const f = input.files && input.files[0]; if (!f) return;
+        if (!window.confirm('Load this backup? It replaces the cats and accounts saved on this phone.')) { input.value = ''; return; }
+        try { await importKittyBackup(f); alert('Backup loaded! The game will now reload. If it asks, log in with the same username and password.'); window.location.reload(); }
+        catch (err) { input.value = ''; alert(err && err.message === 'full' ? 'There is not enough space on this phone for that backup. Nothing was changed.' : 'That file is not a KittyMart backup.'); }
+      }} />
+    </label>
+  );
 }
 
 // ─── Cosy Corner (cat-only): pick a bed + wall colour; napping cats curl up in it ───
@@ -8131,9 +8163,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
         </div>, document.body)}
       <button data-testid="sfx-toggle" onClick={(e) => { try { const off = catSoundsOff(); localStorage.setItem('km_sfx_off', off ? '0' : '1'); e.currentTarget.textContent = off ? '🔊 Meow & Purr Sounds: On' : '🔇 Meow & Purr Sounds: Off'; if (off) playMeow(); } catch {} }} style={{ width: '100%', padding: 14, background: '#fff', color: '#4361ee', border: '2px solid #4361ee', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>{catSoundsOff() ? '🔇 Meow & Purr Sounds: Off' : '🔊 Meow & Purr Sounds: On'}</button>
       <button onClick={() => { try { exportKittyBackup(); } catch { alert('Could not save a backup on this device.'); } }} style={{ width: '100%', padding: 14, background: 'linear-gradient(135deg,#4cc9f0,#4361ee)', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>📦 Save My Cats to a File</button>
-      <label style={{ display:'block', boxSizing:'border-box', width: '100%', padding: 14, background: 'linear-gradient(135deg,#7209b7,#560bad)', color: 'white', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10, textAlign:'center' }}>📥 Load Cats from a File
-        <input type="file" accept="application/json,.json" style={{ display:'none' }} onChange={async e => { const f = e.target.files && e.target.files[0]; if (!f) return; if (!window.confirm('Load this backup? It replaces the cats and account saved on this phone.')) return; try { await importKittyBackup(f); alert('Backup loaded! The game will now reload.'); window.location.reload(); } catch { alert('That file is not a KittyMart backup.'); } }} />
-      </label>
+      <LoadBackupButton label="📥 Load Cats from a File" style={{ display:'block', boxSizing:'border-box', width: '100%', padding: 14, background: 'linear-gradient(135deg,#7209b7,#560bad)', color: 'white', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10, textAlign:'center' }} />
       <button onClick={autoNameAllDogs} style={{ width: '100%', padding: 14, background: 'linear-gradient(135deg,#06d6a0,#059e76)', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>🏷️ Name All My Cats</button>
       <button onClick={() => setConfirmReset(true)} style={{ width: '100%', padding: 14, background: '#e63946', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>🗑️ Reset My Cats</button>
       <button onClick={() => setConfirmDelete(true)} style={{ width: '100%', padding: 14, background: '#b00020', color: 'white', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>❌ Delete Account</button>
