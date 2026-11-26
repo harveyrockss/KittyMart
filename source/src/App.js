@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 278; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 279; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -4217,7 +4217,7 @@ function TrainingSchoolScreen({ player, dogs }) {
 
       <h2 style={{ textAlign:'center', margin:'0 0 4px', color:'#333' }}>🏫 Cat Training School</h2>
       <p style={{ textAlign:'center', color:'#888', fontSize:13, margin:'0 0 16px' }}>
-        Enrol level 5+ cats · 3-hour sessions · unlock Elite Races at Lv.6!
+        Enrol level 5+ cats · 3-hour sessions · {ONLINE ? 'unlock Elite Races at Lv.6!' : 'help them grow past Lv.6!'}
       </p>
 
       {/* How it works */}
@@ -4227,7 +4227,7 @@ function TrainingSchoolScreen({ player, dogs }) {
           • Only cats at <b>Level 5+</b> can attend the Training School<br />
           • Each level-up needs multiple 3-hour sessions<br />
           • <b>Lv5→6:</b> 1 session &nbsp;·&nbsp; <b>Lv6→7:</b> 2 sessions &nbsp;·&nbsp; <b>Lv7→8:</b> 3 sessions…<br />
-          • Cats at <b>Lv6+</b> can enter 🏆 Elite Races for big Kitty Coins!
+          {ONLINE ? <>• Cats at <b>Lv6+</b> can enter 🏆 Elite Races for big Kitty Coins!</> : <>• Cats at <b>Lv6+</b> earn the 🏆 Elite badge!</>}
         </div>
       </div>
 
@@ -4787,11 +4787,11 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
           </button>
           {selectedDog && (() => { const lvl = getDogState(selectedDog.id).level || 1; return lvl >= 6; })() && (
             <button
-              onClick={() => { goScreen('elite_pick_dog'); }}
-              style={{ padding: '22px 0', background: 'linear-gradient(135deg,#f7b731,#e65100)', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 6px 20px rgba(230,81,0,0.4)', position: 'relative', overflow: 'hidden' }}>
+              onClick={() => { if (ONLINE) goScreen('elite_pick_dog'); else showToast('Elite Races need a KittyMart server — try Race vs AI!'); }}
+              style={{ padding: '22px 0', background: 'linear-gradient(135deg,#f7b731,#e65100)', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 6px 20px rgba(230,81,0,0.4)', position: 'relative', overflow: 'hidden', opacity: ONLINE ? 1 : 0.55, filter: ONLINE ? 'none' : 'grayscale(0.6)' }}>
               <span style={{ position:'absolute', top:6, right:12, fontSize:10, background:'rgba(255,255,255,0.25)', borderRadius:20, padding:'2px 8px', fontWeight:'bold' }}>ELITE</span>
               🏆 Elite Race
-              <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 'normal', marginTop: 4 }}>Lv.6+ cats · multiplayer only · big Kitty Coins!</div>
+              <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 'normal', marginTop: 4 }}>{ONLINE ? 'Lv.6+ cats · multiplayer only · big Kitty Coins!' : '📴 Needs online play · not available offline'}</div>
             </button>
           )}
           {selectedDog && getGhost(selectedDog.id) && (
@@ -4804,7 +4804,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
           )}
         </div>
         {/* Elite Race info strip — only shown when player has a Lv6+ dog */}
-        {(dogs || []).some(d => (getDogState(d.id).level || 1) >= 6) && (
+        {ONLINE && (dogs || []).some(d => (getDogState(d.id).level || 1) >= 6) && (
           <div style={{ background: 'linear-gradient(135deg,#1a0533,#2d1b69)', borderRadius: 14, padding: '10px 14px', marginBottom: 14, border: '2px solid #f7b731', display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 22 }}>🏆</span>
             <div>
@@ -4824,7 +4824,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
               </div>
             ))}
           </div>
-          <div style={{ borderTop: '1px solid #ffe082', marginTop: 10, paddingTop: 10 }}>
+          {ONLINE && <div style={{ borderTop: '1px solid #ffe082', marginTop: 10, paddingTop: 10 }}>
             <div style={{ fontWeight: 'bold', color: '#5d4037', fontSize: 12, marginBottom: 4 }}>🏆 Elite Race Prizes (Lv.6+ only)</div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'space-around' }}>
               {['🥇','🥈','🥉','4️⃣'].map((em, i) => (
@@ -4834,7 +4834,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
                 </div>
               ))}
             </div>
-          </div>
+          </div>}
         </div>
       </div>
     );
