@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 279; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 280; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3673,6 +3673,8 @@ const PLACE_PTS = [200, 100, 50, 25];
 const PLACE_LABELS = ['🥇 1st', '🥈 2nd', '🥉 3rd', '4th'];
 // Elite Race prizes — Kitty Coins only, multiplayer only
 const ELITE_DD_PLACE = [50, 20, 10, 5];
+// Champion Cup (offline, Lv.6+ cats vs faster computer cats) — Kitty Coins only
+const CHAMPION_DD_PLACE = [25, 12, 6, 3];
 const LANE_COLORS = ['#667eea', '#f72585', '#06d6a0', '#ffd700'];
 
 // Photo for a race lane: the racer's own cat photo if we have it, else a real photo of the breed, else cartoon.
@@ -4217,7 +4219,7 @@ function TrainingSchoolScreen({ player, dogs }) {
 
       <h2 style={{ textAlign:'center', margin:'0 0 4px', color:'#333' }}>🏫 Cat Training School</h2>
       <p style={{ textAlign:'center', color:'#888', fontSize:13, margin:'0 0 16px' }}>
-        Enrol level 5+ cats · 3-hour sessions · {ONLINE ? 'unlock Elite Races at Lv.6!' : 'help them grow past Lv.6!'}
+        Enrol level 5+ cats · 3-hour sessions · {ONLINE ? 'unlock Elite Races at Lv.6!' : 'unlock the Champion Cup at Lv.6!'}
       </p>
 
       {/* How it works */}
@@ -4227,7 +4229,7 @@ function TrainingSchoolScreen({ player, dogs }) {
           • Only cats at <b>Level 5+</b> can attend the Training School<br />
           • Each level-up needs multiple 3-hour sessions<br />
           • <b>Lv5→6:</b> 1 session &nbsp;·&nbsp; <b>Lv6→7:</b> 2 sessions &nbsp;·&nbsp; <b>Lv7→8:</b> 3 sessions…<br />
-          {ONLINE ? <>• Cats at <b>Lv6+</b> can enter 🏆 Elite Races for big Kitty Coins!</> : <>• Cats at <b>Lv6+</b> earn the 🏆 Elite badge!</>}
+          {ONLINE ? <>• Cats at <b>Lv6+</b> can enter 🏆 Elite Races for big Kitty Coins!</> : <>• Cats at <b>Lv6+</b> earn the 🏆 Elite badge and can race in the 👑 Champion Cup!</>}
         </div>
       </div>
 
@@ -4348,6 +4350,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
   const [finishOrder, setFinishOrder] = React.useState([]); // slots in finish order
   const [racePaidInDD, setRacePaidInDD] = React.useState(false);
   const [eliteMode, setEliteMode] = React.useState(false); // true when racing in Elite mode
+  const [championMode, setChampionMode] = React.useState(false); // offline Champion Cup
   const showToast = m => { setToast(m); setTimeout(() => setToast(null), 2500); };
 
   const pollRef = React.useRef(null);
@@ -4399,7 +4402,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
     myPctRef.current = 0; finishedRef.current = false; finishOrderRef.current = [];
     aiRef.current = null; aiFinishedRef.current = false; myAiPctRef.current = 0; setAiRoom(null);
     ghostModeRef.current = false; setGhostMode(false); ghostStartRef.current = null; ghostTapsRef.current = [];
-    setEliteMode(false);
+    setEliteMode(false); setChampionMode(false);
   };
 
   // ── Polling ──────────────────────────────────────────────────────────────────
@@ -4518,7 +4521,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
     { name: 'Shadow',  breed: 'Bombay',            rarity: 'Uncommon',  speed: 5.0 },
   ];
 
-  const startAiRace = React.useCallback((dog, useGhost) => {
+  const startAiRace = React.useCallback((dog, useGhost, champion = false) => {
     const ghost = useGhost ? getGhost(dog.id) : null;
     ghostModeRef.current = !!(useGhost && ghost);
     setGhostMode(!!(useGhost && ghost));
@@ -4527,7 +4530,11 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
     ghostStartRef.current = null;
     ghostTapsRef.current = [];
 
-    const opponents = [...AI_DOGS].sort(() => Math.random() - 0.5).slice(0, ghost ? 2 : 3);
+    setChampionMode(champion);
+    const field = champion
+      ? AI_DOGS.filter(o => o.rarity === 'Epic' || o.rarity === 'Legendary').map(o => ({ ...o, speed: o.speed + 0.3 }))
+      : AI_DOGS;
+    const opponents = [...field].sort(() => Math.random() - 0.5).slice(0, ghost ? 2 : 3);
     const initial = {
       p1_id: 'me', p1_username: player.username, p1_dog: dogRaceLabel(dog), p1_rarity: dog.rarity, p1_pct: 0,
       // p2 = ghost (if ghost mode) or first AI
@@ -4618,6 +4625,9 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
           const order = [...withTime, ...dnf];
           const myPlace = order.indexOf('p1');
           const pts = myPlace >= 0 ? PLACE_PTS[myPlace] || 0 : 0;
+          // Champion Cup pays Kitty Coins straight away (no points choice)
+          const prize = champion ? (CHAMPION_DD_PLACE[myPlace] || 0) : 0;
+          if (prize) addDD(prize);
           // Record challenge progress and race wins, but do NOT add points yet —
           // the result screen reward tabs let the player choose pts vs Kitty Coins.
           if (pts > 0) {
@@ -4631,12 +4641,12 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
             addStarXP('race_win');
             fireFireworks(3000); // 🏆 race win!
             playSound('win');
-            fireBigWin('1st PLACE!', '🏁 Race Victory', '🏆', '#ffd700', 2800, 'Tap below: 200 pts OR 10 🪙 Kitty Coins');
+            fireBigWin('1st PLACE!', champion ? '👑 Champion Cup' : '🏁 Race Victory', '🏆', '#ffd700', 2800, champion ? `+${prize} 🪙 Kitty Coins` : 'Tap below: 200 pts OR 10 🪙 Kitty Coins');
           } else if (myPlace === 1) {
             playSound('achievement');
             fireBigWin('2nd PLACE!', 'Great race!', '🥈', '#c0c0c0', 2200);
           }
-          setResult({ place: myPlace, pts, isSpectator: false, order, aiMode: true, ghostMode: ghostModeRef.current });
+          setResult({ place: myPlace, pts: champion ? 0 : pts, prize, champion, isSpectator: false, order, aiMode: true, ghostMode: ghostModeRef.current });
           goScreen('result');
         }
       }, 300);
@@ -4785,13 +4795,21 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
             🤖 Race vs AI
             <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 'normal', marginTop: 4 }}>Solo · 3 AI opponents · instant start</div>
           </button>
-          {selectedDog && (() => { const lvl = getDogState(selectedDog.id).level || 1; return lvl >= 6; })() && (
+          {selectedDog && !ONLINE && (getDogState(selectedDog.id).level || 1) >= 6 && (
             <button
-              onClick={() => { if (ONLINE) goScreen('elite_pick_dog'); else showToast('Elite Races need a KittyMart server — try Race vs AI!'); }}
+              onClick={() => startAiRace(selectedDog, false, true)}
+              style={{ padding: '22px 0', background: 'linear-gradient(135deg,#f7b731,#e65100)', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 6px 20px rgba(230,81,0,0.4)' }}>
+              👑 Champion Cup
+              <div style={{ fontSize: 12, opacity: 0.9, fontWeight: 'normal', marginTop: 4 }}>Lv.6+ cats · faster computer cats · win up to {CHAMPION_DD_PLACE[0]} Kitty Coins</div>
+            </button>
+          )}
+          {selectedDog && ONLINE && (getDogState(selectedDog.id).level || 1) >= 6 && (
+            <button
+              onClick={() => goScreen('elite_pick_dog')}
               style={{ padding: '22px 0', background: 'linear-gradient(135deg,#f7b731,#e65100)', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 6px 20px rgba(230,81,0,0.4)', position: 'relative', overflow: 'hidden', opacity: ONLINE ? 1 : 0.55, filter: ONLINE ? 'none' : 'grayscale(0.6)' }}>
               <span style={{ position:'absolute', top:6, right:12, fontSize:10, background:'rgba(255,255,255,0.25)', borderRadius:20, padding:'2px 8px', fontWeight:'bold' }}>ELITE</span>
               🏆 Elite Race
-              <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 'normal', marginTop: 4 }}>{ONLINE ? 'Lv.6+ cats · multiplayer only · big Kitty Coins!' : '📴 Needs online play · not available offline'}</div>
+              <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 'normal', marginTop: 4 }}>Lv.6+ cats · multiplayer only · big Kitty Coins!</div>
             </button>
           )}
           {selectedDog && getGhost(selectedDog.id) && (
@@ -5010,7 +5028,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
         <style>{`.tap-btn{animation:tbounce 0.4s infinite}.tap-btn:active{transform:scale(0.88)!important}@keyframes tbounce{0%,100%{transform:scale(1)}50%{transform:scale(0.93)}}@keyframes cdpop{0%{transform:translate(-50%,-50%) scale(0.4);opacity:0}40%{transform:translate(-50%,-50%) scale(1.2);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}`}</style>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
           <span style={{ fontWeight: 'bold', color: ghostMode ? '#764ba2' : '#06d6a0', fontSize: 14 }}>
-            {ghostMode ? '👻 Ghost Race' : '🤖 vs AI'}
+            {ghostMode ? '👻 Ghost Race' : championMode ? '👑 Champion Cup' : '🤖 vs AI'}
           </span>
           <button onClick={() => { clearInterval(aiIntervalRef.current); resetAll(); }} style={{ background: '#eee', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer', fontSize: 12 }}>Quit</button>
         </div>
@@ -5313,6 +5331,12 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
             </div>
           );
         })()}
+        {result?.champion && (
+          <div style={{ background: 'linear-gradient(135deg,#fff9e6,#fff3cd)', borderRadius: 16, padding: 14, marginBottom: 12, border: '2px solid #f7b731' }}>
+            <div style={{ fontSize: 13, fontWeight: 'bold', color: '#5d4037' }}>👑 CHAMPION CUP</div>
+            <div style={{ fontSize: 22, fontWeight: 'bold', color: '#e65100' }}>+{result.prize} 🪙 Kitty Coins!</div>
+          </div>
+        )}
         {/* Elite race: show auto-paid DD reward */}
         {eliteMode && place >= 0 && raceDDAmount > 0 && (
           <div style={{ background: 'linear-gradient(135deg,#fff9e6,#fff3cd)', borderRadius: 16, padding: 14, marginBottom: 12, border: '2px solid #f7b731' }}>
@@ -5345,7 +5369,9 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
             {result.order.map((n, i) => {
               const isMe = n === mySlot;
               let rewardLabel;
-              if (eliteMode) {
+              if (result?.champion) {
+                rewardLabel = isMe ? <span style={{ marginLeft: 'auto', color: '#e65100', fontWeight: 'bold', fontSize: 13 }}>+{result.prize} 🪙</span> : null;
+              } else if (eliteMode) {
                 // Elite races: show DD prizes for all places, no pts
                 const elitePrize = ELITE_DD_PLACE[i] || 0;
                 rewardLabel = <span style={{ marginLeft: 'auto', color: '#e65100', fontWeight: 'bold', fontSize: 13 }}>+{elitePrize} 🪙</span>;
@@ -5368,7 +5394,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
         )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {result?.aiMode ? (<>
-            <button onClick={() => { const d = selectedDog; resetAll(); setTimeout(() => d ? startAiRace(d, false) : goScreen('ai_pick_dog'), 50); }} style={{ padding: '14px 0', background: 'linear-gradient(135deg,#06d6a0,#059e76)', color: 'white', border: 'none', borderRadius: 14, fontSize: 15, fontWeight: 'bold', cursor: 'pointer' }}>🤖 Race Again vs AI</button>
+            <button onClick={() => { const d = selectedDog; const c = !!result.champion; resetAll(); setTimeout(() => d ? startAiRace(d, false, c) : goScreen('ai_pick_dog'), 50); }} style={{ padding: '14px 0', background: 'linear-gradient(135deg,#06d6a0,#059e76)', color: 'white', border: 'none', borderRadius: 14, fontSize: 15, fontWeight: 'bold', cursor: 'pointer' }}>{result.champion ? '👑 Champion Cup Again' : '🤖 Race Again vs AI'}</button>
             {selectedDog && getGhost(selectedDog.id) && (
               <button onClick={() => { const d = selectedDog; resetAll(); setTimeout(() => startAiRace(d, true), 50); }} style={{ padding: '14px 0', background: 'linear-gradient(135deg,#764ba2,#667eea)', color: 'white', border: 'none', borderRadius: 14, fontSize: 15, fontWeight: 'bold', cursor: 'pointer' }}>👻 Race Your Ghost Again</button>
             )}
