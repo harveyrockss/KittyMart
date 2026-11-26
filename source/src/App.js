@@ -39,7 +39,7 @@ async function scheduleReminderNotifications() {
 
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
-const APP_VERSION = 270; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 271; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -1373,19 +1373,12 @@ async function shareCatchCard(dogName, rarity, photoUrl) {
     grd.addColorStop(0, '#667eea'); grd.addColorStop(1, '#764ba2');
     ctx.fillStyle = grd; ctx.fillRect(0, 0, 400, 400);
     // Dog photo circle
-    if (photoUrl) {
-      await new Promise(resolve => {
-        const img = new Image(); img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          ctx.save();
-          ctx.beginPath(); ctx.arc(200, 180, 130, 0, Math.PI * 2); ctx.clip();
-          ctx.drawImage(img, 70, 50, 260, 260);
-          ctx.restore();
-          resolve();
-        };
-        img.onerror = resolve;
-        img.src = photoUrl;
-      });
+    const img = await loadFirstImage([photoUrl, catArtUrl(dogName)]);
+    if (img) {
+      ctx.save();
+      ctx.beginPath(); ctx.arc(200, 180, 130, 0, Math.PI * 2); ctx.clip();
+      ctx.drawImage(img, 70, 50, 260, 260);
+      ctx.restore();
     }
     // Rarity ring
     ctx.beginPath(); ctx.arc(200, 180, 133, 0, Math.PI * 2);
@@ -1414,6 +1407,21 @@ async function shareCatchCard(dogName, rarity, photoUrl) {
       }
     }, 'image/png');
   } catch(e) { console.error('Share error', e); }
+}
+
+// Load the first image that works (real photo, then cartoon) so share cards are never left with an empty circle.
+function loadFirstImage(urls) {
+  const list = urls.filter(Boolean);
+  return new Promise(resolve => {
+    const next = i => {
+      if (i >= list.length) return resolve(null);
+      const img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => next(i + 1);
+      img.src = list[i];
+    };
+    next(0);
+  });
 }
 
 // ─── Shareable Dress-Up Card ──────────────────────────────────────────────────
@@ -1453,23 +1461,17 @@ async function shareDressupCard(dog, equipped) {
     // Shadow ellipse
     ctx.save(); ctx.globalAlpha = 0.3; ctx.fillStyle = 'black';
     ctx.beginPath(); ctx.ellipse(cx, 328, 110, 18, 0, 0, Math.PI*2); ctx.fill(); ctx.restore();
-    if (dog.photo_url) {
-      await new Promise(resolve => {
-        const img = new Image(); img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          ctx.save();
-          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.clip();
-          ctx.drawImage(img, cx-r, cy-r, r*2, r*2);
-          ctx.restore();
-          // Rarity ring
-          ctx.strokeStyle = RARITY_COLORS[dog.rarity] || '#fff'; ctx.lineWidth = 7;
-          ctx.beginPath(); ctx.arc(cx, cy, r+4, 0, Math.PI*2); ctx.stroke();
-          ctx.strokeStyle = 'white'; ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.arc(cx, cy, r+8, 0, Math.PI*2); ctx.stroke();
-          resolve();
-        };
-        img.onerror = resolve; img.src = dog.photo_url;
-      });
+    const img = await loadFirstImage([dogImageSrc(dog), dog.breed && catArtUrl(dog.breed)]);
+    if (img) {
+      ctx.save();
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.clip();
+      ctx.drawImage(img, cx-r, cy-r, r*2, r*2);
+      ctx.restore();
+      // Rarity ring
+      ctx.strokeStyle = RARITY_COLORS[dog.rarity] || '#fff'; ctx.lineWidth = 7;
+      ctx.beginPath(); ctx.arc(cx, cy, r+4, 0, Math.PI*2); ctx.stroke();
+      ctx.strokeStyle = 'white'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(cx, cy, r+8, 0, Math.PI*2); ctx.stroke();
     }
 
     // Nameplate bar
@@ -5921,7 +5923,7 @@ function DogDiaryModal({ dog, onClose, showToast }) {
   const [resolvedPhoto, setResolvedPhoto] = React.useState(() => dogImageSrc(dog));
   React.useEffect(() => {
     if (customPhoto) return; // custom photo takes priority
-    if (resolvedPhoto) return; // already have a good URL
+    if (resolvedPhoto && !resolvedPhoto.startsWith('data:image/svg')) return; // already have a real photo
     resolveDogPhoto(dog).then(url => { if (url) setResolvedPhoto(url); });
   }, [dog.id]);
 
@@ -8206,13 +8208,6 @@ export default function App() {
     if (!dogs.length) return;
     warmBreedPhotos([...new Set(dogs.map(d => d.breed))]);
   }, [dogs.length]); // eslint-disable-line react-hooks/exhaustive-deps
-  // One-time correction: Tessa (Indiana's Cavoodle) was a girl; an update reset her gender to Male.
-  useEffect(() => {
-    const TESSA = '9344cd4b-5f62-48f2-8b26-4ad47d47d330';
-    if (!dogs.some(d => d.id === TESSA)) return;
-    if (localStorage.getItem('km_fix_tessa_gender') === '1') return;
-    try { setDogGender(TESSA, 'Female'); localStorage.setItem('km_fix_tessa_gender', '1'); } catch {}
-  }, [dogs]);
 
   const [dogsLoaded, setDogsLoaded] = useState(false);
   const [dogsLoadError, setDogsLoadError] = useState(false);
