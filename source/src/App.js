@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 275; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 276; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -1445,8 +1445,9 @@ function loadFirstImage(urls) {
     const next = i => {
       if (i >= list.length) return resolve(null);
       const img = new Image(); img.crossOrigin = 'anonymous';
-      img.onload = () => resolve(img);
-      img.onerror = () => next(i + 1);
+      const t = setTimeout(() => { img.onload = img.onerror = null; next(i + 1); }, 8000); // a stalled photo must not hang the card
+      img.onload = () => { clearTimeout(t); resolve(img); };
+      img.onerror = () => { clearTimeout(t); next(i + 1); };
       img.src = list[i];
     };
     next(0);
@@ -6665,6 +6666,13 @@ function ShareMyPackModal({ player, dogs, onClose }) {
   }, [dogs]);
   const totalPts = calcPoints(dogs) + getBonusPts();
   React.useEffect(() => {
+    let cancelled = false;
+    const draw = async () => {
+    // Load each cat's photo first (its own photo, else a real breed photo, else the cartoon), then draw in one go.
+    const photos = await Promise.all(topDogs.map(async dog => loadFirstImage([
+      localStorage.getItem(`km_photo_${dog.id}`), await resolveDogPhoto(dog).catch(() => null), catArtUrl(dog.breed),
+    ])));
+    if (cancelled) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -6695,7 +6703,7 @@ function ShareMyPackModal({ player, dogs, onClose }) {
     const rar = ['Legendary','Epic','Rare'].map(r => `${r[0]}: ${dogs.filter(d=>d.rarity===r).length}`).join('  ');
     ctx.fillText(rar, W-60, 130);
     // Dog cards
-    const cols = 3, rows = 2, cardW = 190, cardH = 130, startX = 68, startY = 168, gapX = 30, gapY = 18;
+    const cols = 3, rows = 2, cardW = 190, cardH = 144, startX = 85, startY = 160, gapX = 30, gapY = 12;
     const rarityColors = { Legendary:'#f59e0b', Epic:'#8b5cf6', Rare:'#3b82f6', Uncommon:'#10b981', Common:'#9ca3af' };
     topDogs.forEach((dog, i) => {
       const col = i % cols, row = Math.floor(i / cols);
@@ -6711,16 +6719,27 @@ function ShareMyPackModal({ player, dogs, onClose }) {
       // Name
       ctx.font = 'bold 15px "Nunito", sans-serif'; ctx.fillStyle = '#1a1a2e'; ctx.textAlign = 'center';
       const nick = getDogNick(dog.id) || '';
-      ctx.fillText(nick || dog.name, x + cardW/2, y+56);
+      ctx.fillText(nick || dog.name, x + cardW/2, y+120);
       ctx.font = '12px "Nunito", sans-serif'; ctx.fillStyle = '#666';
-      ctx.fillText(dog.breed, x + cardW/2, y+72);
-      // Paw icon
-      ctx.font = '32px serif'; ctx.fillText('🐱', x + cardW/2, y+105);
+      ctx.fillText(dog.breed, x + cardW/2, y+137);
+      // Round photo (cropped to fill the circle)
+      const img = photos[i], cx = x + cardW/2, cy = y+66, r = 35;
+      if (img) {
+        // scale to cover the circle (no source-rect crop: that misplaces SVG cartoons)
+        const w = img.naturalWidth || 400, h = img.naturalHeight || 400, k = (r*2) / Math.min(w, h);
+        ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.clip();
+        ctx.drawImage(img, cx - w*k/2, cy - h*k/2, w*k, h*k);
+        ctx.restore();
+        ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+      } else { ctx.font = '32px serif'; ctx.fillText('🐱', cx, cy+11); }
     });
     // Footer
     ctx.font = '15px "Nunito", sans-serif'; ctx.fillStyle = '#9ab89a'; ctx.textAlign = 'center';
     ctx.fillText('KittyMart — Catch, Train, Race! 🌿', W/2, H-18);
     setImgUrl(canvas.toDataURL('image/png'));
+    };
+    draw().catch(e => console.warn('Share card error', e));
+    return () => { cancelled = true; };
   }, [topDogs, player.username, dogs, totalPts]);
 
   const handleShare = async () => {
@@ -6741,6 +6760,7 @@ function ShareMyPackModal({ player, dogs, onClose }) {
       <div style={{ background:'white', borderRadius:24, padding:20, maxWidth:420, width:'100%', textAlign:'center' }} onClick={e=>e.stopPropagation()}>
         <div style={{ fontWeight:'bold', fontSize:18, color:'#2d6a4f', marginBottom:12 }}>🐾 Share My Pack</div>
         <canvas ref={canvasRef} style={{ display:'none' }} />
+        {!imgUrl && <div style={{ padding:'40px 0', color:'#888' }}>🐾 Making your card…</div>}
         {imgUrl && <img src={imgUrl} alt="My Pack" style={{ width:'100%', borderRadius:16, marginBottom:12 }} />}
         <div style={{ display:'flex', gap:10 }}>
           <button onClick={handleShare} style={{ flex:1, padding:'14px 0', background:'linear-gradient(135deg,#5aab6a,#4a9e5c)', color:'white', border:'none', borderRadius:14, fontSize:15, fontWeight:'bold', cursor:'pointer' }}>
