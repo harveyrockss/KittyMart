@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 285; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 286; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -6963,7 +6963,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
     saveDogState(dog.id, s);
     addXP(dog.id, 10, showToast);
     playPurr();
-    showToast(`🍖 ${dog.name} fed! +10 XP`);
+    showToast(`🐟 ${dog.name} fed! +10 XP`);
     try { localStorage.setItem('km_feed_count', (parseInt(localStorage.getItem('km_feed_count')||'0')+1).toString()); } catch {}
     recordChallenge('feed');
     addStarXP('feed');
@@ -7156,6 +7156,21 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
         <div><div style={{ fontWeight: 'bold', color: '#333', fontSize: 16 }}>🐱 {dogs.length} {dogs.length === 1 ? 'cat' : 'cats'}</div><div style={{ color: '#4a9e5c', fontSize: 13 }}>⭐ {totalPoints} points</div></div>
         <div style={{ textAlign: 'right', fontSize: 12, color: '#888' }}>🏪 Store open!</div>
       </div>
+      {dogs.length > 0 && (
+        <details style={{ background: 'white', border: '2px solid #e8dcf5', borderRadius: 14, padding: '10px 14px', marginBottom: 8, fontSize: 13, color: '#555' }}>
+          <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#764ba2' }}>❓ What do the cat buttons do?</summary>
+          <div style={{ marginTop: 8, lineHeight: 1.8 }}>
+            <div>🐟 Feed: fills the hunger bar, +10 XP</div>
+            <div>💜 Pet: a happy purr, +3 XP (once an hour)</div>
+            <div>✨ Brush: silky fur, +4 XP (every 2 hours)</div>
+            <div>🪶 Play: feather toy, +5 XP (every 3 hours)</div>
+            <div>😴 Nap: tuck into bed, +8 XP (every 6 hours)</div>
+            <div>🧹 Litter tray (when it shows up): clean it for points</div>
+            <div>✏️ Nickname · 🎓 Teach tricks · 🗑️ Delete (asks first)</div>
+            <div>🧬 Breed: pick 2 cats for a kitten (costs 50 points)</div>
+          </div>
+        </details>
+      )}
       {['Legendary','Epic','Rare','Uncommon','Common'].map(rarity => grouped[rarity] && (
         <div key={rarity}>
           <h3 style={{ color: RARITY_COLORS[rarity], margin: '16px 0 8px', fontSize: 14, textTransform: 'uppercase', letterSpacing: 1 }}>{rarity} · {RARITY_POINTS[rarity]}pt{RARITY_POINTS[rarity] === 1 ? '' : 's'} each ({grouped[rarity].length})</h3>
@@ -7198,7 +7213,7 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
                     <button onClick={e=>handleGroom(e,dog)} aria-label="Brush" style={{padding:'3px 6px',background:'#e0f7fa',border:'1px solid #4dd0e1',borderRadius:7,fontSize:11,cursor:'pointer'}}>✨</button>
                     <button onClick={e=>handlePlay(e,dog)} aria-label="Play" style={{padding:'3px 6px',background:'#f3e5f5',border:'1px solid #ce93d8',borderRadius:7,fontSize:11,cursor:'pointer'}}>🪶</button>
                     <button onClick={e=>handleNap(e,dog)} aria-label="Nap" style={{padding:'3px 6px',background:'#ede7f6',border:'1px solid #b39ddb',borderRadius:7,fontSize:11,cursor:'pointer'}}>😴</button>
-                    {needsPoo && <button onClick={e=>handlePoo(e,dog)} style={{padding:'3px 6px',background:'#fff8e1',border:'1px solid #f59e0b',borderRadius:7,fontSize:12,cursor:'pointer'}}>🧹</button>}
+                    {needsPoo && <button onClick={e=>handlePoo(e,dog)} aria-label="Clean litter tray" style={{padding:'3px 6px',background:'#fff8e1',border:'1px solid #f59e0b',borderRadius:7,fontSize:12,cursor:'pointer'}}>🧹</button>}
                   </div>
                   {isRenaming ? (
                     <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: 3, marginBottom: 4 }}>
@@ -7207,10 +7222,10 @@ function CollectionScreen({ player, dogs, setDogs, onNavigateTrade, onNavigateSe
                     </div>
                   ) : (
                     <div style={{ display: 'flex', gap: 3, justifyContent: 'center', marginBottom: 2 }} onClick={e=>e.stopPropagation()}>
-                      <button onClick={e => { e.stopPropagation(); startRename(e, dog); }} style={{ padding: '3px 5px', background: '#f0e8ff', color: '#764ba2', border: 'none', borderRadius: 7, fontSize: 10, cursor: 'pointer' }}>✏️</button>
-                      <button onClick={e => { e.stopPropagation(); setTrainingDog(dog); }} style={{ padding: '3px 5px', background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: 7, fontSize: 10, cursor: 'pointer' }}>🎓</button>
-                      <button onClick={e => toggleBreedSelect(e, dog)} style={{ padding: '3px 5px', background: breedSelect.some(d=>d.id===dog.id)?'#ffd700':'#f5f5dc', color: '#333', border: 'none', borderRadius: 7, fontSize: 10, cursor: 'pointer' }}>🧬</button>
-                      <button onClick={e => handleDelete(e, dog)} style={{ padding: '3px 5px', background: '#ffe8e8', color: '#e63946', border: 'none', borderRadius: 7, fontSize: 10, cursor: 'pointer' }}>🗑️</button>
+                      <button onClick={e => { e.stopPropagation(); startRename(e, dog); }} aria-label="Nickname" style={{ padding: '3px 5px', background: '#f0e8ff', color: '#764ba2', border: 'none', borderRadius: 7, fontSize: 10, cursor: 'pointer' }}>✏️</button>
+                      <button onClick={e => { e.stopPropagation(); setTrainingDog(dog); }} aria-label="Teach tricks" style={{ padding: '3px 5px', background: '#e8f5e9', color: '#2d6a4f', border: 'none', borderRadius: 7, fontSize: 10, cursor: 'pointer' }}>🎓</button>
+                      <button onClick={e => toggleBreedSelect(e, dog)} aria-label="Breed" style={{ padding: '3px 5px', background: breedSelect.some(d=>d.id===dog.id)?'#ffd700':'#f5f5dc', color: '#333', border: 'none', borderRadius: 7, fontSize: 10, cursor: 'pointer' }}>🧬</button>
+                      <button onClick={e => handleDelete(e, dog)} aria-label="Delete" style={{ padding: '3px 5px', background: '#ffe8e8', color: '#e63946', border: 'none', borderRadius: 7, fontSize: 10, cursor: 'pointer' }}>🗑️</button>
                     </div>
                   )}
                 </div>
