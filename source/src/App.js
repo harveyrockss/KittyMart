@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 284; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 285; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3052,7 +3052,7 @@ function CatFactCard() {
   const mood = CAT_MOODS[(day + 3) % CAT_MOODS.length];
   const toy = CAT_TOYS[(day + 5) % CAT_TOYS.length];
   const nap = CAT_NAP_SPOTS[(day + 2) % CAT_NAP_SPOTS.length];
-  const LUCKY_COLOURS = [['🧡','Orange'],['🤍','White'],['🖤','Black'],['💜','Purple'],['💙','Blue'],['💚','Green'],['💛','Golden']];
+  const LUCKY_COLOURS = [['🧡','Orange'],['🤍','White'],['🖤','Black'],['🌫️','Grey'],['🍦','Cream'],['🤎','Brown'],['💛','Golden']];
   const luckyCol = LUCKY_COLOURS[(day + 4) % LUCKY_COLOURS.length];
   const jarKey = 'km_jar_' + localDateKey();
   const [jarOpen, setJarOpen] = React.useState(() => { try { return !!localStorage.getItem(jarKey); } catch { return false; } });
