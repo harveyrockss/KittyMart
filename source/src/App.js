@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 283; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 284; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2968,7 +2968,7 @@ function FriendsGalleryModal({ onClose, initialQuery }) {
               <div style={{ fontSize:40, marginBottom:4 }}>🐾</div>
               <div style={{ fontWeight:'bold', fontSize:18, color:'#333' }}>{publicName(profile.username)}</div>
               <div style={{ fontSize:13, color:'#888', marginTop:4 }}>
-                🐱 {profileDogs.length} {profileDogs.length === 1 ? 'cat' : 'cats'} shown · 🏁 {profile.race_wins||0} race wins · ⭐ {profile.total_pts||0} pts
+                🐱 {profileDogs.length} {profileDogs.length === 1 ? 'cat' : 'cats'} shown · 🏁 {profile.race_wins||0} race {profile.race_wins === 1 ? 'win' : 'wins'} · ⭐ {profile.total_pts||0} pts
               </div>
             </div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10 }}>
@@ -5481,7 +5481,7 @@ function TasksScreen({ dogs }) {
         totalPts += rarity.pts;
       }));
       if (failedLocal > 0) { addDD(p.cost); logPurchase(p.label, p.cost, 'returned: phone storage full'); showPopup(`⚠️ ${p.label} could not update ${failedLocal} cats because the game's saved-data space on this phone is full. Your ${p.cost} Kitty Coins were returned.`); return; }
-      logPurchase(p.label, p.cost, `applied to ${targets.length} cats`);
+      logPurchase(p.label, p.cost, `applied to ${targets.length} ${targets.length === 1 ? 'cat' : 'cats'}`);
       addBonusPts(totalPts);
       showPopup(`${p.label} cleaned ${targets.length} litter tray${targets.length>1?'s':''}! +${totalPts}⭐ earned`);
     } else if (p.id === 'xp_potion') {
@@ -5493,7 +5493,7 @@ function TasksScreen({ dogs }) {
       if (targets.length === 0) { showToast(p.rarity === 'All' ? 'No cats to feed!' : `No ${p.rarity} cats to feed!`); addDD(p.cost); return; }
       const failedLocal = runBulk(() => targets.forEach(d => { const s = getDogState(d.id); s.hunger = 100; s.lastFed = Date.now(); saveDogState(d.id, s); }));
       if (failedLocal > 0) { addDD(p.cost); logPurchase(p.label, p.cost, 'returned: phone storage full'); showPopup(`⚠️ ${p.label} could not update ${failedLocal} cats because the game's saved-data space on this phone is full. Your ${p.cost} Kitty Coins were returned.`); return; }
-      logPurchase(p.label, p.cost, `applied to ${targets.length} cats`);
+      logPurchase(p.label, p.cost, `applied to ${targets.length} ${targets.length === 1 ? 'cat' : 'cats'}`);
       showPopup(p.rarity === 'All' ? `${p.label} has fed all your cats!` : `${p.label} has fed all your ${p.rarity} cats!`);
     } else {
       showPopup(`${p.label} activated!`);
@@ -7453,7 +7453,7 @@ function MartScreen({ dogs, totalPoints }) {
                     totalPts += rarity.pts;
                   }));
                   if (failedLocal > 0) { addDD(p.cost); logPurchase(p.label, p.cost, 'returned: phone storage full'); showPopup(`⚠️ ${p.label} could not update ${failedLocal} cats because the game's saved-data space on this phone is full. Your ${p.cost} Kitty Coins were returned.`); return; }
-                  logPurchase(p.label, p.cost, `applied to ${targets.length} cats`);
+                  logPurchase(p.label, p.cost, `applied to ${targets.length} ${targets.length === 1 ? 'cat' : 'cats'}`);
                   addBonusPts(totalPts);
                   showPopup(`${p.label} cleaned ${targets.length} litter tray${targets.length>1?'s':''}! +${totalPts}⭐ earned`);
                 } else if (p.id === 'xp_potion') {
@@ -7465,7 +7465,7 @@ function MartScreen({ dogs, totalPoints }) {
                   if (targets.length === 0) { showMsg(p.rarity === 'All' ? 'No cats to feed!' : `No ${p.rarity} cats to feed!`); addDD(p.cost); return; }
                   const failedLocal = runBulk(() => targets.forEach(d => { const s = getDogState(d.id); s.hunger = 100; s.lastFed = Date.now(); saveDogState(d.id, s); }));
       if (failedLocal > 0) { addDD(p.cost); logPurchase(p.label, p.cost, 'returned: phone storage full'); showPopup(`⚠️ ${p.label} could not update ${failedLocal} cats because the game's saved-data space on this phone is full. Your ${p.cost} Kitty Coins were returned.`); return; }
-      logPurchase(p.label, p.cost, `applied to ${targets.length} cats`);
+      logPurchase(p.label, p.cost, `applied to ${targets.length} ${targets.length === 1 ? 'cat' : 'cats'}`);
                   showPopup(p.rarity === 'All' ? `${p.label} has fed all your cats!` : `${p.label} has fed all your ${p.rarity} cats!`);
                 } else {
                   showPopup(`${p.label} activated!`);
@@ -8111,7 +8111,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <div style={{ fontWeight: 'bold', fontSize: 16 }}>🐾 {friendResult.username}</div>
-                  <div style={{ fontSize: 12, color: '#666', marginTop: 3 }}>🐱 {friendResult.dogCount} cats · ⭐ {friendResult.points} pts · 🏁 {friendResult.race_wins || 0} wins</div>
+                  <div style={{ fontSize: 12, color: '#666', marginTop: 3 }}>🐱 {friendResult.dogCount} {friendResult.dogCount === 1 ? 'cat' : 'cats'} · ⭐ {friendResult.points} pts · 🏁 {friendResult.race_wins || 0} {friendResult.race_wins === 1 ? 'win' : 'wins'}</div>
                 </div>
                 {friendResult.id !== player.id && !myFriends.some(f => f.id === friendResult.id) && (
                   <button onClick={handleAddFriend} style={{ padding: '10px 16px', background: 'linear-gradient(135deg,#06d6a0,#059e76)', color: 'white', border: 'none', borderRadius: 12, fontSize: 13, fontWeight: 'bold', cursor: 'pointer' }}>+ Add</button>
@@ -8138,7 +8138,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
                         {f.username}
                         {ONLINE && friendsOnlineIds.has(f.id) && <span style={{ fontSize: 9, background: '#06d6a0', color: 'white', borderRadius: 20, padding: '2px 7px', fontWeight: 'bold' }}>🟢 ONLINE</span>}
                       </div>
-                      <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>⭐ {f.total_pts || 0} pts · 🏁 {f.race_wins || 0} wins</div>
+                      <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>⭐ {f.total_pts || 0} pts · 🏁 {f.race_wins || 0} {f.race_wins === 1 ? 'win' : 'wins'}</div>
                     </div>
                     <button onClick={() => handleRemoveFriend(f.id, f.username)} style={{ padding: '6px 12px', background: '#ffe8e8', color: '#e63946', border: 'none', borderRadius: 10, fontSize: 12, fontWeight: 'bold', cursor: 'pointer' }}>Remove</button>
                   </div>
@@ -8269,7 +8269,7 @@ function SettingsScreen({ player, dogs, onLogout, onDogsReset, setPlayer }) {
           <div style={{ background: 'white', borderRadius: 20, padding: 28, width: '100%', maxWidth: 340, textAlign: 'center' }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>⚠️</div>
             <h3 style={{ margin: '0 0 10px', color: '#b00020', fontSize: 20 }}>Delete Account?</h3>
-            <p style={{ margin: '0 0 24px', color: '#555', fontSize: 14, lineHeight: 1.5 }}>This will permanently delete your account, <strong>all {dogs.length} cats</strong>, points, and all progress. There is no way to recover your data.</p>
+            <p style={{ margin: '0 0 24px', color: '#555', fontSize: 14, lineHeight: 1.5 }}>This will permanently delete your account, <strong>{dogs.length === 1 ? 'your 1 cat' : `all ${dogs.length} cats`}</strong>, points, and all progress. There is no way to recover your data.</p>
             <button onClick={() => setConfirmDeleteFinal(true)} style={{ width: '100%', padding: 14, background: '#b00020', color: 'white', border: 'none', borderRadius: 12, fontSize: 16, fontWeight: 'bold', cursor: 'pointer', marginBottom: 10 }}>I understand — continue</button>
             <button onClick={() => setConfirmDelete(false)} style={{ width: '100%', padding: 14, background: '#f0f0f0', color: '#333', border: 'none', borderRadius: 12, fontSize: 16, fontWeight: 'bold', cursor: 'pointer' }}>Cancel</button>
           </div>

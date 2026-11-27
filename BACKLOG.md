@@ -215,3 +215,5 @@
   Next: Super Fan (after IAP). Needs Harvey: support email (SUPPORT_EMAIL) + privacy policy URL before any App Store submission.
 - Run 157: Mart power-up cards showed their icon twice (big icon plus emoji in the title); title is now text only. v1.146 (APP_VERSION 283). npm test 3/3, build OK; playwright (photo APIs mocked): signup, all 8 tabs, catch, full AI race (1st), no console errors; Mart/Cats/race screenshots viewed.
   Next: Super Fan (after IAP). Needs Harvey: support email (SUPPORT_EMAIL) + privacy policy URL before any App Store submission.
+- Run 158: singular/plural wording with one cat or one race win (Delete Account box, friend search/list, player profile, purchase log). v1.147 (APP_VERSION 284). npm test 3/3, build OK; playwright (photo APIs mocked): signup, tabs, catch, full AI race, delete box; screenshots viewed; only the sandbox's blocked network request. Friend/profile lines not exercised.
+  Next: Super Fan (after IAP). Needs Harvey: support email (SUPPORT_EMAIL) + privacy policy URL before any App Store submission.
