@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 287; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 288; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -3199,29 +3199,25 @@ function YarnChase() {
   );
 }
 
+// Today's date key, re-checked while the game stays open and when it comes back to the front
+// (phones pause long timers in the background, so a single midnight timeout is not enough).
+function useTodayKey() {
+  const [todayKey, setTodayKey] = React.useState(() => localDateKey());
+  React.useEffect(() => {
+    const check = () => setTodayKey(localDateKey());
+    const t = setInterval(check, 15000);
+    document.addEventListener('visibilitychange', check);
+    return () => { clearInterval(t); document.removeEventListener('visibilitychange', check); };
+  }, []);
+  return todayKey;
+}
+
 function HomeScreen({ player, dogs, stats, onNavigate }) {
   const bonusPts = useLive(getBonusPts, 'km_pts_change');
   const totalPoints = (stats ? stats.pts : calcPoints(dogs)) + bonusPts;
   const dd = useLive(getDD, 'km_dd_change');
-  // Midnight reset: force re-render when the day changes so spin/mystery refresh automatically
-  const [todayKey, setTodayKey] = React.useState(() => localDateKey());
-  React.useEffect(() => {
-    const msUntilMidnight = () => {
-      const now = new Date();
-      const midnight = new Date(now);
-      midnight.setHours(24, 0, 0, 0);
-      return midnight - now;
-    };
-    let timer;
-    const scheduleMidnight = () => {
-      timer = setTimeout(() => {
-        setTodayKey(localDateKey());
-        scheduleMidnight();
-      }, msUntilMidnight());
-    };
-    scheduleMidnight();
-    return () => clearTimeout(timer);
-  }, []);
+  // Midnight reset: daily cards below are keyed by todayKey so they start fresh on a new day
+  const todayKey = useTodayKey();
   let unlockedAch = {};
   try { unlockedAch = JSON.parse(localStorage.getItem('km_ach') || '{}'); } catch {}
   const achCount = Object.values(unlockedAch).filter(Boolean).length;
@@ -3347,11 +3343,11 @@ function HomeScreen({ player, dogs, stats, onNavigate }) {
         );
       })()}
       <CommunityGoalBanner player={player} dogs={dogs} />
-      <YarnChase />
-      <CatFactCard />
+      <YarnChase key={'YarnChase-' + todayKey} />
+      <CatFactCard key={'CatFactCard-' + todayKey} />
       <MysteryDogCard player={player} today={todayKey} />
-      <TrickOrTreatCard />
-      <AdventCalendarCard />
+      <TrickOrTreatCard key={'TrickOrTreatCard-' + todayKey} />
+      <AdventCalendarCard key={'AdventCalendarCard-' + todayKey} />
       {/* Daily spin + friends row */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
         <button onClick={() => { if (canSpin) setShowSpin(true); else { haptic('light'); } }} style={{ flex: 1, padding: '14px 8px', background: canSpin ? 'linear-gradient(135deg,#ffd700,#f4a261)' : '#eee', color: canSpin ? 'white' : '#aaa', border: 'none', borderRadius: 14, fontSize: 13, fontWeight: 'bold', cursor: canSpin ? 'pointer' : 'default', boxShadow: canSpin ? '0 4px 12px rgba(244,162,97,0.4)' : 'none' }}>
@@ -3402,7 +3398,7 @@ function HomeScreen({ player, dogs, stats, onNavigate }) {
       {/* ✨ Daily Star Track — Dreamlight-style reward path */}
       <StarTrackBar />
       {/* 🌊 Wishing Well — daily random bonus */}
-      <WishingWell />
+      <WishingWell key={'WishingWell-' + todayKey} />
       {showSpin && <DailyGiftModal onClose={() => setShowSpin(false)} onWin={handleSpinWin} />}
       {showFriends && <FriendsGalleryModal onClose={() => setShowFriends(false)} />}
     </div>
@@ -6482,8 +6478,9 @@ function CatCottage({ wall, roof = 0, door = 0, flowers = 0 }) {
 function CosyCornerScreen({ dogs, onBack }) {
   const [cfg, setCfg] = useState(getCosy);
   const upd = (patch) => { const n = { ...cfg, ...patch }; setCfg(n); try { localStorage.setItem('km_cosy', JSON.stringify(n)); } catch {} };
-  const sunKey = 'km_sun_' + localDateKey();
+  const sunKey = 'km_sun_' + useTodayKey();
   const [sunDone, setSunDone] = React.useState(() => { try { return !!localStorage.getItem(sunKey); } catch { return false; } });
+  React.useEffect(() => { try { setSunDone(!!localStorage.getItem(sunKey)); } catch {} }, [sunKey]);
   const soakSun = () => {
     try { playPurr(); } catch {}
     if (sunDone) return;
