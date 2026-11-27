@@ -213,3 +213,5 @@
   Next: Super Fan (after IAP). Needs Harvey: support email (SUPPORT_EMAIL) + privacy policy URL before any App Store submission.
 - Run 156: replaced the stale create-react-app placeholder test with 3 real ones (every breed has a photo source + cartoon art; every catch-zone breed exists; no dog wording in breed names). Tests only: no app change, no version bump (v1.145). `npm test` 3/3, build OK; playwright (photo APIs mocked): signup, all 8 tabs, catch, full AI race (1st), no console errors; screenshots viewed. Also checked: per-player counters are parked/restored on log out/in (all km_ keys).
   Next: Super Fan (after IAP). Needs Harvey: support email (SUPPORT_EMAIL) + privacy policy URL before any App Store submission.
+- Run 157: Mart power-up cards showed their icon twice (big icon plus emoji in the title); title is now text only. v1.146 (APP_VERSION 283). npm test 3/3, build OK; playwright (photo APIs mocked): signup, all 8 tabs, catch, full AI race (1st), no console errors; Mart/Cats/race screenshots viewed.
+  Next: Super Fan (after IAP). Needs Harvey: support email (SUPPORT_EMAIL) + privacy policy URL before any App Store submission.

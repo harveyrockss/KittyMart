@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 282; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 283; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -7475,7 +7475,7 @@ function MartScreen({ dogs, totalPoints }) {
                 <div key={p.id} style={{ background: active ? '#d4edda' : 'white', border: `2px solid ${active ? '#28a745' : '#e0d0ff'}`, borderRadius: 14, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{ fontSize: 32 }}>{p.label.split(' ')[0]}</div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 'bold', fontSize: 13, color: '#333' }}>{p.label}</div>
+                    <div style={{ fontWeight: 'bold', fontSize: 13, color: '#333' }}>{p.label.slice(p.label.indexOf(' ') + 1)}</div>
                     <div style={{ fontSize: 11, color: '#888' }}>{p.desc}</div>
                     {active && <div style={{ fontSize: 10, color: '#28a745', fontWeight: 'bold' }}>⚡ Active!</div>}
                   </div>
