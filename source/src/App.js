@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 288; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 289; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -914,8 +914,7 @@ window.addEventListener('online', async () => {
   try { await sb(`players?id=eq.${_bonusPtsPlayerId}`, 'PATCH', { player_data: await packPlayerDataZ() }); } catch {}
 });
 
-// ─── Kitty Coins (Ð) — race-earned currency, spent in the Mart ─────────────
-const DD = 'Ð'; // Kitty Coin sign (plain text fallback)
+// ─── Kitty Coins — race-earned currency, spent in the Mart ─────────────
 function getDD() { try { return parseInt(localStorage.getItem('km_dd') || '0', 10); } catch { return 0; } }
 function addDD(delta) { try { const n = Math.max(0, getDD() + delta); localStorage.setItem('km_dd', n); window.dispatchEvent(new Event('km_dd_change')); saveNow(); return n; } catch { return 0; } }
 // DDIcon — Kitty Coin symbol
@@ -925,7 +924,7 @@ function DDIcon({ size = 18, style = {} }) {
       style={{ display:'inline-block', verticalAlign:'middle', borderRadius:'50%', marginRight:1, ...style }} />
   );
 }
-// Ð earned per race place: 1st=10, 2nd=6, 3rd=3, 4th=1
+// Kitty Coins earned per race place: 1st=10, 2nd=6, 3rd=3, 4th=1
 const DD_PLACE = [10, 6, 3, 1];
 
 // ─── Haptic feedback (works on iOS Safari + Android) ─────────────────────────
@@ -3471,7 +3470,7 @@ function AdventCalendarCard() {
       {justWon && (
         <div onClick={() => setJustWon(null)} style={{ background: 'white', borderRadius: 14, padding: 12, marginBottom: 10, textAlign: 'center', cursor: 'pointer' }}>
           <div style={{ fontSize: 28 }}>🎁</div>
-          <div style={{ fontWeight: 'bold', color: '#a4161a' }}>Day {justWon.day}: {justWon.label}{justWon.dd && justWon.pts ? ` + ${justWon.dd} ${DD}` : ''}!</div>
+          <div style={{ fontWeight: 'bold', color: '#a4161a' }}>Day {justWon.day}: {justWon.label}{justWon.dd && justWon.pts ? `: ${justWon.pts} points + ${justWon.dd} Kitty Coins` : ''}!</div>
         </div>
       )}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6 }}>
@@ -3540,7 +3539,7 @@ function TrickOrTreatCard() {
       {done || !current ? (
         <div style={{ textAlign: 'center', color: '#ffd700', fontWeight: 'bold', fontSize: 14, padding: 10 }}>
           <div style={{ fontSize: 32 }}>🎃</div>
-          All puzzles solved! You earned {earned}{DD} today!
+          All puzzles solved! You earned {earned} Kitty Coins today!
           <div style={{ fontSize: 12, color: '#ccc', marginTop: 4 }}>Come back next Halloween! 👻</div>
         </div>
       ) : (
@@ -3565,7 +3564,7 @@ function TrickOrTreatCard() {
           {reveal && (
             <div style={{ marginTop: 10, textAlign: 'center' }}>
               {selected === current.ans
-                ? <div style={{ color: '#ffd700', fontWeight: 'bold' }}>🎉 Correct! +{current.dd}{DD} earned!</div>
+                ? <div style={{ color: '#ffd700', fontWeight: 'bold' }}>🎉 Correct! +{current.dd} Kitty Coins earned!</div>
                 : <div style={{ color: '#ff6b00', fontWeight: 'bold' }}>👻 Oops! No Kitty Coins this time.</div>}
               {available.length > 1 && (
                 <button onClick={nextPuzzle} style={{ marginTop: 8, background: '#ff6b00', color: 'white', border: 'none', borderRadius: 12, padding: '8px 18px', fontWeight: 'bold', fontSize: 13, cursor: 'pointer' }}>
@@ -3574,7 +3573,7 @@ function TrickOrTreatCard() {
               )}
             </div>
           )}
-          <div style={{ color: '#aaa', fontSize: 11, marginTop: 8, textAlign: 'center' }}>{TRICK_OR_TREAT_PUZZLES.length - (state?.answered||[]).length} puzzles remaining · {earned}{DD} earned today</div>
+          <div style={{ color: '#aaa', fontSize: 11, marginTop: 8, textAlign: 'center' }}>{TRICK_OR_TREAT_PUZZLES.length - (state?.answered||[]).length} puzzles remaining · {earned} Kitty Coins earned today</div>
         </>
       )}
     </div>
@@ -5448,7 +5447,7 @@ function TasksScreen({ dogs }) {
   const showPopup = (m) => { haptic('success'); setPopupMsg(m); };
 
   const buyPowerup = (p) => {
-    if (dd < p.cost) { showToast(`Need ${p.cost}${DD}! Win races to earn Kitty Coins.`); return; }
+    if (dd < p.cost) { showToast(`Need ${p.cost} Kitty Coins! Win races to earn Kitty Coins.`); return; }
     addDD(-p.cost);
     if (p.duration > 0) {
       const expires = Date.now() + p.duration * 1000;
@@ -7440,7 +7439,7 @@ function MartScreen({ dogs, totalPoints }) {
               const boosts = (() => { try { return JSON.parse(localStorage.getItem('km_boosts') || '{}'); } catch { return {}; } })();
               const active = boosts[p.id] && Date.now() < boosts[p.id];
               const buyPU = () => {
-                if (!canAfford) { showMsg(`Need ${p.cost}${DD} — win races to earn Kitty Coins!`); return; }
+                if (!canAfford) { showMsg(`Need ${p.cost} Kitty Coins — win races to earn Kitty Coins!`); return; }
                 addDD(-p.cost);
                 haptic('success');
                 if (p.duration > 0) {
@@ -8714,7 +8713,8 @@ export default function App() {
           <button onClick={loadDogs} style={{ flexShrink: 0, padding: '6px 12px', background: '#4a9e5c', color: 'white', border: 'none', borderRadius: 10, fontWeight: 'bold', fontSize: 12, cursor: 'pointer' }}>Retry</button>
         </div>
       )}
-      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      {/* Holiday gradients are dark; a pale wash keeps the screens' dark text readable */}
+      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', background: holiday ? 'rgba(255,253,248,0.9)' : 'transparent' }}>
         {tab === 'home'        && <HomeScreen player={player} dogs={dogs} stats={stats} onNavigate={setTab} />}
         {tab === 'catch'       && <CatchScreen player={player} dogs={dogs} onCatch={(newDog) => {
           // Re-downloading the whole collection after every catch froze big accounts (7,000+ dogs) and
