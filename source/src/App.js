@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 281; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 282; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -5345,7 +5345,7 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
         {/* Elite race: show auto-paid DD reward */}
         {eliteMode && place >= 0 && raceDDAmount > 0 && (
           <div style={{ background: 'linear-gradient(135deg,#fff9e6,#fff3cd)', borderRadius: 16, padding: 14, marginBottom: 12, border: '2px solid #f7b731' }}>
-            <div style={{ fontSize: 22, fontWeight: 'bold', color: '#e65100' }}>+{raceDDAmount} 🪙 Kitty Coins!</div>
+            <div style={{ fontSize: 22, fontWeight: 'bold', color: '#e65100' }}>+{raceDDAmount} 🪙 Kitty Coin{raceDDAmount === 1 ? '' : 's'}!</div>
             <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>Elite Race prize paid automatically</div>
           </div>
         )}
@@ -5358,15 +5358,15 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
                 ⭐ {result.pts} Points
               </button>
               <button onClick={() => { addDD(raceDDAmount); setRacePaidInDD('dd'); }} style={{ flex:1, padding:'10px 6px', background:'linear-gradient(135deg,#667eea,#764ba2)', color:'white', border:'none', borderRadius:12, fontSize:13, fontWeight:'bold', cursor:'pointer' }}>
-                🐱 {raceDDAmount} Kitty Coins
+                🐱 {raceDDAmount} Kitty Coin{raceDDAmount === 1 ? '' : 's'}
               </button>
             </div>
           </div>
         )}
         {!eliteMode && racePaidInDD === 'pts' && <div style={{ fontSize: 18, fontWeight: 'bold', color: '#f4a261', marginBottom: 4 }}>+{result.pts} pts ⭐</div>}
-        {!eliteMode && racePaidInDD === 'dd' && <div style={{ fontSize: 18, fontWeight: 'bold', color: '#764ba2', marginBottom: 4 }}>+{raceDDAmount} <DDIcon size={18} /> Kitty Coins!</div>}
+        {!eliteMode && racePaidInDD === 'dd' && <div style={{ fontSize: 18, fontWeight: 'bold', color: '#764ba2', marginBottom: 4 }}>+{raceDDAmount} <DDIcon size={18} /> Kitty Coin{raceDDAmount === 1 ? '' : 's'}!</div>}
         <div style={{ background: 'linear-gradient(135deg,#667eea22,#764ba222)', borderRadius: 10, padding: '6px 14px', display: 'inline-block', marginBottom: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: 'bold', color: '#fff' }}>🐱 Kitty Coins balance: {dd}</span>
+          <span style={{ fontSize: 13, fontWeight: 'bold', color: '#5b3a86' }}>🐱 Kitty Coins balance: {dd}</span>
         </div>
         <div style={{ fontSize: 14, color: '#888', marginBottom: 8 }}>Race Wins: 🏁 {localStorage.getItem('km_race_wins') || 0}</div>
         {(room || aiRoom) && result?.order?.length > 0 && (
