@@ -227,3 +227,5 @@
   Next: Super Fan (after IAP). Needs Harvey: support email (SUPPORT_EMAIL) + privacy policy URL before any App Store submission.
 - Run 163: checked December ahead of time (clock set to 25 Dec). Fixed dark text on dark holiday backgrounds (Christmas/Halloween etc.) with a pale wash behind screen content; removed the leftover 'Ð' coin sign (now says Kitty Coins; Advent day 25 shows both points and coins). v1.152 (APP_VERSION 289). npm test 4/4, build OK; playwright (photo APIs mocked/blocked): signup, Advent, all tabs, catch, full AI race; screenshots viewed; only blocked-network errors.
   Next: Super Fan (after IAP). Needs Harvey: support email (SUPPORT_EMAIL) + privacy policy URL before any App Store submission.
+- Run 164: health check only, no app change (v1.152). npm test 4/4, build OK, login screen loads with no console errors (full tab/catch/race playtest not re-run, nothing changed). Wording sweep: no visible dog wording or dog emoji in source.
+  Routine has little useful work left without Harvey: support email (SUPPORT_EMAIL), privacy policy URL, in-app purchase setup (then Super Fan), and whether the "catch 500 cats" weekly goal should be lower.
