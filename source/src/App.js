@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { sb, supabaseAuth, ONLINE, repairOfflinePlayer, forgetOfflineAuth } from './backend';
-import { CAT_BREEDS, ZONE_BREEDS, CAT_TRAITS, CAT_NAMES_MALE, CAT_NAMES_FEMALE, catArtUrl } from './catData';
+import { CAT_BREEDS, ZONE_BREEDS, CAT_TRAITS, CAT_NAMES_MALE, CAT_NAMES_FEMALE, catArtUrl, localDayNumber } from './catData';
 import { fetchBreedPhoto, catPhotoFor, warmBreedPhotos, installPhotoFallback } from './photos';
 installPhotoFallback();
 
@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 286; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 287; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -953,7 +953,7 @@ function haptic(style = 'light') {
 
 // ─── Today's featured dog ─────────────────────────────────────────────────────
 function getFeaturedDog() {
-  const dayIdx = Math.floor(Date.now() / 86400000);
+  const dayIdx = localDayNumber();
   return DOG_BREEDS[dayIdx % DOG_BREEDS.length];
 }
 
@@ -1011,7 +1011,8 @@ function checkLoginStreak() {
     let streak  = parseInt(localStorage.getItem('km_streak') || '0', 10);
     let reward  = 0;
     if (last === today) return { streak, reward, isNew: false };
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    const y = new Date(); y.setDate(y.getDate() - 1); // calendar day, safe across clock changes
+    const yesterday = y.toDateString();
     if (last === yesterday) { streak++; } else { streak = 1; }
     reward = Math.min(streak * 5, 50); // 5pts/day, capped at 50
     addBonusPts(reward);
@@ -3044,7 +3045,7 @@ const CAT_NAP_SPOTS = [
   ['🛋️','The comfiest cushion'],['📚','Right on top of a book'],['🧣','A soft fluffy blanket'],['🌿','Next to a leafy plant'],
 ];
 function CatFactCard() {
-  const day = Math.floor(Date.now() / 86400000);
+  const day = localDayNumber(); // changes at the player's midnight, like the other daily extras
   const fact = CAT_FACTS[day % CAT_FACTS.length];
   const joke = CAT_JOKES[day % CAT_JOKES.length];
   const [showJoke, setShowJoke] = React.useState(false);

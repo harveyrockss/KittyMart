@@ -317,3 +317,8 @@ export const CAT_NAMES_FEMALE = [
 ];
 
 export const BREEDS_LOOKUP = BREEDS_BY_NAME;
+
+// Day number that ticks over at the player's own midnight (not UTC), for daily rotating content.
+export function localDayNumber(d = new Date()) {
+  return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+}
