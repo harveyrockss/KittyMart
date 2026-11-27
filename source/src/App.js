@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 280; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 281; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -2578,6 +2578,8 @@ const ACHIEVEMENTS = [
   { id: 'race_3',        label: '🏁 Whisker Winner', desc: 'Win 3 races against the computer cats', pts: 30,  check: () => parseInt(localStorage.getItem('km_race_wins')||'0',10) >= 3 },
   { id: 'race_25',       label: '🥇 Whisker Legend', desc: 'Win 25 races against the computer cats', pts: 60,  check: () => parseInt(localStorage.getItem('km_race_wins')||'0',10) >= 25 },
   { id: 'race_10',       label: '🏆 Whisker Champion', desc: 'Win 10 races against the computer cats', pts: 60,  check: () => parseInt(localStorage.getItem('km_race_wins')||'0',10) >= 10 },
+  { id: 'cup_1',         label: '👑 Cup Winner',     desc: 'Win the Champion Cup with a level 6+ cat', pts: 40, check: () => parseInt(localStorage.getItem('km_cup_wins')||'0',10) >= 1 },
+  { id: 'cup_5',         label: '🏅 Cup Collector',  desc: 'Win the Champion Cup 5 times',      pts: 60,  check: () => parseInt(localStorage.getItem('km_cup_wins')||'0',10) >= 5 },
   { id: 'cat_cafe',      label: '☕ Cat Café',        desc: 'Have 20 cats in your collection',   pts: 40,  check: (dogs) => dogs.length >= 20 },
 ];
 
@@ -4637,6 +4639,9 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
           if (myPlace === 0) {
             const wins = parseInt(localStorage.getItem('km_race_wins') || '0') + 1;
             localStorage.setItem('km_race_wins', wins);
+            if (champion) localStorage.setItem('km_cup_wins', parseInt(localStorage.getItem('km_cup_wins') || '0', 10) + 1);
+            // Unlock race achievements now (after the win celebration), not just on next load
+            setTimeout(() => checkAchievements(dogs, showToast), 3000);
             recordChallenge('race_win');
             addStarXP('race_win');
             fireFireworks(3000); // 🏆 race win!
@@ -4798,15 +4803,15 @@ function PetRaceScreen({ player, dogs, setPlayer, onlineCount }) {
           {selectedDog && !ONLINE && (getDogState(selectedDog.id).level || 1) >= 6 && (
             <button
               onClick={() => startAiRace(selectedDog, false, true)}
-              style={{ padding: '22px 0', background: 'linear-gradient(135deg,#f7b731,#e65100)', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 6px 20px rgba(230,81,0,0.4)' }}>
+              style={{ padding: '22px 12px', background: 'linear-gradient(135deg,#f7b731,#e65100)', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 6px 20px rgba(230,81,0,0.4)' }}>
               👑 Champion Cup
-              <div style={{ fontSize: 12, opacity: 0.9, fontWeight: 'normal', marginTop: 4 }}>Lv.6+ cats · faster computer cats · win up to {CHAMPION_DD_PLACE[0]} Kitty Coins</div>
+              <div style={{ fontSize: 12, opacity: 0.9, fontWeight: 'normal', marginTop: 4 }}>Lv.6+ cats · faster computer cats · win up to {CHAMPION_DD_PLACE[0]} Kitty Coins · Cup wins: {parseInt(localStorage.getItem('km_cup_wins') || '0', 10)}</div>
             </button>
           )}
           {selectedDog && ONLINE && (getDogState(selectedDog.id).level || 1) >= 6 && (
             <button
               onClick={() => goScreen('elite_pick_dog')}
-              style={{ padding: '22px 0', background: 'linear-gradient(135deg,#f7b731,#e65100)', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 6px 20px rgba(230,81,0,0.4)', position: 'relative', overflow: 'hidden', opacity: ONLINE ? 1 : 0.55, filter: ONLINE ? 'none' : 'grayscale(0.6)' }}>
+              style={{ padding: '22px 12px', background: 'linear-gradient(135deg,#f7b731,#e65100)', color: 'white', border: 'none', borderRadius: 20, fontSize: 17, fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 6px 20px rgba(230,81,0,0.4)', position: 'relative', overflow: 'hidden', opacity: ONLINE ? 1 : 0.55, filter: ONLINE ? 'none' : 'grayscale(0.6)' }}>
               <span style={{ position:'absolute', top:6, right:12, fontSize:10, background:'rgba(255,255,255,0.25)', borderRadius:20, padding:'2px 8px', fontWeight:'bold' }}>ELITE</span>
               🏆 Elite Race
               <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 'normal', marginTop: 4 }}>Lv.6+ cats · multiplayer only · big Kitty Coins!</div>
