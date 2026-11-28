@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { sb, supabaseAuth, ONLINE, repairOfflinePlayer, forgetOfflineAuth } from './backend';
-import { CAT_BREEDS, ZONE_BREEDS, CAT_TRAITS, CAT_NAMES_MALE, CAT_NAMES_FEMALE, catArtUrl, localDayNumber } from './catData';
+import { isEasterSeason, CAT_BREEDS, ZONE_BREEDS, CAT_TRAITS, CAT_NAMES_MALE, CAT_NAMES_FEMALE, catArtUrl, localDayNumber } from './catData';
 import { fetchBreedPhoto, catPhotoFor, warmBreedPhotos, installPhotoFallback } from './photos';
 installPhotoFallback();
 
@@ -40,7 +40,7 @@ async function scheduleReminderNotifications() {
 const CAT_PERSONALITIES = ['😴 Sleepy','🔍 Curious','🧶 Playful','🐟 Foodie','🥷 Sneaky','🦁 Brave','😽 Cuddly','🎩 Fancy'];
 function catPersonality(id) { let h = 0; const t = String(id); for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0; return CAT_PERSONALITIES[h % CAT_PERSONALITIES.length]; }
 const SUPPORT_EMAIL = ''; // set to a real address to show the email-support and Report buttons
-const APP_VERSION = 289; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
+const APP_VERSION = 290; // build number; shown as v1.<n-137> (141 = v1.4). Bump with public/version.json
 (async () => {
   try {
     const res = await fetch(process.env.PUBLIC_URL+'/version.json?t=' + Date.now());
@@ -86,8 +86,8 @@ function getHolidayTheme() {
   // St. Patrick's Day: Mar 15 – Mar 17
   if (m === 3 && d >= 15 && d <= 17)
     return { name: 'St Patricks', gradient: 'linear-gradient(135deg,#1b5e20,#43a047)', nav: '#1b5e20', emojis: ['🍀','☘️','🌈','🎩','🐾'], banner: '☘️ Happy St. Patrick\'s Day! 🍀' };
-  // Easter: approximate (Apr 1–20 range, simplified)
-  if (m === 4 && d >= 1 && d <= 20)
+  // Easter: moves each year (late March to late April)
+  if (isEasterSeason(now))
     return { name: 'Easter', gradient: 'linear-gradient(135deg,#e040fb,#ffca28)', nav: '#e040fb', emojis: ['🐣','🐰','🥚','🌸','🌼'], banner: '🐣 Happy Easter! 🐰' };
   // Australian Summer: Jan 4 – Feb 9 (outside New Year and Valentine's windows)
   if ((m === 1 && d >= 4) || (m === 2 && d <= 9))

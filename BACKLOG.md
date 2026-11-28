@@ -229,3 +229,5 @@
   Next: Super Fan (after IAP). Needs Harvey: support email (SUPPORT_EMAIL) + privacy policy URL before any App Store submission.
 - Run 164: health check only, no app change (v1.152). npm test 4/4, build OK, login screen loads with no console errors (full tab/catch/race playtest not re-run, nothing changed). Wording sweep: no visible dog wording or dog emoji in source.
   Routine has little useful work left without Harvey: support email (SUPPORT_EMAIL), privacy policy URL, in-app purchase setup (then Super Fan), and whether the "catch 500 cats" weekly goal should be lower.
+- Run 165: the Easter theme was fixed to 1-20 April, but Easter 2027 is 28 March; it now follows the real date each year (10 days before Easter Sunday to Easter Monday, `isEasterSeason`). v1.153 (APP_VERSION 290). npm test 5/5, build (GENERATE_SOURCEMAP=false) OK; playwright (photo APIs mocked, clock 27 Mar 2027): signup, all 8 tabs, catch, full AI race (1st), Mart; screenshots viewed; only the sandbox's blocked network request.
+  Next: Super Fan (after IAP). Needs Harvey: support email (SUPPORT_EMAIL) + privacy policy URL before any App Store submission.

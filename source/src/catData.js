@@ -322,3 +322,16 @@ export const BREEDS_LOOKUP = BREEDS_BY_NAME;
 export function localDayNumber(d = new Date()) {
   return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
 }
+
+// Easter season: 10 days before Easter Sunday through Easter Monday (Gregorian computus).
+export function isEasterSeason(date) {
+  const y = date.getFullYear();
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100;
+  const h = (19 * a + b - Math.floor(b / 4) - Math.floor((b - Math.floor((b + 8) / 25) + 1) / 3) + 15) % 30;
+  const l = (32 + 2 * (b % 4) + 2 * Math.floor(c / 4) - h - (c % 4)) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const n = h + l - 7 * m + 114;
+  const sunday = Date.UTC(y, Math.floor(n / 31) - 1, (n % 31) + 1);
+  const diff = (Date.UTC(y, date.getMonth(), date.getDate()) - sunday) / 86400000;
+  return diff >= -10 && diff <= 1;
+}
